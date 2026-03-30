@@ -283,6 +283,12 @@ function M.get_text(opts)
     local col_end = locopts.col_end or vim.fn.getpos("'>")[3]
     local cur_col = locopts.cur_col or vim.fn.col('.')
 
+    -- If last column is selected then no text can be added
+    local last_col = vim.fn.col('$')
+    if col_end == last_col then
+        col_end = last_col - 1
+    end
+
     local line = vim.api.nvim_buf_get_lines(bufnum, lnum - 1, lnum, false)[1]
     local text = line:sub(col_start, col_end)
 
