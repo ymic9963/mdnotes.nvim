@@ -322,7 +322,6 @@ function M.check_list_valid(opts)
     -- Find where list starts
     for i = origin_lnum, lower_limit_lnum, -1 do
         local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
-        if not cur_line then vim.print(origin_lnum, i - 1, i) end
         lcontent = M.resolve_list_content(cur_line)
         if lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
             break
@@ -387,7 +386,6 @@ function M.ordered_list_renumber(opts)
 
     -- Get list
     local list_lines = vim.api.nvim_buf_get_lines(buffer, lsearch.startl - 1, lsearch.endl, false)
-    vim.print(list_lines)
 
     local new_list_lines = {}
     for i, v in ipairs(list_lines) do
