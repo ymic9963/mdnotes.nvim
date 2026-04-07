@@ -445,7 +445,7 @@ function M.delete(opts)
 
     local ildata
     if uri == nil then
-        ildata = mdn_il.parse({ location = opts.location }) or {}
+        ildata = mdn_il.parse({ location = opts.location, keep_pointy_brackets = false }) or {}
         uri = ildata.uri
         if uri == nil then return false, nil end
     end
