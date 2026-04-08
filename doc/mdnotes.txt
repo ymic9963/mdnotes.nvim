@@ -19,7 +19,14 @@ commands!
 ==============================================================================
 QUICK START            	             			*mdnotes-quickstart*
 
-To setup `mdnotes` using the Lazy package manager, put this in your `init.lua` file,
+To setup `mdnotes` using |vim.pack|, put this in your `init.lua` file,
+>lua
+    vim.pack.add({"https://github.com/ymic9963/mdnotes.nvim" })
+    require("mdnotes").setup({
+	-- Config here
+    })
+<
+or by using lazy.nvim,
 >lua
     {
 	"ymic9963/mdnotes.nvim",
@@ -39,6 +46,7 @@ Can use either `opts` or `config` with the traditional `setup({}`) function,
 	    })
 	}
     }
+<
 Explanation for the options is given in the next |mdnotes-config| section.
 See |mdnotes-keymaps| for keymap recommendations, |mdnotes-lsp| for notes on
 using LSPs with `mdnotes`, and |mdnotes-completion| for using file name
