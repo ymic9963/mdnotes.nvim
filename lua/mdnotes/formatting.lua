@@ -53,7 +53,7 @@ function M.insert_format(format_char, opts)
     end
 
     -- Limit the end column value
-    -- Visual mode and vimgrep can give end_col values after the line ending
+    -- Visual mode and grep can give end_col values after the line ending
     local line_len = #(vim.api.nvim_buf_get_lines(txtdata.buffer, txtdata.lnum - 1, txtdata.lnum, false)[1])
     if txtdata.col_end > line_len then
         txtdata.col_end = line_len

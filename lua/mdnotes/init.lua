@@ -236,6 +236,32 @@ function M.open_buf(buf)
     vim.cmd(edit_cmd)
 end
 
+---Resolving any required internal :grep calls
+---@param pattern string grep pattern
+---@param path string File path
+function M.mdn_grep(pattern, path)
+    if vim.o.grepprg == "internal" then
+        -- INFO:
+        -- To convert e.g.
+        -- grep "\]\(<?assets\/" .
+        -- to
+        -- grep "](<\?assets/" *
+        pattern = pattern:gsub("\\", "")
+        pattern = pattern:gsub("%?", "\\?")
+        pattern = pattern:gsub("/", "\\/")
+        pattern = pattern:gsub("%[", "\\[")
+        pattern = pattern:gsub("%]", "\\]")
+
+        pattern = "/" .. pattern .. "/"
+        path = vim.fs.joinpath(vim.fs.normalize(path), "*")
+    else
+        pattern = '"' .. pattern .. '"'
+    end
+
+    vim.cmd.grep({args = {pattern, path}, mods = {emsg_silent = true}})
+    vim.print(path)
+end
+
 ---Check text for valid Markdown syntax
 ---@param pattern MdnPattern Pattern that returns the start and end columns, as well as the text
 ---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?

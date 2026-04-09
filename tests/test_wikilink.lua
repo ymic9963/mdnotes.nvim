@@ -17,6 +17,7 @@ local T = new_set({
             -- Load tested plugin
             child.lua([[M = require('mdnotes')]])
             child.lua([[require('mdnotes').setup()]])
+            -- child.o.grepprg = "internal"
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
@@ -57,44 +58,85 @@ T['show_references()'] = function()
     child.cmd([[edit tests/test-data/files/file2.md]])
     child.fn.cursor(1,1)
     local ret = child.lua([[return require('mdnotes.wikilink').show_references()]])
-    eq(ret, {
-        {
-            bufnr = 3,
-            col = 1,
-            end_col = 10,
-            end_lnum = 2,
-            lnum = 2,
-            module = "",
-            nr = 0,
-            pattern = "",
-            text = "[[file2]]",
-            type = "",
-            valid = 1,
-            vcol = 0
-        }
-    })
-    child.cmd("ccl")
-    eq(vim.fs.basename(child.api.nvim_buf_get_name(0)), "file2.md")
+    if child.o.grepprg == "internal" then
+        eq(ret, {
+            {
+                bufnr = 3,
+                col = 1,
+                end_col = 10,
+                end_lnum = 2,
+                lnum = 2,
+                module = "",
+                nr = 0,
+                pattern = "",
+                text = "[[file2]]",
+                type = "",
+                valid = 1,
+                vcol = 0
+            }
+        })
+        child.cmd("ccl")
+        eq(vim.fs.basename(child.api.nvim_buf_get_name(0)), "file2.md")
 
-    child.cmd([[edit tests/test-data/files/file3.md]])
-    child.fn.cursor(2,1)
-    ret = child.lua([[return require('mdnotes.wikilink').show_references()]])
-    eq(ret, {
-        {
-            bufnr = 3,
-            col = 1,
-            end_col = 10,
-            end_lnum = 2,
-            lnum = 2,
-            module = "",
-            nr = 0,
-            pattern = "",
-            text = "[[file2]]",
-            type = "",
-            valid = 1,
-            vcol = 0
-        }
-    })
+        child.cmd([[edit tests/test-data/files/file3.md]])
+        child.fn.cursor(2,1)
+        ret = child.lua([[return require('mdnotes.wikilink').show_references()]])
+        eq(ret, {
+            {
+                bufnr = 3,
+                col = 1,
+                end_col = 10,
+                end_lnum = 2,
+                lnum = 2,
+                module = "",
+                nr = 0,
+                pattern = "",
+                text = "[[file2]]",
+                type = "",
+                valid = 1,
+                vcol = 0
+            }
+        })
+    else
+        eq(ret, {
+            {
+                bufnr = 2, -- is 3 with vimgrep
+                col = 1,
+                end_col = 0, -- is 10 with vimgrep
+                end_lnum = 0, -- is 2 with vimgrep
+                lnum = 2,
+                module = "",
+                nr = -1, -- is 0 with vimgrep
+                pattern = "",
+                text = "[[file2]]",
+                type = "",
+                valid = 1,
+                vcol = 0
+            }
+        })
+        child.cmd("ccl")
+        eq(vim.fs.basename(child.api.nvim_buf_get_name(0)), "file2.md")
+
+        child.cmd([[edit tests/test-data/files/file3.md]])
+        child.fn.cursor(2,1)
+        ret = child.lua([[return require('mdnotes.wikilink').show_references()]])
+        eq(ret, {
+            {
+                bufnr = 2, -- is 3 with vimgrep
+                col = 1,
+                end_col = 0, -- is 10 with vimgrep
+                end_lnum = 0, -- is 2 with vimgrep
+                lnum = 2,
+                module = "",
+                nr = -1, -- is 0 with vimgrep
+                pattern = "",
+                text = "[[file2]]",
+                type = "",
+                valid = 1,
+                vcol = 0
+            }
+        })
+    end
 end
 
 T['rename_references()'] = function()

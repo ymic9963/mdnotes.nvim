@@ -673,6 +673,15 @@ open_buf({buf})						*mdnotes.open_buf()*
     Parameters: ~
     • {buffer}  (`integer|string`)
 
+mdn_grep({pattern}, {path})				*mdnotes.mdn_grep()*
+
+    Resolve any required internal |:grep| calls. Uses |'grepprg'| to check if
+    it should convert the {pattern} into a pattern that |:vimgrep| recognises.
+
+    Parameters: ~
+    • {pattern}  (`string`) grep pattern
+    • {path}  (`string`) File path
+
 check_markdown_syntax({pattern}, {opts}) 		*mdnotes.check_markdown_syntax()*
 
     Check if the Markdown syntax under the cursor matches the {pattern} of type

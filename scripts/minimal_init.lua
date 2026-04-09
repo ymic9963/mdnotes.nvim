@@ -9,6 +9,8 @@ if #vim.api.nvim_list_uis() == 0 then
     if vim.fn.isdirectory("deps/mini.test") == 1 then
         -- This is used for CI
         mini_path = "deps/mini.test"
+
+        vim.o.grepprg = "internal"
     else
         -- This is used when developing
         mini_path = vim.fs.normalize(vim.fn.stdpath('data') .. '/site/pack/core/opt/mini.test')

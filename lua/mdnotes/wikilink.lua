@@ -116,8 +116,9 @@ function M.show_references(opts)
 
     local cur_pos = vim.fn.getpos('.')
     local cwd = require('mdnotes').cwd
+    local mdn_grep = require('mdnotes').mdn_grep
 
-    vim.cmd.vimgrep({args = {'/\\[\\[' .. wldata.wikilink_nofrag .. '.*\\]\\]/', vim.fs.joinpath(cwd, "*")}, mods = {emsg_silent = true}})
+    mdn_grep("\\[\\[" .. wldata.wikilink_nofrag .. ".*\\]\\]", cwd)
 
     local qflist = vim.fn.getqflist()
     if vim.tbl_isempty(qflist) then
@@ -159,6 +160,7 @@ function M.rename_references(opts)
     local temp_qflist = vim.fn.getqflist()
     local prompt = "Rename WikiLink and file: "
     local cwd = require('mdnotes').cwd
+    local mdn_grep = require('mdnotes').mdn_grep
     local wldata = M.parse({ location = locopts })
 
     if wldata == nil then
@@ -198,7 +200,7 @@ function M.rename_references(opts)
 
     -- Change all [[WikiLink]] text to be the new name
     vim.cmd.wall({bang = true, mods = {silent = true}})
-    vim.cmd.vimgrep({args = {'/\\[\\[' .. wldata.wikilink_nofrag .. '.*\\]\\]/', vim.fs.joinpath(cwd, "*")}, mods = {emsg_silent = true}})
+    mdn_grep("\\[\\[" .. wldata.wikilink_nofrag .. ".*\\]\\]", cwd)
     vim.cmd.cdo({args = {('s/%s/%s/'):format("\\[\\[" .. wldata.wikilink_nofrag, "\\[\\[" .. new_name)}, mods = {emsg_silent = true}})
     vim.cmd.wall({bang = true, mods = {silent = true}})
 
@@ -258,9 +260,10 @@ function M.undo_rename()
     local cur_buf = vim.api.nvim_get_current_buf()
     local cur_pos = vim.fn.getpos('.')
     local cwd = require('mdnotes').cwd
+    local mdn_grep = require('mdnotes').mdn_grep
 
     vim.cmd.wall({bang = true, mods = {silent = true}})
-    vim.cmd.vimgrep({args = {'/\\[\\[' .. M.new_filename .. '.*\\]\\]/', vim.fs.joinpath(cwd, "*")}, mods = {emsg_silent = true}})
+    mdn_grep("\\[\\[" .. M.new_filename .. ".*\\]\\]", cwd)
     vim.cmd.cdo({args = {('s/%s/%s/'):format(M.new_filename, M.old_filename)}, mods = {emsg_silent = true}})
     vim.cmd.wall({bang = true, mods = {silent = true}})
 
@@ -395,6 +398,7 @@ function M.get_orphans(opts)
     local tempqf_list = vim.fn.getqflist()
     local count = 0
     local cwd = require('mdnotes').cwd
+    local mdn_grep = require('mdnotes').mdn_grep
     local files_cwd = require('mdnotes').get_files_in_cwd({ extension = ".md", hidden = false, fs_type = "file" })
 
     if silent == false then
@@ -403,7 +407,7 @@ function M.get_orphans(opts)
 
     for _, file in pairs(files_cwd) do
         file = file:gsub(".md", "")
-        vim.cmd.vimgrep({args = {'/\\[\\[' .. file .. '.*\\]\\]/', vim.fs.joinpath(cwd, "*")}, mods = {emsg_silent = true}})
+        mdn_grep("\\[\\[" .. file .. ".*\\]\\]", cwd)
         if vim.tbl_isempty(vim.fn.getqflist()) then
             count = count + 1
             table.insert(orphans, file .. ".md")

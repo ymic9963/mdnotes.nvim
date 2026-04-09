@@ -231,13 +231,15 @@ function M.get_used_assets(opts)
     vim.validate("silent", silent, "boolean")
 
     local cwd = require('mdnotes').cwd
+    local mdn_grep = require('mdnotes').mdn_grep
     local mdn_patterns = require('mdnotes.patterns')
     local uri = ""
     local used_assets = {}
     local temp_qflist = vim.fn.getqflist()
 
-    -- Vimgrep inline links with asset paths with no spaces
-    vim.cmd.vimgrep({args = {"/](<\\?" .. M.get_assets_folder_name() .. "\\//", vim.fs.joinpath(cwd, "*")}, mods = {emsg_silent = true}})
+    -- Grep inline links with asset paths
+    local pattern = "\\]\\(<?" .. M.get_assets_folder_name() .. "\\/"
+    mdn_grep(pattern, cwd)
     local assets_list = vim.fn.getqflist()
 
     for _, v in ipairs(assets_list) do
