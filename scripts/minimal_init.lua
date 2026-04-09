@@ -11,7 +11,7 @@ if #vim.api.nvim_list_uis() == 0 then
         mini_path = "deps/mini.test"
     else
         -- This is used when developing
-        mini_path = vim.fs.normalize(vim.fn.stdpath('data') .. '/lazy/mini.test')
+        mini_path = vim.fs.normalize(vim.fn.stdpath('data') .. '/site/pack/core/opt/mini.test')
     end
 
     vim.cmd('set rtp+=' .. mini_path)
