@@ -53,7 +53,7 @@ function M.parse(opts)
 end
 
 ---Follow the WikiLink under the cursor
----@param opts {location: MdnInLineLocation?}?
+---@param opts {location: MdnInLineLocation?, hor: boolean?, vert: boolean?}?
 function M.follow(opts)
     if check_markdown_lsp_cur_buf() then
         vim.lsp.buf.definition()
@@ -63,6 +63,8 @@ function M.follow(opts)
 
     opts = opts or {}
     local locopts = opts.location or {}
+    local hor = opts.hor or false
+    local vert = opts.vert or false
 
     local wldata = M.parse({ location = locopts })
 
@@ -80,13 +82,27 @@ function M.follow(opts)
             path = path .. ".md"
         end
 
-        require('mdnotes').open_buf(path)
+        require('mdnotes').open_buf(path, {hor = hor, vert = vert})
     end
 
     if wldata.fragment ~= "" then
         vim.fn.cursor(vim.fn.search(wldata.fragment), 1)
         vim.api.nvim_input('zz')
     end
+end
+
+---Follow the WikiLink under the cursor and split horizontally
+---@param opts {location: MdnInLineLocation?}?
+function M.follow_hor(opts)
+    opts = opts or {}
+    M.follow({ location = opts.location, hor = true})
+end
+
+---Follow the WikiLink under the cursor and split vertically
+---@param opts {location: MdnInLineLocation?}?
+function M.follow_vert(opts)
+    opts = opts or {}
+    M.follow({ location = opts.location, vert = true})
 end
 
 ---Show the references to the current WikiLink under the cursor

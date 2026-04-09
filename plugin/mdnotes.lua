@@ -109,6 +109,8 @@ local get_commands = function() return {
     },
     wikilink = {
         follow = require("mdnotes.wikilink").follow,
+        follow_hor = require("mdnotes.wikilink").follow_hor,
+        follow_vert = require("mdnotes.wikilink").follow_vert,
         show_references = require("mdnotes.wikilink").show_references,
         rename_references = require("mdnotes.wikilink").rename_references,
         undo_rename = require("mdnotes.wikilink").undo_rename,

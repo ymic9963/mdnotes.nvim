@@ -222,15 +222,36 @@ end
 
 ---Open the buffer using the cwd
 ---@param buf integer|string
-function M.open_buf(buf)
+---@param opts {hor: boolean?, vert: boolean?}?
+function M.open_buf(buf, opts)
+    opts = opts or {}
+    local hor = opts.hor or false
+    local vert = opts.vert or false
+
     vim.validate("buf", buf, {"number", "string"})
+    vim.validate("hor", hor, "boolean")
+    vim.validate("vert", vert, "boolean")
+
+    if hor == true and vert == true then
+        hor = false
+        vert = false
+    end
+
+    local open_cmd = ""
+    if hor == true then
+        open_cmd = "split "
+    elseif vert == true then
+        open_cmd = "vsplit "
+    else
+        open_cmd = M.open_cmd
+    end
 
     local edit_cmd = ""
     if type(buf) == "number" then
-        edit_cmd = M.open_cmd .. buf
+        edit_cmd = open_cmd .. buf
     elseif type(buf) == "string" then
         vim.cmd.cd({ args = {M.cwd}, mods = {silent = true}})
-        edit_cmd = M.open_cmd .. buf
+        edit_cmd = open_cmd .. buf
     end
 
     vim.cmd(edit_cmd)
