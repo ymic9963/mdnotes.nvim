@@ -183,12 +183,7 @@ local function resolve_autocmd_config()
     end
 end
 
----Setup function
----@param user_config MdnConfig
-function M.setup(user_config)
-    M.config = validate_config(user_config)
-    M.config.index_file = vim.fs.normalize(M.config.index_file)
-
+local function resolve_open_cmd()
     if M.config.open_behaviour == "buffer" then
         M.open_cmd = 'edit '
     elseif M.config.open_behaviour == "tab" then
@@ -198,7 +193,15 @@ function M.setup(user_config)
     elseif M.config.open_behaviour == "vsplit" then
         M.open_cmd = 'vsplit '
     end
+end
 
+---Setup function
+---@param user_config MdnConfig
+function M.setup(user_config)
+    M.config = validate_config(user_config)
+    M.config.index_file = vim.fs.normalize(M.config.index_file)
+
+    resolve_open_cmd()
     resolve_autocmd_config()
 
     M.set_cwd()
