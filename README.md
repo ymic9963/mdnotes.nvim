@@ -163,6 +163,7 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
 - LSP - Please see the [Using LSPs Section](RATIONALE.md#using-lsps) for more information regarding LSPs, but I recommend,
     - [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide) or
     - [marksman](https://github.com/artempyanykh/marksman)
+- Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) `mdnotes`.
 
 
 ### ⌨️ Keymaps
@@ -282,6 +283,8 @@ I wanted to make a more Neovim-centric Markdown notes plugin that tries to work 
 - [mkdnflow.nvim](https://github.com/jakewvincent/mkdnflow.nvim)
 - [markdown.nvim](https://github.com/tadmccorkle/markdown.nvim) 
 - [neowiki.nvim](https://github.com/echaya/neowiki.nvim)
+- [vim-markdown-toc](https://github.com/mzlogin/vim-markdown-toc)
+- [vim-table-mode](https://github.com/dhruvasagar/vim-table-mode)
  
 ## Tests
 Using [mini.test](https://github.com/nvim-mini/mini.test) for testing. For this project, if you want to run the tests then you need to install mini.test as a plugin locally. This was done to minimise dependencies in the repo. If you're not using lazy then you need to specify the `mini.test` location, using the `mini_path` variable in `scripts/minimal_init.lua`. To run the tests execute the following command in the project root,
