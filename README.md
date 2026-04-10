@@ -270,6 +270,9 @@ The GFM table specification is supported.
 |3r1c|3r2c|3r3c|
 ```
 
+## WikiLink Graphs
+See `:h mdnotes-wikilink-graphs` for a starter Python script for creating a node graph to visualise your WikiLinks.
+
 ## 🫂 Motivation
 I wanted to make a more Neovim-centric Markdown notes plugin that tries to work the available Markdown LSPs, is command/subcommand focused, concise, adheres to the [CommonMark](https://spec.commonmark.org/) and [GFM](https://github.github.com/gfm/) specs, while also providing the more widespread [WikiLink](https://github.com/Python-Markdown/markdown/blob/master/docs/extensions/wikilinks.md) support other note-taking apps provide. I hope I did in fact accomplish this (and more) for you as well as for me, and if I have not then please create an issue or contribute! Thanks for reading this :).
 

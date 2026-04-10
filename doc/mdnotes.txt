@@ -2470,4 +2470,39 @@ In `mdnotes` there are the |:Mdn-outliner-indent| and |:Mdn-outliner-unindnet| c
 which provide the same indenting functionality but also execute a more outliner-style
 indenting when using nested lists. This was inspired by applications such as Logseq.
 
+==============================================================================
+WIKILINK GRAPHS 					*mdnotes-wikilink-graphs*
+
+Visualising the links between your files can be quite satisfying. An AI friend
+of mine helped me create (or it created) the following Python script which
+aims to serve as inspiration for visualising WikiLinks as node graphs. Run the
+script inside your notes folder,
+>python
+    import re
+    import os
+    import networkx as nx
+    import matplotlib.pyplot as plt
+
+    G = nx.Graph()
+
+    for file in os.listdir("."):
+	if file.endswith(".md"):
+	    with open(os.path.join(".", file),  encoding="utf-8") as f:
+		content = f.read()
+		links = re.findall(r"\[\[(.*?)\]\]", content)
+		for link in links:
+		    G.add_edge(file, link)
+
+    plt.figure(figsize=(12, 12))
+
+    # More iterations = nicer layout
+    # Higher k = more spread out
+    pos = nx.spring_layout(G, k = 2.0, iterations = 200)
+
+    degrees = dict(G.degree())
+    node_sizes = [degrees[node] * 200 for node in G.nodes()]
+
+    nx.draw(G, pos, with_labels = True, node_size = node_sizes)
+    plt.show()
+<
 vim:tw=78:ts=8:expandtab:noet:ft=help:norl:
