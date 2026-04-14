@@ -85,6 +85,8 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - Exposes most internal functions to provide an API as to allow a hyper-extensible note-taking experience. See `:h mdnotes-api` for function documentation and `:h mdnotes-api-examples` for example usage.
 
 ## 👽 Setup
+Supports Neovim 0.10 or later.
+
 Using `vim.pack`,
 ```lua
 vim.pack.add({"https://github.com/ymic9963/mdnotes.nvim" })
