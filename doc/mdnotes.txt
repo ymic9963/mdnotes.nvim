@@ -362,17 +362,14 @@ subcommands are listed below.
 
     Show orphan pages (pages with no references) in current directory.
 
-:Mdn assets insert_image				*:Mdn-assets-insert_image*
+:Mdn assets insert					*:Mdn-assets-insert_image*
 
-    Insert the image in the clipboard under the cursor and depending on
+    Insert the file in the clipboard under the cursor and depending on
     |mdnotes-asset_insert_behaviour| place it in your |mdnotes-assets_path|. (e.g
     `![image](path/to/assets/image.png`)). Overwriting depends on
-    |mdnotes-asset_overwrite_behaviour|.
-
-:Mdn assets insert_file					*:Mdn-assets-insert_file*
-
-    Exactly the same as |Mdn-assets-insert_image| but it inserts a inline link to the
-    file (e.g. `[file](path/to/assets/file.txt`)).
+    |mdnotes-asset_overwrite_behaviour|. Auto-detects if the file has an image
+    extension to add the `!` character for inline links using
+    |mdnotes.assets.has_image_extension()|.
 
 :Mdn assets unused_delete				*:Mdn-assets-unused_delete*
 
