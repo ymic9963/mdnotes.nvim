@@ -44,10 +44,10 @@ end
 
 T['get_asset_inline_link()'] = function()
     local ret = child.lua([[return require('mdnotes.assets').get_asset_inline_link({ process_file = false, file_path = "path/test" })]])
-    eq(ret, "[test](assets/test)")
+    eq(ret.inline_link, "[test](assets/test)")
 
     ret = child.lua([[return require('mdnotes.assets').get_asset_inline_link({ process_file = false, file_path = "path/test.png" })]])
-    eq(ret, "![test.png](assets/test.png)")
+    eq(ret.inline_link, "![test.png](assets/test.png)")
 end
 
 T['insert()'] = function()
@@ -60,6 +60,12 @@ T['insert()'] = function()
     child.lua([[return require('mdnotes.assets').insert({ process_file = false, file_path = "path/test" })]])
     lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
     eq(lines[1],  "[test](assets/test)")
+
+    lines = { "test2" }
+    buf = create_md_buffer(child, lines)
+    child.lua([[return require('mdnotes.assets').insert({ process_file = false, file_path = "path/test" })]])
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines[1],  "[test2](assets/test)")
 end
 
 T['get_used_assets()'] = function()

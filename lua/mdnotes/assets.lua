@@ -133,9 +133,15 @@ end
 ---@field process_file boolean? Process the file according to the plugin config
 ---@field file_path string? Optional file_path to generate the inline link for
 
+---@class MdnAssetInlineLink
+---@field inline_link string? Entire inline link with the asset path
+---@field file_name string? File name of the asset
+---@field asset_path string? Path of the asset
+---@field img_char '"!"'|'""
+
 ---Create the asset inline link
 ---@param opts MdnGetAssetInlineLinkOpts
----@return string? inline_link
+---@return MdnAssetInlineLink?
 function M.get_asset_inline_link(opts)
     opts = opts or {}
 
@@ -194,11 +200,18 @@ function M.get_asset_inline_link(opts)
     local inline_link = ("[%s](%s)"):format(file_name, asset_path)
 
     -- Auto-detect image
+    local img_char = ""
     if M.has_image_extension(file_name or "") == true then
-        inline_link = "!" .. inline_link
+        img_char = "!"
     end
+    inline_link = img_char .. inline_link
 
-    return inline_link
+    return {
+        inline_link = inline_link,
+        file_name = file_name,
+        asset_path = asset_path,
+        img_char = img_char
+    }
 end
 
 ---@class MdnAssetInsertOpts: MdnGetAssetInlineLinkOpts
@@ -210,16 +223,13 @@ function M.insert(opts)
     if M.check_assets_path() == false then return end
 
     opts = opts or {}
-    local locopts = opts.location or {}
-    local bufnum = locopts.buffer or vim.api.nvim_get_current_buf()
-    local lnum = locopts.lnum or vim.fn.line('.')
-    local col_start = -1 or locopts.col_start
-    local col_end = -1 or locopts.col_end
-    local cur_col = locopts.cur_col or math.floor((col_start + col_end) / 2)
-
-    local inline_link = M.get_asset_inline_link({ process_file = opts.process_file, file_path = opts.file_path })
-
-    vim.api.nvim_buf_set_text(bufnum, lnum - 1, cur_col, lnum - 1,  cur_col, {inline_link})
+    local txtdata = require('mdnotes').get_text({ location = opts.location }) or {}
+    local asset_il = M.get_asset_inline_link({ process_file = opts.process_file, file_path = opts.file_path }) or {}
+    if txtdata.text == "" then
+        vim.api.nvim_buf_set_text(txtdata.buffer, txtdata.lnum - 1, txtdata.cur_col - 1, txtdata.lnum - 1, txtdata.cur_col - 1, {asset_il.inline_link})
+    else
+        vim.api.nvim_buf_set_text(txtdata.buffer, txtdata.lnum - 1, txtdata.col_start - 1, txtdata.lnum - 1, txtdata.col_end, {("%s[%s](%s)"):format(asset_il.img_char, txtdata.text, asset_il.asset_path)})
+    end
 end
 
 ---Get the assets that are already used in the notes

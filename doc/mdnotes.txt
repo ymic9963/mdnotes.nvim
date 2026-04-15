@@ -903,11 +903,17 @@ assets.get_asset_inline_link({opts})			*mdnotes.assets.get_asset_inline_link()*
 		optional path to asset and the clipboard is used if `nil`
 
     Return: ~
-      (`string?`): Asset inline link on success, `nil` on failure.
+      (`MdnAssetInlineLink?`)
 
 assets.insert()						*mdnotes.assets.insert()*
 
     Insert the file in the clipboard as an inline link under the cursor.
+    Auto-detects if the file is an image to add the `!` character using
+    |mdnotes.assets.has_image_extension()|.
+
+    Uses |mdnotes.get_text()| to insert an inline link over it and if it
+    detects `""` then it inserts the inline link with the file name as the
+    inline link text.
 
     Parameters: ~
     • {opts}  (`MdnInsertOpts?`)
@@ -2117,6 +2123,16 @@ MdnGetAssetInlineLinkOpts 				*mdnotes.MdnGetAssetInlineLinkOpts*
     Fields: ~
     • {process_file} (`boolean?`) Process the file according to the plugin config
     • {file_path} (`string?`) Optional file_path to generate the inline link for
+
+MdnAssetInlineLink					*mdnotes.MdnGetAssetInlineLinkOpts*
+    
+    Return of |mdnotes.assets.get_asset_inline_link()|.
+    
+    Fields: ~
+    • {inline_link} (`string?`) Entire inline link with the asset path
+    • {file_name} (`string?`) File name of the asset
+    • {asset_path} (`string?`) Path of the asset
+    • {img_char} (`"!"|""?`) Inline link image character
 
 MdnAssetInsertOpts 					*mdnotes.MdnAssetInsertOpts*
 
