@@ -221,15 +221,6 @@ T['ordered_list'] = function()
         })
 
         child.api.nvim_input("<ESC>")
-
-        child.fn.cursor(2,0)
-        child.lua([[require('mdnotes.formatting').ordered_list_renumber({ silent = true })]])
-        lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
-        eq(lines, {
-            "1" .. ol_indicator .. " ",
-            "2" .. ol_indicator .. " item",
-            "3" .. ol_indicator .. " ",
-        })
     end
 end
 
@@ -311,6 +302,13 @@ T['check_list_valid()'] = function()
         "- item",
         "    - item",
         "    - item",
+        "",
+        "1. item",
+        "2. item",
+        "3. item",
+        "   - item",
+        "4. item",
+        "5. item",
     }
     create_md_buffer(child, lines)
 
@@ -338,6 +336,42 @@ T['check_list_valid()'] = function()
         buffer = 2,
         startl = 5,
         endl = 6
+    })
+
+    child.fn.cursor(10,1)
+    ret = child.lua([[return require('mdnotes.formatting').check_list_valid({ same_indicator = false })]])
+    eq(ret, {
+        valid = true,
+        buffer = 2,
+        startl = 10,
+        endl = 15
+    })
+end
+
+T['ordered_list_renumber()'] = function()
+    local lines = {
+        "1. item",
+        "4. item",
+        "4. item",
+        "   - item",
+        "   - item",
+        "   - item",
+        "6. item",
+        "8. item",
+    }
+    local buf = create_md_buffer(child, lines)
+
+    child.lua([[require('mdnotes.formatting').ordered_list_renumber({ silent = true })]])
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines, {
+        "1. item",
+        "2. item",
+        "3. item",
+        "   - item",
+        "   - item",
+        "   - item",
+        "4. item",
+        "5. item",
     })
 end
 

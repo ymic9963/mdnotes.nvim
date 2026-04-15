@@ -273,13 +273,14 @@ function M.task_list_toggle(opts)
 end
 
 ---Check if the list surrounding the origin line is valid and return its line numbers
----@param opts {same_indent: boolean?, search: MdnSearchOpts?, outliner_list: boolean?}?
+---@param opts {same_indent: boolean?, same_indicator: boolean?, search: MdnSearchOpts?, outliner_list: boolean?}?
 ---@return MdnSearchResult
 function M.check_list_valid(opts)
     opts = opts or {}
 
     local outliner_list = opts.outliner_list or false
     local same_indent = opts.same_indent or false
+    local same_indicator = opts.same_indicator ~= false
     local search_opts = opts.search or {}
     local buffer = search_opts.buffer or vim.api.nvim_get_current_buf()
     local origin_lnum = search_opts.origin_lnum or vim.fn.line('.')
@@ -322,8 +323,9 @@ function M.check_list_valid(opts)
     -- Find where list starts
     for i = origin_lnum, lower_limit_lnum, -1 do
         local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
+        if cur_line == "" then break end
         lcontent = M.resolve_list_content(cur_line)
-        if lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
+        if same_indicator == true and lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
             break
         end
         if same_indent == true and lcontent.indent ~= detected_indent  then
@@ -335,8 +337,9 @@ function M.check_list_valid(opts)
     -- Find where the list ends
     for i = origin_lnum, upper_limit_lnum do
         local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
+        if cur_line == "" then break end
         lcontent = M.resolve_list_content(cur_line)
-        if lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
+        if same_indicator == true and lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
             break
         end
         if same_indent == true and lcontent.indent ~= detected_indent  then
@@ -354,7 +357,7 @@ function M.check_list_valid(opts)
 end
 
 ---Renumber the ordered list
----@param opts {silent: boolean?, search: MdnSearchOpts}? opts.silent: Silence notifications
+---@param opts {silent: boolean?, search: MdnSearchOpts}?
 function M.ordered_list_renumber(opts)
     opts = opts or {}
     local silent = opts.silent or false
@@ -364,7 +367,7 @@ function M.ordered_list_renumber(opts)
 
     vim.validate("silent", silent, "boolean")
 
-    local lsearch = M.check_list_valid({ search = search_opts })
+    local lsearch = M.check_list_valid({ search = search_opts, same_indicator = false })
     if lsearch.valid == false then
         if silent == false then
             vim.notify("Mdn: Unable to detect an ordered list", vim.log.levels.ERROR)
@@ -372,12 +375,11 @@ function M.ordered_list_renumber(opts)
         return
     end
 
-    local ol_pattern = require('mdnotes.patterns').ordered_list
     local line = vim.api.nvim_buf_get_lines(buffer, origin_lnum - 1, origin_lnum, false)[1]
-    local spaces, num, separator, text = line:match(ol_pattern)
+    local ildata = M.resolve_list_content(line)
 
     -- Only case where text is nil is when it detects an unordered list
-    if text == nil then
+    if ildata.type == "unordered" then
         if silent == false then
             vim.notify("Mdn: Cannot reorder an unordered list", vim.log.levels.ERROR)
         end
@@ -388,12 +390,16 @@ function M.ordered_list_renumber(opts)
     local list_lines = vim.api.nvim_buf_get_lines(buffer, lsearch.startl - 1, lsearch.endl, false)
 
     local new_list_lines = {}
-    for i, v in ipairs(list_lines) do
-        spaces, num, separator, text = v:match(ol_pattern)
-        if tonumber(num) ~= i then
-            num = tostring(i)
+    local cur_number = 1
+    for _, v in ipairs(list_lines) do
+        ildata = M.resolve_list_content(v)
+        if ildata.type == "ordered" then
+            if tonumber(ildata.marker) ~= cur_number then
+                ildata.marker = tostring(cur_number)
+            end
+            cur_number = cur_number + 1
         end
-        table.insert(new_list_lines, spaces .. num .. separator .. " " .. text)
+        table.insert(new_list_lines, ildata.indent .. ildata.marker .. ildata.separator .. " " .. ildata.text)
     end
 
     vim.api.nvim_buf_set_lines(buffer, lsearch.startl - 1, lsearch.endl, false, new_list_lines)

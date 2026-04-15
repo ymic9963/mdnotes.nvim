@@ -1122,6 +1122,8 @@ formatting.check_list_valid({opts}) 			*mdnotes.formatting.check_list_valid()*
     • {opts}  (`table?`) Optional parameters:
               • {same_indent} (`boolean?`, default `false`)
 		check for list only of the same indent level
+              • {same_indicator} (`boolean?`, default `true`)
+		check for list only of the same indicator
               • {search} (`MdnSearchOpts?`)
               • {outliner_list} (`boolean?`, default `false`)
 		treat list as an outliner list
