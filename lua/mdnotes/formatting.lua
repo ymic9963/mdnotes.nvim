@@ -180,7 +180,7 @@ end
 
 ---Get a consistent table containing all data on a list item whether it is ordered or unordered
 ---@param line string Line containing list item
----@return MdnListContent
+---@return MdnListContent?
 function M.resolve_list_content(line)
     vim.validate("line", line, "string")
 
@@ -190,7 +190,7 @@ function M.resolve_list_content(line)
     local ol_indent, ol_marker, ol_separator, ol_text = line:match(mdnotes_patterns.ordered_list)
 
     local indent = (ul_indent or ol_indent) or ""
-    local marker = ul_marker or ol_marker
+    local marker = ul_marker or ol_marker or ""
     local separator = ol_separator or ""
     local text = (ul_text or ol_text) or ""
 
@@ -199,6 +199,10 @@ function M.resolve_list_content(line)
         type = "unordered"
     else
         type = "ordered"
+    end
+
+    if indent == "" and marker == "" and separator == "" and text == "" then
+        return nil
     end
 
     return {
@@ -290,7 +294,7 @@ function M.check_list_valid(opts)
     -- Get the origin line's list content
     local origin_line = vim.api.nvim_buf_get_lines(buffer, origin_lnum - 1, origin_lnum, false)[1]
     local lcontent = M.resolve_list_content(origin_line)
-    if lcontent.marker == nil or lcontent.separator == nil then
+    if lcontent == nil or lcontent.marker == nil or lcontent.separator == nil then
         return { valid = false }
     end
 
@@ -306,6 +310,7 @@ function M.check_list_valid(opts)
         for i = origin_lnum, upper_limit_lnum do
             local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
             lcontent = M.resolve_list_content(cur_line)
+            if lcontent == nil then break end
             if lcontent.indent == detected_indent and i > origin_lnum then break end
             if lcontent.indent >= detected_indent then
                 list_endl = i
@@ -325,6 +330,7 @@ function M.check_list_valid(opts)
         local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
         if cur_line == "" then break end
         lcontent = M.resolve_list_content(cur_line)
+        if lcontent == nil then break end
         if same_indicator == true and lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
             break
         end
@@ -339,6 +345,7 @@ function M.check_list_valid(opts)
         local cur_line = vim.api.nvim_buf_get_lines(buffer, i - 1, i, false)[1]
         if cur_line == "" then break end
         lcontent = M.resolve_list_content(cur_line)
+        if lcontent == nil then break end
         if same_indicator == true and lcontent.marker ~= detected_marker and lcontent.separator ~= detected_separator then
             break
         end
@@ -346,6 +353,15 @@ function M.check_list_valid(opts)
             break
         end
         list_endl = i
+    end
+
+    if list_startl == 0 and list_endl == 0 then
+        return {
+            valid = false,
+            buffer = buffer,
+            startl = list_startl,
+            endl = list_endl,
+        }
     end
 
     return {
@@ -370,16 +386,21 @@ function M.ordered_list_renumber(opts)
     local lsearch = M.check_list_valid({ search = search_opts, same_indicator = false })
     if lsearch.valid == false then
         if silent == false then
-            vim.notify("Mdn: Unable to detect an ordered list", vim.log.levels.ERROR)
+            vim.notify("Mdn: Unable to detect a valid list", vim.log.levels.ERROR)
         end
         return
     end
 
     local line = vim.api.nvim_buf_get_lines(buffer, origin_lnum - 1, origin_lnum, false)[1]
-    local ildata = M.resolve_list_content(line)
+    local lcontent = M.resolve_list_content(line)
+    if lcontent == nil then
+        if silent == false then
+            vim.notify("Mdn: Unable to detect a valid list", vim.log.levels.ERROR)
+        end
+        return
+    end
 
-    -- Only case where text is nil is when it detects an unordered list
-    if ildata.type == "unordered" then
+    if lcontent.type == "unordered" then
         if silent == false then
             vim.notify("Mdn: Cannot reorder an unordered list", vim.log.levels.ERROR)
         end
@@ -392,14 +413,15 @@ function M.ordered_list_renumber(opts)
     local new_list_lines = {}
     local cur_number = 1
     for _, v in ipairs(list_lines) do
-        ildata = M.resolve_list_content(v)
-        if ildata.type == "ordered" then
-            if tonumber(ildata.marker) ~= cur_number then
-                ildata.marker = tostring(cur_number)
+        lcontent = M.resolve_list_content(v)
+        if lcontent == nil then break end
+        if lcontent.type == "ordered" then
+            if tonumber(lcontent.marker) ~= cur_number then
+                lcontent.marker = tostring(cur_number)
             end
             cur_number = cur_number + 1
         end
-        table.insert(new_list_lines, ildata.indent .. ildata.marker .. ildata.separator .. " " .. ildata.text)
+        table.insert(new_list_lines, lcontent.indent .. lcontent.marker .. lcontent.separator .. " " .. lcontent.text)
     end
 
     vim.api.nvim_buf_set_lines(buffer, lsearch.startl - 1, lsearch.endl, false, new_list_lines)

@@ -373,6 +373,26 @@ T['ordered_list_renumber()'] = function()
         "4. item",
         "5. item",
     })
+
+    lines = {
+        "# Header",
+        "1. item",
+        "4. item",
+        "6. item",
+        "8. item",
+    }
+    buf = create_md_buffer(child, lines)
+
+    child.fn.cursor(2,1)
+    child.lua([[require('mdnotes.formatting').ordered_list_renumber({ silent = true })]])
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines, {
+        "# Header",
+        "1. item",
+        "2. item",
+        "3. item",
+        "4. item",
+    })
 end
 
 T['unformat_lines()'] = function()

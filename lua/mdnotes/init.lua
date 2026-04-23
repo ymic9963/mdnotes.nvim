@@ -431,16 +431,12 @@ local function get_indent_indicator(inc_val)
     local mdnotes_patterns = require('mdnotes.patterns')
     local line = vim.api.nvim_get_current_line()
     local lcontent = require('mdnotes.formatting').resolve_list_content(line)
-
-    local type = "unordered"
-    if lcontent.separator ~= "" then
-        type = "ordered"
-    end
+    if lcontent == nil then return "", "\n" end
 
     local check_text = lcontent.text:gsub(mdnotes_patterns.task, ""):gsub("[%s]", "")
 
     if check_text and check_text ~= "" then
-        if type == "unordered" then
+        if lcontent.type == "unordered" then
             if lcontent.text:match(mdnotes_patterns.task) then
                 return lcontent.indent, "\n" .. lcontent.marker .. " " .. "[ ] "
             else
@@ -448,7 +444,7 @@ local function get_indent_indicator(inc_val)
             end
         end
 
-        if type == "ordered" then
+        if lcontent.type == "ordered" then
             if lcontent.text:match(mdnotes_patterns.task) then
                 return lcontent.indent, "\n" .. tostring(tonumber(lcontent.marker + inc_val)) .. lcontent.separator .. " " .. "[ ] "
             else

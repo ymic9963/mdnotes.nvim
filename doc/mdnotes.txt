@@ -1100,7 +1100,7 @@ resolve_list_content({line})				*mdnotes.formatting.resolve_list_content()*
     • {line}  (`string?`) Line text
 
     Return: ~
-      (`MdnListContent`)
+      (`MdnListContent?`)
 
 formatting.task_list_toggle({opts})			*mdnotes.formatting.task_list_toggle()*
 
@@ -2164,9 +2164,9 @@ MdnListContent						 *mdnotes.MdnListContent*
 
     Fields: ~
     • {indent} (`string`) Indent of list item
-    • {marker} (`string List`) List item marker
-    • {separator} (`string List`) List item separator, only in ordered lists
-    • {text} (`string List`) List item text
+    • {marker} (`string`) List item marker
+    • {separator} (`string`) List item separator, only in ordered lists
+    • {text} (`string`) List item text
     • {type} (`'"ordered"'|'"unordered"'`)
 
 MdnInsertFormattingOpts					 *mdnotes.MdnInsertFormattingOpts*
