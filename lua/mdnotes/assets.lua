@@ -515,7 +515,7 @@ function M.delete(opts)
     -- Reset the text if a location for it was found
     if is_deleted == true then
         local mdn_grep = require('mdnotes').mdn_grep
-        local tempqfl = vim.fn.getqflist()
+        local temp_qflist = vim.fn.getqflist()
 
         mdn_grep(uri, cwd)
         local assets_list = vim.fn.getqflist()
@@ -531,7 +531,7 @@ function M.delete(opts)
             end)
         end
 
-        vim.fn.setqflist(tempqfl)
+        vim.fn.setqflist(temp_qflist)
 
         if ildata ~= nil then
             local new_col = ildata.cur_col - 2
