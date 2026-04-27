@@ -33,7 +33,7 @@ All the features of `mdnotes` and their associated commands are listed and categ
 
 ### 🖇️ WikiLinks
 - Create a WikiLink by highlighting or hovering over a word and executing `:Mdn wikilink create`.
-- Open WikiLinks with `:Mdn wikilink follow`.
+- Open WikiLinks with `:Mdn wikilink follow/_hor/_vert`. Use the `_hor/_vert` variations of the command to open WikiLinks in a horizontal or vertical split.
 - Rename link references and the file itself using `:Mdn wikilink rename_references`. Also rename references of the current buffer when not hovering over a Wikilink.
 - Show the references of a Wikilink by hovering over the link and executing `:Mdn wikilink show_references`. Also show references of the current buffer when not hovering over a Wikilink.
 - Undo the most recent reference rename with `:Mdn wikilink undo_rename`. **Only** available when `prefer_lsp = false`.
