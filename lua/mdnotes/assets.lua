@@ -464,8 +464,8 @@ function M.delete(opts)
 
     vim.validate("uri", uri, "string")
 
-    local asset_path = mdn_il.get_path_from_uri(uri, true)
-    if asset_path == nil then return false, nil end
+    local asset_path, err = mdn_il.get_path_from_uri(uri, true)
+    if err ~= nil then return false, nil end
 
     local behaviour = require('mdnotes').config.asset_delete_behaviour
     local cwd = require('mdnotes').cwd
@@ -513,13 +513,31 @@ function M.delete(opts)
     end
 
     -- Reset the text if a location for it was found
-    if ildata ~= nil and is_deleted == true then
-        local new_col = ildata.cur_col - 2
-        if new_col < 1 then new_col = 1 end
+    if is_deleted == true then
+        local mdn_grep = require('mdnotes').mdn_grep
+        local tempqfl = vim.fn.getqflist()
 
-        -- Set the line and cursor position
-        vim.api.nvim_buf_set_text(ildata.buffer, ildata.lnum - 1, ildata.col_start - 1, ildata.lnum - 1, ildata.col_end - 1, {ildata.text})
-        vim.fn.cursor({ildata.lnum, new_col})
+        mdn_grep(uri, cwd)
+        local assets_list = vim.fn.getqflist()
+
+        for _,v in ipairs(assets_list) do
+            vim.api.nvim_buf_call(v.bufnr, function()
+                local il = mdn_il.parse({  location = {
+                    lnum = v.lnum,
+                    col_start = v.col,
+                }})
+                if il == nil then return is_deleted, asset_path end
+                vim.api.nvim_buf_set_text(il.buffer, il.lnum - 1, il.col_start - 1, il.lnum - 1, il.col_end - 1, {il.text})
+            end)
+        end
+
+        vim.fn.setqflist(tempqfl)
+
+        if ildata ~= nil then
+            local new_col = ildata.cur_col - 2
+            if new_col < 1 then new_col = 1 end
+            vim.fn.cursor({ildata.lnum, new_col})
+        end
     end
 
     return is_deleted, asset_path

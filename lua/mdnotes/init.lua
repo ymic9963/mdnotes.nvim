@@ -280,7 +280,6 @@ function M.mdn_grep(pattern, path)
     end
 
     vim.cmd.grep({args = {pattern, path}, mods = {emsg_silent = true}})
-    vim.print(path)
 end
 
 ---Check text for valid Markdown syntax

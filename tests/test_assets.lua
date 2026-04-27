@@ -97,7 +97,7 @@ T['unused_delete()'] = function()
     return require('mdnotes.assets').unused_delete({ skip_input = true })
     ]])
     eq(
-       vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/assets' })[1]),
+        vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/assets' })[1]),
         nil
     )
     child.cmd([[
@@ -117,7 +117,7 @@ T['unused_move()'] = function()
     return require('mdnotes.assets').unused_move({ skip_input = true })
     ]])
     eq(
-       vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/unused_assets' })[1]),
+        vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/unused_assets' })[1]),
         "asset3.txt"
     )
     vim.fs.rm('./tests/test-data/files/unused_assets', {recursive = true})
@@ -134,7 +134,7 @@ T['download_website_html()'] = function()
     return require('mdnotes.assets').download_website_html({ uri = "https://neovim.io/" })
     ]])
     eq(
-       vim.fs.basename(vim.fs.find("https_neovim_io_.html", { path = './tests/test-data/files/assets' })[1]),
+        vim.fs.basename(vim.fs.find("https_neovim_io_.html", { path = './tests/test-data/files/assets' })[1]),
         "https_neovim_io_.html"
     )
     vim.fs.rm('./tests/test-data/files/assets/https_neovim_io_.html')
@@ -146,6 +146,12 @@ T['delete()'] = function()
     write
     edit tests/test-data/files/file7.md
     ]])
+
+    local lastlnum = child.fn.line("$")
+    child.api.nvim_buf_set_lines(0, lastlnum, lastlnum+1, false, {"[asset4.txt](assets/asset4.txt)"})
+    child.api.nvim_buf_set_lines(0, lastlnum+1, lastlnum+2, false, {"[asset4.txt](assets/asset4.txt)"})
+    child.cmd([[write]])
+
     local ret = child.lua([[
     require('mdnotes').set_cwd()
     return require('mdnotes.assets').delete({
@@ -154,10 +160,18 @@ T['delete()'] = function()
     })]])
     eq(ret , true)
     eq(
-       vim.fs.basename(vim.fs.find("asset4.txt", { path = './tests/test-data/files/garbage' })[1]),
+        vim.fs.basename(vim.fs.find("asset4.txt", { path = './tests/test-data/files/garbage' })[1]),
         "asset4.txt"
     )
     vim.fs.rm('./tests/test-data/files/garbage', {recursive = true})
+
+    local lines = child.api.nvim_buf_get_lines(0, 0, -1, false)
+    lastlnum = child.fn.line("$")
+    eq(lines[lastlnum],  "asset4.txt")
+    eq(lines[lastlnum-1],  "asset4.txt")
+    child.api.nvim_buf_set_lines(0, -2, -1, false, {})
+    child.api.nvim_buf_set_lines(0, -2, -1, false, {})
+    child.cmd([[write]])
 end
 
 return T

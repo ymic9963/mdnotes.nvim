@@ -992,7 +992,8 @@ assets.download_website_html({opts})				*mdnotes.assets.download_website_html()*
 assets.delete()						*mdnotes.assets.delete()*
 
     Delete the asset in the inline link under the cursor. Removes the inline
-    link and keeps the inline link text.
+    link and keeps the inline link text. Also handles all the references to
+    the deleted asset in the |mdnotes-cwd|.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:
