@@ -261,7 +261,7 @@ function M.task_list_toggle(opts)
             table.insert(new_lines, new_text)
         else
             if silent == false then
-                vim.notify(("Mdn: Unable to detect a task list marker at line ".. tostring(startl - 1 + i)), vim.log.levels.ERROR)
+                vim.notify("Mdn: Unable to detect a list or task list marker at line ".. tostring(startl - 1 + i), vim.log.levels.ERROR)
             end
             return
         end
