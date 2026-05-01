@@ -9,7 +9,7 @@
 
 ## ☀️ Introduction
 
-Mdnotes aims to be a lightweight plugin that improves the Markdown note-taking experience in Neovim, with minimal configuration required. It also exposes most of the functions used internally, so that the user can create a hyper-extensible note-taking experience similar to Neovim's philosophy.
+Mdnotes aims to be a lightweight plugin that improves the Markdown note-taking experience in Neovim, with minimal configuration required. It also exposes most of the functions used internally, so that the user can create an extensible note-taking experience similar to Neovim's philosophy.
 
 It provides the typical Markdown features like inserting/editing inline links, ordered/unordered/task lists, generating ToC, table helpers, and formatting. The highlights are that it provides better WikiLink support, managing/inserting/deleting assets, sequential Markdown buffer history, link referencing/renaming, and outliner-style indentation. Please see the [Features](#-features) below for a descriptive list of features and their commands! 
 
@@ -82,7 +82,8 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - Opt-in use of existing Markdown LSP functions by setting `prefer_lsp = true`.
 - Supports Windows eccentricities.
 - Create user commands within the `:Mdn user` namespace for better organisation.
-- Exposes most internal functions to provide an API as to allow a hyper-extensible note-taking experience. See `:h mdnotes-api` for function documentation and `:h mdnotes-api-examples` for example usage.
+- See `:h mdnotes-wikilink-graphs` for a starter Python script for creating a node graph to visualise your WikiLinks.
+- Exposes most internal functions to provide an API as to allow an extensible note-taking experience. See `:h mdnotes-api` for function documentation and `:h mdnotes-api-examples` for example usage.
 
 ## 👽 Setup
 Supports Neovim 0.10 or later.
@@ -272,9 +273,6 @@ The GFM table specification is supported.
 |2r1c|2r2c|2r3c|
 |3r1c|3r2c|3r3c|
 ```
-
-## WikiLink Graphs
-See `:h mdnotes-wikilink-graphs` for a starter Python script for creating a node graph to visualise your WikiLinks.
 
 ## 🫂 Motivation
 I wanted to make a more Neovim-centric Markdown notes plugin that tries to work the available Markdown LSPs, is command/subcommand focused, concise, adheres to the [CommonMark](https://spec.commonmark.org/) and [GFM](https://github.github.com/gfm/) specs, while also providing the more widespread [WikiLink](https://github.com/Python-Markdown/markdown/blob/master/docs/extensions/wikilinks.md) support other note-taking apps provide. I hope I did in fact accomplish this (and more) for you as well as for me, and if I have not then please create an issue or contribute! Thanks for reading this :).
