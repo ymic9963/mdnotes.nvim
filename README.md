@@ -114,11 +114,12 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
 - Live Previewer for Markdown files in browser,
     - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Older, more widely used, has dependencies.
     - [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim) - Newer, no dependencies.
-- LSP - Please see the [Using LSPs Section](RATIONALE.md#using-lsps) for more information regarding LSPs, but I recommend,
-    - [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide) or
+- LSP - Please see the [Using LSPs Section](RATIONALE.md#using-lsps) for more information regarding LSPs, but I recommend one of,
+    - [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide)
     - [marksman](https://github.com/artempyanykh/marksman)
-- Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) `mdnotes`.
+    - [iwe-org/iwe](https://github.com/iwe-org/iwe) with [iwe-org/iwe.nvim](https://github.com/iwe-org/iwe.nvim) (See their comparison [here](https://iwe.md/docs/concepts/comparison/#detailed-comparisons))
 
+Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) `mdnotes`.
 
 ### ⌨️ Keymaps
  The keymappings below can be enabled by setting `default_keymaps = true` as they are not enabled by default, and they will only be available in Markdown buffers. Place any `mdnotes` keymaps in a  `<Neovim config path>/after/ftplugin/markdown.lua` file so that they're also Markdown specific. For organisation they use the `<leader>m` prefix.
