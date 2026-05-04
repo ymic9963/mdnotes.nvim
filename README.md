@@ -34,7 +34,7 @@ For a complete descriptive feature list with their associated commands, please s
 - Generate Table of Contents
 - Outliner mode
 - Create user commands within the plugin namespace for organisation
-- Most internal functions are exposed as an API for extensibility (`:h mdnotes-api`).
+- Most internal functions are exposed as an API for extensibility (`:h mdnotes-api`)
 
 ## 👽 Setup
 Supports Neovim 0.10 or later.
@@ -112,8 +112,8 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
     - [markview.nvim](https://github.com/OXY2DEV/markview.nvim)
     - [render-markdown.nvim](https://github.com/MeanderingProgrammer/render-markdown.nvim)
 - Live Previewer for Markdown files in browser,
-    - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Older, more widely used, has dependencies.
-    - [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim) - Newer, no dependencies.
+    - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Older, more widely used, has dependencies
+    - [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim) - Newer, no dependencies
 - LSP - Please see the [Using LSPs Section](RATIONALE.md#using-lsps) for more information regarding LSPs, but I recommend one of,
     - [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide)
     - [marksman](https://github.com/artempyanykh/marksman)
