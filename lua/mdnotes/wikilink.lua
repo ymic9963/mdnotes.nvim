@@ -4,11 +4,11 @@ local M = {}
 
 local uv = vim.loop or vim.uv
 
----@type string
-M.old_filename = ""
+---@type table<string>
+M.old_filenames = {}
 
----@type string
-M.new_filename = ""
+---@type table<string>
+M.new_filenames = {}
 
 ---@class MdnWikiLinkData: MdnInLineLocation
 ---@field wikilink_nofrag string WikiLink without the fragment
@@ -246,8 +246,8 @@ function M.rename_references(opts)
         return wldata.wikilink_nofrag, err
     end
 
-    M.old_filename = wldata.wikilink_nofrag
-    M.new_filename = new_name
+    table.insert(M.old_filenames, wldata.wikilink_nofrag)
+    table.insert(M.new_filenames, new_name)
 
     -- Set the qf list to what it was before the operation
     vim.fn.setqflist(temp_qflist)
@@ -269,10 +269,13 @@ function M.undo_rename()
         return
     end
 
-    if M.new_filename == "" or M.old_filename == "" then
+    if vim.tbl_isempty(M.new_filenames) or vim.tbl_isempty(M.old_filenames) then
         vim.notify("Mdn: Detected no recent rename", vim.log.levels.ERROR)
         return
     end
+
+    local newest_filename = M.new_filenames[#M.new_filenames]
+    local newest_old_filename = M.old_filenames[#M.old_filenames]
 
     local temp_qflist = vim.fn.getqflist()
     local cur_buf = vim.api.nvim_get_current_buf()
@@ -281,30 +284,30 @@ function M.undo_rename()
     local mdn_grep = require('mdnotes').mdn_grep
 
     vim.cmd.wall({bang = true, mods = {silent = true}})
-    mdn_grep("\\[\\[" .. M.new_filename .. ".*\\]\\]", cwd)
-    vim.cmd.cdo({args = {('s/%s/%s/'):format(M.new_filename, M.old_filename)}, mods = {emsg_silent = true}})
+    mdn_grep("\\[\\[" .. newest_filename .. ".*\\]\\]", cwd)
+    vim.cmd.cdo({args = {('s/%s/%s/'):format(newest_filename, newest_old_filename)}, mods = {emsg_silent = true}})
     vim.cmd.wall({bang = true, mods = {silent = true}})
 
     local ret, err = uv.fs_rename(
-        vim.fs.joinpath(cwd, M.new_filename .. ".md"),
-        vim.fs.joinpath(cwd, M.old_filename .. ".md")
+        vim.fs.joinpath(cwd, newest_filename .. ".md"),
+        vim.fs.joinpath(cwd, newest_old_filename .. ".md")
     )
     if not ret then
         vim.notify(("Mdn: Undo file rename failed"), vim.log.levels.ERROR)
         return nil, err
     end
 
-    vim.notify(("Mdn: Undo renaming '%s' to '%s'"):format(M.old_filename, M.new_filename), vim.log.levels.INFO)
+    vim.notify(("Mdn: Undo renaming '%s' to '%s'"):format(newest_old_filename, newest_filename), vim.log.levels.INFO)
 
     -- Get the buffer number of the renamed file if it is in the buffer list
-    local renamed_bufnum = get_buf_from_buf_list(M.old_filename .. ".md")
+    local renamed_bufnum = get_buf_from_buf_list(newest_old_filename .. ".md")
 
     -- If the buffer number of the renamed file is in the buffer list
     if renamed_bufnum ~= nil then
         if renamed_bufnum ~= cur_buf then
             vim.api.nvim_buf_delete(renamed_bufnum, {force = true})
         elseif renamed_bufnum == cur_buf then
-            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(cwd, M.old_filename .. ".md"))
+            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(cwd, newest_old_filename .. ".md"))
         end
     end
 
@@ -314,7 +317,10 @@ function M.undo_rename()
     -- Set the qf list to what it was before the operation
     vim.fn.setqflist(temp_qflist)
 
-    return M.new_filename, M.old_filename
+    table.remove(M.new_filenames)
+    table.remove(M.old_filenames)
+
+    return newest_filename, newest_old_filename
 end
 
 ---Create a WikiLink from the word under the cursor

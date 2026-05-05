@@ -179,7 +179,11 @@ T['undo_rename()'] = function()
     child.fn.cursor(2,1)
     local ret = child.lua([[return {require('mdnotes.wikilink').rename_references({ new_name = "file55" })}]])
     eq(ret, {"file5", "file55"})
+    ret = child.lua([[return {require('mdnotes.wikilink').rename_references({ new_name = "file555" })}]])
+    eq(ret, {"file55", "file555"})
 
+    ret = child.lua([[return {require('mdnotes.wikilink').undo_rename()}]])
+    eq(ret, {"file555", "file55"})
     ret = child.lua([[return {require('mdnotes.wikilink').undo_rename()}]])
     eq(ret, {"file55", "file5"})
 end
