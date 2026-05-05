@@ -14,7 +14,7 @@ M.uri_website_tbl = {"https", "http"}
 
 ---Get the inline link data such as the image designator, link text, link URI/destination,
 ---and the start and end columns
----@param opts {inline_link: string?, keep_pointy_brackets: boolean?, location: MdnInLineLocation}?
+---@param opts {inline_link: string?, keep_pointy_brackets: boolean?, location: MdnInLineLocation?}?
 ---@return MdnInlineLinkData?
 function M.parse(opts)
     opts = opts or {}
@@ -27,7 +27,7 @@ function M.parse(opts)
 
     local check_markdown_syntax = require('mdnotes').check_markdown_syntax
     local il_pattern = require("mdnotes.patterns").inline_link
-    local txtdata
+    local txtdata = {}
 
     -- Overwrite if location is given
     if opts.location or inline_link == nil then
