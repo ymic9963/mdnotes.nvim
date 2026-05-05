@@ -173,4 +173,8 @@ Using [mini.test](https://github.com/nvim-mini/mini.test) for testing. For this 
 ```bash
 nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
 ```
+or for individual test files,
+```bash
+nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_*.lua')"
+```
 
