@@ -1844,8 +1844,47 @@ toc.generate({opts})					*mdnotes.toc.generate()*
 		silence notifications
 
     Return: ~
-    • (`string[]?`) Table with ToC lines on success, `nil` on failure.
+    • (`MdnToc?`) 
 
+toc.check_toc_valid({opts}) 				*mdnotes.toc.check_toc_valid()*
+
+    Check if there is a ToC in the specified search range or under the cursor.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {search} (`MdnSearchOpts?`, defaults to under the cursor)
+
+    Return: ~
+    • (`MdnSearchRet`)
+
+toc.parse({opts})					*mdnotes.toc.parse()*
+
+    Get the Table of Contents and store as an object of type `MdnToc`.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {silent} (`boolean?`, default `false`)
+              • {search} (`MdnSearchOpts?`, defaults to under the cursor)
+
+    Return: ~
+    • (`MdnToc?`)
+
+toc.update({opts})					*mdnotes.toc.update()*
+
+    Update the ToC contents in-place.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {depth} (`integer?`, defaults to |mdnotes-toc_depth|)
+		depth of the ToC
+              • {write} (`boolean?`, default `true`)
+		write to the specified {buffer} and {line}
+              • {silent} (`boolean?`, default `false`)
+		silence notifications
+              • {search} (`MdnSearchOpts?`, defaults to under the cursor)
+
+    Return: ~
+    • (`MdnToc?`) 
 
 wikilink.parse({opts}) 					*mdnotes.wikilink.parse()*
 
@@ -2250,6 +2289,16 @@ MdnTableColLocs					*mdnotes.MdnTableColLocs*
 
     Table column locations. Alias for a `table` with entries of type `table`
     which itself has entries of type `integer`.
+
+MdnToc						*mdnotes.MdnTableColLocs*
+
+    Table of Contents (ToC) object.
+
+    Inherits from |mdnotes.MdnMultiLineLocation|.
+
+    Fields: ~
+    • {lines} (`string[]`) ToC lines
+    • {depth} (`integer`) Depth of ToC
 
 MdnWikiLinkData					*mdnotes.MdnWikiLinkData*
 

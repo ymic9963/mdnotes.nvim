@@ -38,15 +38,26 @@ T['generate()'] = function()
     require('mdnotes').populate_buf_fragments(cur_buf)
     return require('mdnotes.toc').generate({ write = false, depth = 1 })
     ]])
-    eq(ret, {"- [Heading 1](#heading-1)"})
+    eq(ret, {
+        contents = { "- [Heading 1](#heading-1)" },
+        buffer = 2,
+        depth = 1,
+        startl = 1,
+        endl = 1
+    })
 
     ret = child.lua([[
     local cur_buf = vim.api.nvim_get_current_buf()
     require('mdnotes').populate_buf_fragments(cur_buf)
     return require('mdnotes.toc').generate({ write = false })
     ]])
-    eq(ret, {"- [Heading 1](#heading-1)", "    - [Heading 2](#heading-2)"})
-
+    eq(ret, {
+        contents = { "- [Heading 1](#heading-1)", "    - [Heading 2](#heading-2)" },
+        buffer = 2,
+        depth = 4,
+        startl = 1,
+        endl = 2
+    })
 
     child.lua([[
     local cur_buf = vim.api.nvim_get_current_buf()
@@ -57,11 +68,91 @@ T['generate()'] = function()
     eq(lines, {
         "- [Heading 1](#heading-1)",
         "    - [Heading 2](#heading-2)",
+        "# Heading 1",
         "Text here",
         "",
         "## Heading 2",
         "Text here"
     })
+end
+
+
+T['check_toc_valid()'] = function()
+    local lines = {
+        "- [Heading 1](#heading-1)",
+        "    - [Heading 2](#heading-2)",
+    }
+    create_md_buffer(child, lines)
+
+    local ret = child.lua([[ return require('mdnotes.toc').check_toc_valid() ]])
+    eq(ret, {
+        buffer = 2,
+        endl = 2,
+        startl = 1,
+        valid = true
+    })
+end
+
+T['parse()'] = function()
+    local lines = {
+        "- [Heading 1](#heading-1)",
+        "    - [Heading 2](#heading-2)",
+    }
+    create_md_buffer(child, lines)
+
+    local ret = child.lua([[ return require('mdnotes.toc').parse() ]])
+    eq(ret, {
+        contents = { "- [Heading 1](#heading-1)", "    - [Heading 2](#heading-2)" },
+        depth = 2,
+        startl = 1,
+        endl = 2,
+        buffer = 2
+    })
+end
+
+
+T['update()'] = function()
+    local lines = {
+        "- [Heading 1](#heading-1)",
+        "    - [Heading 2](#heading-2)",
+        "# Heading 1",
+        "Text here",
+        "",
+        "## Heading 2",
+        "Text here",
+        "",
+        "## Heading 3",
+        "Text here",
+    }
+    local buf = create_md_buffer(child, lines)
+
+    local ret = child.lua([[
+    local cur_buf = vim.api.nvim_get_current_buf()
+    require('mdnotes').populate_buf_fragments(cur_buf)
+    return require('mdnotes.toc').update()
+    ]])
+    eq(ret, {
+        contents = { "- [Heading 1](#heading-1)", "    - [Heading 2](#heading-2)", "    - [Heading 3](#heading-3)" },
+        depth = 2,
+        startl = 1,
+        endl = 3,
+        buffer = 2
+    })
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines, {
+        "- [Heading 1](#heading-1)",
+        "    - [Heading 2](#heading-2)",
+        "    - [Heading 3](#heading-3)",
+        "# Heading 1",
+        "Text here",
+        "",
+        "## Heading 2",
+        "Text here",
+        "",
+        "## Heading 3",
+        "Text here",
+    }
+)
 end
 
 return T

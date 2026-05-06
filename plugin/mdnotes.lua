@@ -162,7 +162,8 @@ local get_commands = function() return {
         convert_fragment_to_gfm = require("mdnotes.inline_link").convert_fragment_to_gfm,
     },
     toc = {
-        generate = require("mdnotes.toc").generate
+        generate = require("mdnotes.toc").generate,
+        update = require("mdnotes.toc").update
     },
     heading = {
         next = require("mdnotes.heading").goto_next,
@@ -199,7 +200,7 @@ vim.api.nvim_create_user_command( "Mdn", function(opts)
         func({ location = { startl = opts.line1, endl = opts.line2 } })
     elseif func == commands.table.create then
         func(args[3], args[4])
-    elseif func == commands.toc.generate then
+    elseif func == commands.toc.generate or func == commands.toc.update then
         func({ depth = args[3] })
     elseif func == commands.user[1] and vim.tbl_isempty(commands.user) then
         vim.notify("Mdn: There are no user commands in place", vim.log.levels.ERROR)
