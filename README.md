@@ -20,6 +20,7 @@ All documentation is available with `:h mdnotes.txt`. Execute `:checkhealth mdno
 ## 🔥 Features
 For a complete descriptive feature list with their associated commands, please see [FEATURES.md](FEATURES.md).
 
+- Uses subcommands with opt-in default key mappings and opt-out autocmds
 - Open, toggle, rename, relink, and normalize inline links
 - Create, follow, rename, show, delete, and find WikiLinks
 - Insert, manage, and delete assets
@@ -31,7 +32,7 @@ For a complete descriptive feature list with their associated commands, please s
 - Ordered and unordered list continuation and renumbering
 - Task list toggling
 - Unformat lines to remove any Markdown formatting
-- Generate Table of Contents
+- Generate Table of Contents and update in-place
 - Outliner mode
 - Create user commands within the plugin namespace for organisation
 - Most internal functions are exposed as an API for extensibility (`:h mdnotes-api`)
