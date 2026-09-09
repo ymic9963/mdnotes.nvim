@@ -23,7 +23,7 @@ For a complete descriptive feature list with their associated commands, please s
 - Uses subcommands with opt-in default key mappings and opt-out autocmds
 - **Formatting**: Toggling for strong, emphasis, inline code, strikethrough, autolink, fenced code blocks
 - **Inline links**: open, toggle, rename, relink, and normalize
-- **WikiLinks**: Create, follow, rename, show, delete, and find/rename references
+- **WikiLinks**: Create, follow, delete, and find or rename references
 - **Assets**: Insert, manage, view, and delete assets
 - **Tables**: Create, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
 - **Reference links**: Open, insert, update, manage, convert from inline links and vice versa
@@ -133,8 +133,8 @@ Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelate
 vim.keymap.set('n', '<leader>mgx', ':Mdn inline_link open<CR>', { buffer = true, desc = "Open inline link URI under cursor" })
 vim.keymap.set('n', '<leader>mgf', ':Mdn wikilink follow<CR>', { buffer = true, desc = "Open markdown file from WikiLink" })
 vim.keymap.set('n', '<leader>mgF', ':Mdn wikilink follow_hor<CR>', { buffer = true, desc = "Open markdown file from WikiLink in a horizontal split" })
-vim.keymap.set('n', '<leader>mgrr', ':Mdn wikilink show_references<CR>', { buffer = true, desc = "Show references of link or buffer" })
-vim.keymap.set('n', '<leader>mgrn', ':Mdn wikilink rename_references<CR>', { buffer = true, desc = "Rename references of link or current buffer" })
+vim.keymap.set('n', '<leader>mgrr', ':Mdn wikilink find_references<CR>', { buffer = true, desc = "Show references of WikiLink or current buffer" })
+vim.keymap.set('n', '<leader>mgrn', ':Mdn wikilink rename_references<CR>', { buffer = true, desc = "Rename references of WikiLink or current buffer" })
 vim.keymap.set({"v", "n"}, "<leader>mk", ":Mdn inline_link toggle<CR>", { buffer = true, desc = "Toggle inline link" })
 vim.keymap.set("n", "<leader>mh", ":Mdn history go_back<CR>", { buffer = true, desc = "Go to back to previously visited Markdown buffer" })
 vim.keymap.set("n", "<leader>ml", ":Mdn history go_forward<CR>", { buffer = true, desc = "Go to next visited Markdown buffer" })
