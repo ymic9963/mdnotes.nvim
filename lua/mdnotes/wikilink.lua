@@ -121,7 +121,7 @@ end
 ---Show the references to the current WikiLink under the cursor
 ---@param opts {location: MdnInLineLocation?, silent: boolean?}?
 ---@return table? qflist Resulting quickfix list
-function M.show_references(opts)
+function M.find_references(opts)
     if check_markdown_lsp_cur_buf() then
         vim.lsp.buf.references()
 

@@ -53,10 +53,10 @@ T['follow()'] = function()
     eq(lines[1], "# File 2")
 end
 
-T['show_references()'] = function()
+T['find_references()'] = function()
     child.cmd([[edit tests/test-data/files/file2.md]])
     child.fn.cursor(1,1)
-    local ret = child.lua([[return Mdn.wikilink.show_references()]])
+    local ret = child.lua([[return Mdn.wikilink.find_references()]])
     if child.o.grepprg == "internal" then
         eq(ret, {
             {
@@ -79,7 +79,7 @@ T['show_references()'] = function()
 
         child.cmd([[edit tests/test-data/files/file3.md]])
         child.fn.cursor(2,1)
-        ret = child.lua([[return Mdn.wikilink.show_references()]])
+        ret = child.lua([[return Mdn.wikilink.find_references()]])
         eq(ret, {
             {
                 bufnr = 3,
@@ -118,7 +118,7 @@ T['show_references()'] = function()
 
         child.cmd([[edit tests/test-data/files/file3.md]])
         child.fn.cursor(2,1)
-        ret = child.lua([[return Mdn.wikilink.show_references()]])
+        ret = child.lua([[return Mdn.wikilink.find_references()]])
         eq(ret, {
             {
                 bufnr = 2, -- is 3 with vimgrep

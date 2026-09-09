@@ -57,8 +57,8 @@ The default keymaps are listed below and they can be enabled using
     vim.keymap.set('n', '<leader>mgx', ':Mdn inline_link open<CR>', { buffer = true, desc = "Open inline link destination under cursor" })
     vim.keymap.set('n', '<leader>mgf', ':Mdn wikilink follow<CR>', { buffer = true, desc = "Open markdown file from WikiLink" })
     vim.keymap.set('n', '<leader>mgF', ':Mdn wikilink follow_hor<CR>', { buffer = true, desc = "Open markdown file from WikiLink in a horizontal split" })
-    vim.keymap.set('n', '<leader>mgrr', ':Mdn wikilink show_references<CR>', { buffer = true, desc = "Show references of link or buffer" })
-    vim.keymap.set('n', '<leader>mgrn', ':Mdn wikilink rename_references<CR>', { buffer = true, desc = "Rename references of link or current buffer" })
+    vim.keymap.set('n', '<leader>mgrr', ':Mdn wikilink find_references<CR>', { buffer = true, desc = "Show references of WikiLink or current buffer" })
+    vim.keymap.set('n', '<leader>mgrn', ':Mdn wikilink rename_references<CR>', { buffer = true, desc = "Rename references of WikiLink or current buffer" })
     vim.keymap.set({"v", "n"}, "<leader>mk", ":Mdn inline_link toggle<CR>", { buffer = true, desc = "Toggle inline_link" })
     vim.keymap.set("n", "<leader>mh", ":Mdn history go_back<CR>", { buffer = true, desc = "Go to back to previously visited Markdown buffer" })
     vim.keymap.set("n", "<leader>ml", ":Mdn history go_forward<CR>", { buffer = true, desc = "Go to next visited Markdown buffer" })
@@ -351,7 +351,7 @@ to write the buffers if any command changes buffer contents.
 
     Create a WikiLink by highlighting or hovering over a word and executing. 
 
-:Mdn wikilink show_references 				*:Mdn-wikilink-show_references*
+:Mdn wikilink find_references 				*:Mdn-wikilink-find_references*
 
     Show the references of the current Wikilink under cursor in a quickfix
     list. If no Wikilink is under the cursor it shows the references to the
@@ -2822,7 +2822,7 @@ wikilink.follow_vert({opts})				*mdnotes.wikilink.follow_vert()*
               • {picker} (`boolean`, default `false`)
 		show picker to select
 
-wikilink.show_references({opts})			*mdnotes.wikilink.show_references()*
+wikilink.find_references({opts})			*mdnotes.wikilink.find_references()*
 
     Show the references of the current Wikilink under cursor in a quickfix
     list. If no Wikilink is under the cursor it shows the references to the

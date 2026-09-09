@@ -16,7 +16,7 @@ The main reason I started this project was dissatisfaction with Markdown LSPs at
 
 |Feature                         |mdnotes                                      |LSP                                                        |Neovim                                                                 |
 |--------------------------------|---------------------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------------|
-|Showing references              |Y (`:Mdn wikilink show_references`)          |Y (`:h vim.lsp.buf.references()` or `grr`)                 |N                                                                      |
+|Find references                 |Y (`:Mdn wikilink find_references`)          |Y (`:h vim.lsp.buf.references()` or `grr`)                 |N                                                                      |
 |Rename links to current buffer  |Y (`:Mdn wikilink rename_references`)        |Y (`:h vim.lsp.buf.rename()` or `grn`, markdown-oxide only)|N                                                                      |
 |Rename links to hovered WikiLink|Y (`:Mdn wikilink rename_references`)        |? (`:h vim.lsp.buf.rename()`, should work but it does not) |N                                                                      |
 |Buffer History                  |Y (Sequential `:Mdn history go_back/forward`)|N                                                          |Y (Not Sequential `:h bp`/`:h bn`                                      |
