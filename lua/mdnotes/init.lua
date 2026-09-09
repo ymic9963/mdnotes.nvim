@@ -221,6 +221,7 @@ local function set_g()
     _G.Mdn.table = require('mdnotes.table')
     _G.Mdn.toc = require('mdnotes.toc')
     _G.Mdn.wikilink = require('mdnotes.wikilink')
+    _G.Mdn.demo = require('mdnotes.demo')
 end
 
 ---Setup function
