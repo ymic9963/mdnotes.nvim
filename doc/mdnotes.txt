@@ -970,7 +970,7 @@ get_files_in_cwd({opts}) 				*mdnotes.get_files_in_cwd()*
               • {extension} (`string?`)
 		specify extension e.g. `.md`, can also speficy `.*` for all
 		file extensions
-              • {hidden} (`boolean?`)
+              • {hidden} (`boolean?`, default `false`)
 		specify if hidden files should be retrieved
               • {fs_type} (`string?`)
 		specify the type of item to be retrieved, choose from,

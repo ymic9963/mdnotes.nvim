@@ -564,45 +564,56 @@ function M.get_files_in_cwd(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
-    local cwd = require('mdnotes').cwd
     local files = {}
-    local add = false
+
+    local function remove(name)
+        if vim.tbl_contains(files, name) then
+            for i, v in ipairs(files) do
+                if v == name then
+                    table.remove(files, i)
+                    break
+                end
+            end
+        end
+    end
+
+    local cwd = require('mdnotes').cwd
+    local hidden = opts.hidden or false
+
     for name, type in vim.fs.dir(cwd) do
+        table.insert(files, name)
+
         if opts.extension ~= nil then
             if name:match("^.*(%..*)") == opts.extension or opts.extension == ".*" then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
-        if opts.hidden ~= nil then
-            if name:sub(1,1) == "." and opts.hidden == true then
-                add = true
+        -- Remove hidden by default
+        if name:sub(1,1) == "." then
+            if hidden == true then
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
         if opts.fs_type ~= nil then
             if type == opts.fs_type or type == "all" then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
         if opts.pattern ~= nil then
             if name:match(opts.pattern) then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
-        end
-
-        if add == true then
-            table.insert(files, name)
-            add = false
         end
     end
 
