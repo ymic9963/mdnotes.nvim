@@ -150,7 +150,7 @@ local get_commands = function() return {
         column_alignment_toggle = require("mdnotes.table").column_alignment_toggle,
         column_duplicate = require("mdnotes.table").column_duplicate,
         column_sort_ascending = require("mdnotes.table").column_sort_ascending,
-        column_sort_descendig = require("mdnotes.table").column_sort_descending,
+        column_sort_descending = require("mdnotes.table").column_sort_descending,
         row_insert_above = require("mdnotes.table").row_insert_above,
         row_insert_below = require("mdnotes.table").row_insert_below,
     },
