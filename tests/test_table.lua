@@ -351,15 +351,15 @@ T['row_insert()'] = function()
     }
     local buf = create_md_buffer(child, lines)
 
-    child.fn.cursor(4, 1)
+    child.fn.cursor(3, 1)
     child.lua([[Mdn.table.row_insert_below()]])
     lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
     eq(lines, {
         "|1r1c|1r2c|1r3c|",
         "|----|----|----|",
         "|2r1c|2r2c|2r3c|",
-        "|3r1c|3r2c|3r3c|",
         "|    |    |    |",
+        "|3r1c|3r2c|3r3c|",
     })
 
     child.lua([[Mdn.table.row_insert_above()]])
@@ -367,6 +367,19 @@ T['row_insert()'] = function()
     eq(lines, {
         "|1r1c|1r2c|1r3c|",
         "|----|----|----|",
+        "|    |    |    |",
+        "|2r1c|2r2c|2r3c|",
+        "|    |    |    |",
+        "|3r1c|3r2c|3r3c|",
+    })
+
+    child.fn.cursor(6, 1)
+    child.lua([[Mdn.table.row_insert_below()]])
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines, {
+        "|1r1c|1r2c|1r3c|",
+        "|----|----|----|",
+        "|    |    |    |",
         "|2r1c|2r2c|2r3c|",
         "|    |    |    |",
         "|3r1c|3r2c|3r3c|",

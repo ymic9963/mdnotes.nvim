@@ -551,15 +551,21 @@ function M.row_insert(contents, opts)
 
     opts = opts or {}
 
-    local row_index = opts.row_index or #contents + 1
+    local row_index = opts.row_index or #contents
     local row_data = opts.row_data
 
-    local row = contents[row_index]
-
-    -- In the case where index is invalid
-    if row == nil then
-        row = contents[#contents]
+    -- Clamp values
+    if row_index < 1 then
+        row_index = 1
     end
+
+    if row_index > #contents then
+        row_index = #contents + 1
+    end
+
+    -- Because of the clamping above, it would only be nil at #contents + 1
+    -- In that case it should retrieve #contents index 
+    local row = contents[row_index] or contents[#contents]
 
     -- Default row
     if row_data == nil then
