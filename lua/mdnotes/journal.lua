@@ -75,7 +75,7 @@ function M.insert_entry(opts)
         end
     end
 
-    local strftime = vim.fn.strftime(require('mdnotes').config.date_format):match("([^\n\r\t]+)")
+    local strftime = vim.pesc(vim.fn.strftime(require('mdnotes').config.date_format):match("([^\n\r\t]+)"))
     local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_get_current_buf(), 0, -1, false)
     local match = false
 

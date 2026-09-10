@@ -122,7 +122,6 @@ function M.insert(opts)
 
     vim.validate("silent", silent, "boolean")
 
-    local rldef = M.get_rl_definition(opts.label)
     if destination == '' then
         if silent == false then
             vim.notify("Mdn: Nothing detected in clipboard, \"+ register empty...", vim.log.levels.ERROR)
@@ -138,6 +137,7 @@ function M.insert(opts)
 
     vim.api.nvim_buf_set_text(txtdata.buf, txtdata.lnum - 1, txtdata.col_start - 1, txtdata.lnum - 1, txtdata.col_end, {'[' .. txtdata.raw .. '][' .. link_label .. ']'})
 
+    local rldef = M.get_rl_definition(opts.label)
     if rldef == nil then
         vim.api.nvim_buf_set_lines(txtdata.buf, vim.fn.line("$"), vim.fn.line("$") + 1, false, {'[' .. def_label .. ']: ' ..  destination})
     end
