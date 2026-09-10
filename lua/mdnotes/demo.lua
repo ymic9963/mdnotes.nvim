@@ -9,10 +9,16 @@ local M = {}
 
 local demo_running = false
 local demo_buf = 0
+local demo_win = 0
 
 local function stop_demo()
     demo_running = false
-    vim.cmd("bw " .. demo_buf)
+    vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        "# Mdnotes Demo",
+        "(Press <ESC> to stop demo)",
+    })
+    vim.cmd.write()
+    vim.cmd("bw! " .. demo_buf)
     vim.notify("Mdn: Demo stopped")
 end
 
@@ -46,16 +52,18 @@ end
 
 ---Run demo (AI assisted)
 function M.run()
-    demo_buf = vim.api.nvim_create_buf(false, true)
+    local demo_path = vim.fs.joinpath(require('mdnotes').plugin_install_dir, "tests/markdown-test-files/demo-files/demo.md")
+    demo_buf = vim.fn.bufadd(demo_path)
     vim.bo[demo_buf].filetype = "markdown"
 
-    demo_running = true
-    vim.keymap.set("n", "<Esc>", stop_demo, { buffer = demo_buf, })
-    vim.api.nvim_open_win(demo_buf, true, {relative='win', row=1, col=3, width=150, height=40})
     vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
         "# Mdnotes Demo",
         "(Press <ESC> to stop demo)",
     })
+
+    demo_running = true
+    vim.keymap.set("n", "<Esc>", stop_demo, { buffer = demo_buf, })
+    demo_win = vim.api.nvim_open_win(demo_buf, true, {relative='win', row=1, col=3, width=150, height=40})
 
     local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
     local ctrl_u = vim.api.nvim_replace_termcodes("<C-U>", true, false, true)
@@ -230,31 +238,153 @@ function M.run()
         -- },
         -- Formatting Demo End
         -- Inline Link Demo Start
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Inline links",
+        --             "- Open [link.md](link.md#fragment)",
+        --             "- Toggle [link](https://neovim.io/)",
+        --             "- Rename [link](https://neovim.io/)",
+        --             "- Relink [link](https://neovim.io/)",
+        --             "- Normalize [path](a/../path/to/../normalize)",
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(5, 8)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link open\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         require('mdnotes.history').go_back()
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(6, 11)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(6, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(7, 11)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link rename\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("renamed\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(8, 11)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link relink\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("https://www.example.com/\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(9, 14)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn inline_link normalize\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- Inline Link Demo End
+        -- WikiLink Demo Start
         {
             action = function()
                 vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
                     "# Mdnotes Demo",
                     "(Press <ESC> to stop demo)",
                     "",
-                    "## Inline links",
-                    "- Open",
-                    "- Toggle [link](https://neovim.io/)",
-                    "- Rename [link](https://neovim.io/)",
-                    "- Relink [link](https://neovim.io/)",
-                    "- Normalize [path](a/../path/to/../normalize)",
+                    "## WikiLinks",
+                    "- Create WikiLink",
+                    "- Follow [[WikiLink]]",
+                    "- Delete [[WikiLink]]",
+                    "- Find references to [[WikiLink]]",
+                    "- Rename references to [[WikiLink]]",
+                    "- Undo the rename",
                 })
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.fn.cursor(6, 11)
+                vim.fn.cursor(5, 10)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn inline_link toggle\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn wikilink create\n", "n", false)
+                vim.cmd.write()
             end,
             delay = 1000,
         },
@@ -266,72 +396,63 @@ function M.run()
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn inline_link toggle\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn wikilink follow\n", "n", false)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.fn.cursor(7, 11)
+                local buf = vim.api.nvim_get_current_buf()
+                require('mdnotes.history').go_back()
+                vim.cmd("bw! " .. buf)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn inline_link rename\n", "n", false)
+                vim.fn.cursor(7, 10)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
+                vim.api.nvim_feedkeys(":Mdn wikilink delete", "n", false)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys("renamed\n", "n", false)
+                vim.api.nvim_feedkeys("\ny\n", "n", false)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.fn.cursor(8, 11)
+                vim.cmd([[undo]])
+                local cwd = require('mdnotes').cwd
+                vim.uv.fs_copyfile(vim.fs.joinpath(cwd, "WikiLink-backup.md"), vim.fs.joinpath(cwd, "WikiLink.md"))
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn inline_link relink\n", "n", false)
+                vim.fn.cursor(8, 22)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
+                vim.api.nvim_feedkeys(":Mdn wikilink find_references\n", "n", false)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys("https://www.example.com/\n", "n", false)
+                vim.cmd([[ccl]])
+                vim.api.nvim_set_current_win(demo_win)
             end,
             delay = 1000,
         },
-        {
-            action = function()
-                vim.fn.cursor(9, 14)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn inline_link normalize\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        -- Inline Link Demo End
-        -- WikiLink Demo Start
     })
 end
 
