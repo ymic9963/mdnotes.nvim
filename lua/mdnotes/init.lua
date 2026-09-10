@@ -107,7 +107,7 @@ local default_config = {
 ---@field populate_buf_fragments boolean populate_buf_fragments() autocmd for ToC fragments
 ---@field ordered_list_renumber boolean ordered_list_renumber() autocmd for ordered lists
 ---@field table_best_fit boolean best_fit() autocmd for tables
----@field outliner_state boolean autocmd for Outliner mode state notification
+---@field outliner_state_notification boolean autocmd for Outliner mode state notification
 ---@field journal_insert_entry boolean autocmd for inserting a journal entry on opening the journal file
 ---@field populate_buf_reference_links boolean populate_buf_reference_links() autocmd reference links
 ---@field populate_buf_footnotes boolean populate_buf_footnotes() autocmd footnotes

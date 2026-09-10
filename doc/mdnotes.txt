@@ -3063,7 +3063,7 @@ MdnAutocmdsConfig	 				*mdnotes.MdnAutocmdsConfig*
     • {populate_buf_fragments} (`boolean`) |mdnotes.populate_buf_fragments()| autocmd for ToC fragments
     • {ordered_list_renumber} (`boolean`) |mdnotes.formatting.ordered_list_renumber()| autocmd for ordered lists
     • {table_best_fit} (`boolean`) |mdnotes.table.best_fit()| autocmd for tables
-    • {outliner_state} (`boolean`) autocmd for Outliner mode state notification
+    • {outliner_state_notification} (`boolean`) autocmd for Outliner mode state notification
     • {journal_insert_entry} (`boolean`) autocmd for inserting a journal entry on opening the journal file
     • {populate_buf_reference_link_definitions} (`boolean`) |mdnotes.reference_link.populate_buf_reference_link_defintions()| autocmd for reference links
     • {populate_buf_footnotes} (`boolean`) |mdnotes.footnote.populate_buf_footnotes()| autocmd for footnotes
