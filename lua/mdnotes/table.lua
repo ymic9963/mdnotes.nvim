@@ -30,8 +30,8 @@ function M.check_table_valid(opts)
 
     local buf = search_opts.buf or vim.api.nvim_get_current_buf()
     local origin_lnum = search_opts.origin_lnum or vim.fn.line('.')
-    local lower_limit_lnum = search_opts.upper_limit_lnum or 1
-    local upper_limit_lnum = search_opts.lower_limit_lnum or vim.fn.line('$')
+    local lower_limit_lnum = search_opts.lower_limit_lnum or 1
+    local upper_limit_lnum = search_opts.upper_limit_lnum or vim.fn.line('$')
 
     local table_startl = 0
     local table_endl = 0
@@ -551,15 +551,21 @@ function M.row_insert(contents, opts)
 
     opts = opts or {}
 
-    local row_index = opts.row_index or #contents + 1
+    local row_index = opts.row_index or #contents
     local row_data = opts.row_data
 
-    local row = contents[row_index]
-
-    -- In the case where index is invalid
-    if row == nil then
-        row = contents[#contents]
+    -- Clamp values
+    if row_index < 1 then
+        row_index = 1
     end
+
+    if row_index > #contents then
+        row_index = #contents + 1
+    end
+
+    -- Because of the clamping above, it would only be nil at #contents + 1
+    -- In that case it should retrieve #contents index 
+    local row = contents[row_index] or contents[#contents]
 
     -- Default row
     if row_data == nil then

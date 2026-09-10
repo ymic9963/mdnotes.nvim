@@ -574,9 +574,9 @@ function M.delete(opts)
 
     local user_input, text1 = "", ""
     local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
-    if behaviour == "delete" then
-        prompt = "Delete file at '" .. asset_path .. "'. " .. prompt
-        text1 = "Deleted"
+    if behaviour == "remove" then
+        prompt = "Remove file at '" .. asset_path .. "'. " .. prompt
+        text1 = "Removed"
     elseif behaviour == "garbage" then
         prompt = "Move file at '" .. asset_path .. "' to garbage folder. " .. prompt
         text1 = "Moved"

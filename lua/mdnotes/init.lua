@@ -73,8 +73,6 @@ M.default_ui_select = vim.ui.select
 ---@field date_format string? Date format when using journal_insert_entry(), see :h strftime()
 ---@field prefer_lsp boolean? To prefer Markdown LSP functions rather than the mdnotes functions
 ---@field auto_list_continuation boolean? Automatic list continuation
----@field auto_list_renumber boolean? Automatic renumbering of ordered lists
----@field auto_table_best_fit boolean? Automatic table best fit
 ---@field default_keymaps boolean?
 ---@field autocmds boolean|MdnAutocmdsConfig?
 ---@field table_best_fit_padding integer? Add padding around cell contents when using tables_best_fit
@@ -107,7 +105,7 @@ local default_config = {
 ---@field populate_buf_fragments boolean populate_buf_fragments() autocmd for ToC fragments
 ---@field ordered_list_renumber boolean ordered_list_renumber() autocmd for ordered lists
 ---@field table_best_fit boolean best_fit() autocmd for tables
----@field outliner_state boolean autocmd for Outliner mode state notification
+---@field outliner_state_notification boolean autocmd for Outliner mode state notification
 ---@field journal_insert_entry boolean autocmd for inserting a journal entry on opening the journal file
 ---@field populate_buf_reference_links boolean populate_buf_reference_links() autocmd reference links
 ---@field populate_buf_footnotes boolean populate_buf_footnotes() autocmd footnotes
@@ -486,9 +484,9 @@ local function get_indent_indicator(inc_val)
 
         if ldata.type == "ordered" then
             if ldata.is_task == true then
-                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker + inc_val)) .. ldata.separator .. " " .. "[ ] "
+                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker) + inc_val) .. ldata.separator .. " " .. "[ ] "
             else
-                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker + inc_val)) .. ldata.separator .. " "
+                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker) + inc_val) .. ldata.separator .. " "
             end
         end
     elseif check_text == "" then
@@ -565,45 +563,56 @@ function M.get_files_in_cwd(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
-    local cwd = require('mdnotes').cwd
     local files = {}
-    local add = false
+
+    local function remove(name)
+        if vim.tbl_contains(files, name) then
+            for i, v in ipairs(files) do
+                if v == name then
+                    table.remove(files, i)
+                    break
+                end
+            end
+        end
+    end
+
+    local cwd = require('mdnotes').cwd
+    local hidden = opts.hidden or false
+
     for name, type in vim.fs.dir(cwd) do
+        table.insert(files, name)
+
         if opts.extension ~= nil then
             if name:match("^.*(%..*)") == opts.extension or opts.extension == ".*" then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
-        if opts.hidden ~= nil then
-            if name:sub(1,1) == "." and opts.hidden == true then
-                add = true
+        -- Remove hidden by default
+        if name:sub(1,1) == "." then
+            if hidden == true then
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
         if opts.fs_type ~= nil then
             if type == opts.fs_type or type == "all" then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
         end
 
         if opts.pattern ~= nil then
             if name:match(opts.pattern) then
-                add = true
+                -- continue iteration
             else
-                add = false
+                remove(name)
             end
-        end
-
-        if add == true then
-            table.insert(files, name)
-            add = false
         end
     end
 
@@ -782,7 +791,7 @@ function M.statistics(opts)
     opts = opts or {}
 
     local buf = opts.buf or vim.api.nvim_get_current_buf()
-    local silent = opts.silent ~= false
+    local silent = opts.silent or false
 
     vim.validate("buf", buf, "number")
     vim.validate("silent", silent, "boolean")
@@ -842,7 +851,7 @@ function M.statistics(opts)
     -- NOTE: Tried to print "formatted words" but because URLs might contain
     -- `_word_` then `word` is matched in scan_lines
 
-    if silent ~= false then
+    if silent == false then
         vim.notify(("Bytes:\t\t%s\n" ..
         "Characters:\t%s\n" ..
         "Words:\t\t%s\n" ..
