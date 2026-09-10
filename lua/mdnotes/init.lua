@@ -485,9 +485,9 @@ local function get_indent_indicator(inc_val)
 
         if ldata.type == "ordered" then
             if ldata.is_task == true then
-                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker + inc_val)) .. ldata.separator .. " " .. "[ ] "
+                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker) + inc_val) .. ldata.separator .. " " .. "[ ] "
             else
-                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker + inc_val)) .. ldata.separator .. " "
+                return ldata.indent, "\n" .. tostring(tonumber(ldata.marker) + inc_val) .. ldata.separator .. " "
             end
         end
     elseif check_text == "" then
