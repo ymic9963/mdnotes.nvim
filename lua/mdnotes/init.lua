@@ -857,8 +857,8 @@ function M.statistics(opts)
         "Lines:\t\t%s\n" ..
         "Inline links:\t%s\n" ..
         "WikiLinks:\t%s\n" ..
-        "Reference links:%s\n" ..
-        "Footnote references:%s\n" ..
+        "Ref. links:\t%s\n" ..
+        "Footnote ref.:\t%s\n" ..
         "Headings:\t%s\n")
         :format(bytes, chars, words, lines, ils, wls, rls, frefs, headings)
         , vim.log.levels.INFO)
