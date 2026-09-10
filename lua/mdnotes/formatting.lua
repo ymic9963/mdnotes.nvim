@@ -291,8 +291,8 @@ function M.check_list_valid(opts)
 
     local buf = search_opts.buf or vim.api.nvim_get_current_buf()
     local origin_lnum = search_opts.origin_lnum or vim.fn.line('.')
-    local lower_limit_lnum = search_opts.upper_limit_lnum or 1
-    local upper_limit_lnum = search_opts.lower_limit_lnum or vim.fn.line('$')
+    local lower_limit_lnum = search_opts.lower_limit_lnum or 1
+    local upper_limit_lnum = search_opts.upper_limit_lnum or vim.fn.line('$')
 
     local outliner_list = opts.outliner_list or false
     local same_indent = opts.same_indent or false
@@ -447,8 +447,8 @@ function M.check_fence_valid(pattern, opts)
 
     local buf = search_opts.buf or vim.api.nvim_get_current_buf()
     local origin_lnum = search_opts.origin_lnum or vim.fn.line('.')
-    local lower_limit_lnum = search_opts.upper_limit_lnum or 1
-    local upper_limit_lnum = search_opts.lower_limit_lnum or vim.fn.line('$')
+    local lower_limit_lnum = search_opts.lower_limit_lnum or 1
+    local upper_limit_lnum = search_opts.upper_limit_lnum or vim.fn.line('$')
 
     local fence_startl = 0
     local fence_endl = 0
