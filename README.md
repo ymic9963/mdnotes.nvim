@@ -74,19 +74,20 @@ and specify your config using `opts = {}` or with a `setup({})` function,
 ```lua
 {
     index_file = "",
-    journal_file = "",              -- path or function returning string for dynamic journal file
-    assets_path = "",               -- path or function returning string for dynamic asset path
-    asset_insert_behaviour = "copy",-- "copy" or "move" files when inserting from clipboard
-    overwrite_behaviour = "error",  -- "overwrite" or "error" when finding assset file conflicts
-    open_behaviour = "buffer",      -- "buffer", "tab", "split", or "vsplit" to open when following links
-    date_format = "%a %d %b %Y"     -- date format based on :h strftime()
-    prefer_lsp = false,             -- to prefer LSP functions than the mdnotes functions
-    auto_list_continuation = true,  -- automatic list continuation
+    journal_file = "",                  -- path or function returning string for dynamic journal file
+    assets_path = "",                   -- path or function returning string for dynamic asset path
+    asset_insert_behaviour = "copy",    -- "copy" or "move" files when inserting from clipboard
+    asset_overwrite_behaviour = "error",-- "overwrite" or "error" when finding assset file conflicts
+    asset_delete_behaviour = "garbage", -- move to "garbage" or "remove" asset when deleting
+    open_behaviour = "buffer",          -- "buffer", "tab", "split", or "vsplit" to open when following links
+    date_format = "%a %d %b %Y"         -- date format based on :h strftime()
+    prefer_lsp = false,                 -- to prefer LSP functions than the mdnotes functions
+    auto_list_continuation = true,      -- automatic list continuation
     default_keymaps = false,
-    autocmds = true,                -- enable or disable plugin autocmds, check docs for enabling/disabling individual ones
-    table_best_fit_padding = 0,     -- add padding around cell contents when using tables_best_fit
-    toc_depth = 4                   -- depth shown in the ToC
-    user_commands = {}              -- table with user commands in {command_name = function} scheme
+    autocmds = true,                    -- enable or disable plugin autocmds, check docs for enabling/disabling individual ones
+    table_best_fit_padding = 0,         -- add padding around cell contents when using tables_best_fit
+    toc_depth = 4                       -- depth shown in the ToC
+    user_commands = {}                  -- table with user commands in {command_name = function} scheme
 }
 ```
 ### 📂 Directory Setup

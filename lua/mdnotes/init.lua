@@ -73,8 +73,6 @@ M.default_ui_select = vim.ui.select
 ---@field date_format string? Date format when using journal_insert_entry(), see :h strftime()
 ---@field prefer_lsp boolean? To prefer Markdown LSP functions rather than the mdnotes functions
 ---@field auto_list_continuation boolean? Automatic list continuation
----@field auto_list_renumber boolean? Automatic renumbering of ordered lists
----@field auto_table_best_fit boolean? Automatic table best fit
 ---@field default_keymaps boolean?
 ---@field autocmds boolean|MdnAutocmdsConfig?
 ---@field table_best_fit_padding integer? Add padding around cell contents when using tables_best_fit
