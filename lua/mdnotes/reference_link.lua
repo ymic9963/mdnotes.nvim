@@ -123,7 +123,7 @@ function M.insert(opts)
     vim.validate("silent", silent, "boolean")
 
     local rldef = M.get_rl_definition(opts.label)
-    if destination == '' and rldef ~= nil then
+    if destination == '' then
         if silent == false then
             vim.notify("Mdn: Nothing detected in clipboard, \"+ register empty...", vim.log.levels.ERROR)
         end
