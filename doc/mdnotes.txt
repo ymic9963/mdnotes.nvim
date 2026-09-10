@@ -1058,6 +1058,8 @@ statistics({opts})					*mdnotes.statistics()*
     • {opts}  (`table?`) Optional parameters:
               • {buf} (`number?` defaults to current buffer)
 		buffer number
+              • {silent} (`boolean?`, default `false`)
+		silence notifications
 
     Return: ~
     • (`table`) Table containing statistics. Current values are bytes,

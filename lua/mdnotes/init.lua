@@ -792,7 +792,7 @@ function M.statistics(opts)
     opts = opts or {}
 
     local buf = opts.buf or vim.api.nvim_get_current_buf()
-    local silent = opts.silent ~= false
+    local silent = opts.silent or false
 
     vim.validate("buf", buf, "number")
     vim.validate("silent", silent, "boolean")
@@ -852,7 +852,7 @@ function M.statistics(opts)
     -- NOTE: Tried to print "formatted words" but because URLs might contain
     -- `_word_` then `word` is matched in scan_lines
 
-    if silent ~= false then
+    if silent == false then
         vim.notify(("Bytes:\t\t%s\n" ..
         "Characters:\t%s\n" ..
         "Words:\t\t%s\n" ..
