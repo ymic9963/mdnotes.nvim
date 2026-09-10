@@ -8,14 +8,11 @@
 ---
 
 ## ☀️ Introduction
-
 Mdnotes aims to be a lightweight plugin that improves the Markdown note-taking experience in Neovim, with minimal configuration required. It also exposes most of the functions used internally, so that the user can create an extensible note-taking experience similar to Neovim's philosophy.
 
-In the [Recommendations](#-recommendations) section I've written some notes on my recommended `mdnotes` setup, and please read [MARKDOWN.md](MARKDOWN.md) to know how `mdnotes` aims to format your notes. Also see [RATIONALE.md](RATIONALE.md) for information on certain design decisions like directory structure, using LSPs, and editing tables.
+All documentation is available with `:h mdnotes.txt`. Check out `:h mdnotes-tips` for some tips when writing notes in out-of-the-box Neovim, and `:h mdnotes-migrating` if migrating from a previous note-taking application. Execute `:checkhealth mdnotes` to ensure there are no problems with your plugin config and remember to create backups of your notes if executing any mass data-altering commands!
 
-If you are migrating from another note-taking application, then [MIGRATING.md](MIGRATING.md) might be of interest to you, and I've also written some useful tips in [TIPS.md](TIPS.md) for when writing notes in out-of-the-box Neovim. Lastly, a disclaimer I must unfortunately say, is if you are executing any mass data-altering commands, ensure you have a notes backup!
-
-All documentation is available with `:h mdnotes.txt`. Execute `:checkhealth mdnotes` to ensure there are no problems with your plugin config.
+Optional supplementary documentation to read before using is in [SUPPLEMENTARY.md](SUPPLEMENTARY.md). It provides information about the rationale behind certain design decisions, how mdnotes aims to format your notes, and testing.
 
 ## 🔥 Features
 For a complete descriptive feature list with their associated commands, please see [FEATURES.md](FEATURES.md).
@@ -93,7 +90,7 @@ and specify your config using `opts = {}` or with a `setup({})` function,
 }
 ```
 ### 📂 Directory Setup
-Sample directory structure for `mdnotes` is shown below. See [RATIONALE.md](RATIONALE.md) for reasons regarding the accepted file structure.
+Sample directory structure for mdnotes is shown below. See [RATIONALE.md](RATIONALE.md) for reasons regarding the accepted file structure.
 ```
 notes/
 ├───assets/
@@ -106,10 +103,10 @@ etc.
 This plugin was made with this type of directory structure in mind because this is how I use it. If this directory configuration doesn't suit you please make an issue and hopefully I'll be able to accomodate anyone's needs.
 
 ## 💋 Recommendations
-I've specified below some recommended plugins, keymaps, and optional settings for a great experience with `mdnotes`.
+I've specified below some recommended plugins, keymaps, and optional settings for a great experience with mdnotes.
 
 ### 🔌 Plugins
-For the best Neovim Markdown note-taking experience, I've listed some other projects to optionally install alongside `mdnotes`,
+For the best Neovim Markdown note-taking experience, I've listed some other projects to optionally install alongside mdnotes,
 - [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) - Tree-sitter for Neovim; with this also install the `markdown`, `markdown_inline`, and `latex` parsers.
 - In-Neovim Previewer for Markdown files (both are excellent),
     - [markview.nvim](https://github.com/OXY2DEV/markview.nvim)
@@ -125,10 +122,10 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
     - [academic.nvim](https://github.com/ficd0/academic.nvim) - academic english dictionary
     - [vim-dirtytalk](https://github.com/psliwka/vim-dirtytalk) - programmers dictionary
 
-Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) `mdnotes`.
+Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) mdnotes.
 
 ### ⌨️ Keymaps
- The keymappings below can be enabled by setting `default_keymaps = true` as they are not enabled by default, and they will only be available in Markdown buffers. Place any `mdnotes` keymaps in a  `<Neovim config path>/after/ftplugin/markdown.lua` file so that they're also Markdown specific. For organisation they use the `<leader>m` prefix.
+ The keymappings below can be enabled by setting `default_keymaps = true` as they are not enabled by default, and they will only be available in Markdown buffers. Place any mdnotes keymaps in a  `<Neovim config path>/after/ftplugin/markdown.lua` file so that they're also Markdown specific. For organisation they use the `<leader>m` prefix.
  ```lua
 vim.keymap.set('n', '<leader>mgx', ':Mdn inline_link open<CR>', { buffer = true, desc = "Open inline link URI under cursor" })
 vim.keymap.set('n', '<leader>mgf', ':Mdn wikilink follow<CR>', { buffer = true, desc = "Open markdown file from WikiLink" })
@@ -180,13 +177,3 @@ I wanted to make a more Neovim-centric Markdown notes plugin that tries to work 
 - [vim-markdown-toc](https://github.com/mzlogin/vim-markdown-toc)
 - [vim-table-mode](https://github.com/dhruvasagar/vim-table-mode)
  
-## Tests
-Using [mini.test](https://github.com/nvim-mini/mini.test) for testing. For this project, if you want to run the tests then you need to install mini.test as a plugin locally. This was done to minimise dependencies in the repo. If you're not using lazy then you need to specify the `mini.test` location, using the `mini_path` variable in `scripts/minimal_init.lua`. To run the tests execute the following command in the project root,
-```bash
-nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
-```
-or for individual test files,
-```bash
-nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run_file('tests/test_*.lua')"
-```
-
