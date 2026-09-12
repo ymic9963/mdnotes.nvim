@@ -385,54 +385,102 @@ function M.create(opts)
 end
 
 ---Delete the current WikiLink and the associated file
----@param opts {location: MdnInLineLocation?, move_cursor: boolean?, skip_input: boolean?}?
----@return boolean deleted, string wikilink Returns whether the file was deleted and the affected WikiLink
+---@param opts {file: string?, location: MdnInLineLocation?, move_cursor: boolean?, skip_input: boolean?}?
+---@return boolean deleted, string? wl_path Returns whether the file was deleted and the affected WikiLink
 function M.delete(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
-    local wldata = M.parse({ location = opts.location })
-    if wldata == nil then
-        return false, ""
+    local skip_input = opts.skip_input or false
+    local file = opts.file
+
+    local wldata
+    if file == nil then
+        wldata = M.parse({ location = opts.location })
+        if wldata == nil then return false, nil end
+        file = wldata.file
     end
 
-    local skip_input = opts.skip_input or false
+    local cwd = require('mdnotes').cwd
+    local wl_path = vim.fs.normalize(vim.fs.joinpath(cwd, file))
 
     -- Append .md to guarantee a file name
-    local found_file = ""
-    if not vim.endswith(wldata.file, ".md") then
-        found_file = wldata.file .. ".md"
-    else
-        found_file = wldata.file
+    local wl_name = vim.fs.basename(wl_path)
+    if not vim.endswith(wl_name, ".md") then
+        wl_name = wl_name .. ".md"
+        wl_path = wl_path .. ".md"
     end
 
-    local deleted = false
-    local cwd = require('mdnotes').cwd
-    local path = vim.fs.normalize(vim.fs.joinpath(cwd, found_file))
-    if uv.fs_stat(path) then
-        if skip_input == false then
-            vim.ui.input( { prompt = ("Mdn: Delete '%s' WikiLink and file? Type y/n (default 'n'): "):format(wldata.file), }, function(input)
-                vim.cmd.echo()
-                if input == 'y' then
-                    vim.fs.rm(path)
-                elseif input == 'n' or '' then
-                    vim.notify("Mdn: Did not delete WikiLink file", vim.log.levels.WARN)
-                else
-                    vim.notify(("Mdn: Skipping unknown input '%s'. Press any key to continue..."):format(input), vim.log.levels.ERROR)
-                    vim.fn.getchar()
-                end
-            end)
-        elseif skip_input == true then
-            vim.fs.rm(path)
+    local behaviour = require('mdnotes').config.wikilink_delete_behaviour
+    local garbage_path = require('mdnotes').get_garbage_dir()
+    local is_deleted = false
+
+    local verb = ""
+    local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
+    if behaviour == "remove" then
+        prompt = "Remove file at '" .. wl_path .. "'. " .. prompt
+        verb = "Removed"
+    elseif behaviour == "garbage" then
+        prompt = "Move file at '" .. wl_path .. "' to garbage folder. " .. prompt
+        verb = "Moved"
+    end
+
+    local user_input = ""
+    if skip_input == false then
+        vim.ui.input( { prompt = prompt, }, function(input)
+            user_input = input
+        end)
+        vim.cmd.echo()
+    elseif skip_input == true then
+        user_input = 'y'
+    end
+
+    vim.cmd.redraw()
+    if uv.fs_stat(wl_path) then
+        if user_input == 'y' then
+            if behaviour == "remove" then
+                vim.fs.rm(wl_path)
+            elseif behaviour == "garbage" then
+                uv.fs_rename(wl_path, vim.fs.joinpath(garbage_path, wl_name))
+            end
+            vim.notify(("Mdn: %s '%s'"):format(verb, wl_path), vim.log.levels.WARN)
+            is_deleted = true
+        elseif user_input == 'n' or '' then
+            vim.notify(("Mdn: Skipped '%s'"):format(wl_path), vim.log.levels.WARN)
+        else
+            vim.notify(("Mdn: Unknown input '%s'"):format(user_input), vim.log.levels.ERROR)
         end
-        deleted = true
-    else
-        vim.notify("Mdn: WikiLink file not found so proceeding to remove text only", vim.log.levels.WARN)
     end
 
-    vim.api.nvim_buf_set_text(wldata.buf, wldata.lnum - 1, wldata.col_start - 1, wldata.lnum - 1, wldata.col_end - 1, {wldata.file})
+    -- Reset the text if a location for it was found
+    if is_deleted == true then
+        local mdn_grep = require('mdnotes').mdn_grep
+        local temp_qflist = vim.fn.getqflist()
 
-    return deleted, wldata.file
+        mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", require('mdnotes').cwd)
+        local wl_list = vim.fn.getqflist()
+
+        for _,v in ipairs(wl_list) do
+            vim.api.nvim_buf_call(v.bufnr, function()
+                local wl = M.parse({  location = {
+                    lnum = v.lnum,
+                    col_start = v.col,
+                }})
+                if wl == nil then return is_deleted, wl_path end
+                vim.api.nvim_buf_set_text(wl.buf, wl.lnum - 1, wl.col_start - 1, wl.lnum - 1, wl.col_end - 1, {wl.file})
+            end)
+        end
+
+        vim.fn.setqflist(temp_qflist)
+
+        if wldata ~= nil then
+            local new_col = wldata.cur_col - 2
+            if new_col < 1 then new_col = 1 end
+            vim.fn.cursor({wldata.lnum, new_col})
+        end
+    end
+
+    return is_deleted, wl_path
 end
 
 ---Normalize the WikiLink under the cursor

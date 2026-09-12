@@ -206,21 +206,34 @@ T['create()'] = function()
 end
 
 T['delete()'] = function()
-    local lines = {
-        "[[./tests/test-data/files/file6]]"
-    }
-    local buf = create_md_buffer(child, lines)
+    -- Create remove.md
+    child.cmd([[edit tests/test-data/files/remove.md]])
+    child.cmd([[write]])
 
     eq(
-        vim.fs.basename(vim.fs.find("file6.md", { path = './tests/test-data/files' })[1]),
-        "file6.md"
+        vim.fs.basename(vim.fs.find("remove.md", { path = './tests/test-data/files' })[1]),
+        "remove.md"
     )
+
+    child.cmd([[edit tests/test-data/files/file6.md]])
+    child.fn.cursor(2,1)
+
     child.lua([[Mdn.wikilink.delete({ skip_input = true })]])
-    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
-    eq(lines[1], "./tests/test-data/files/file6")
-    eq(vim.fs.find("file6.md", { path = './tests/test-data/files' }), {})
-    child.cmd([[ edit tests/test-data/files/file6.md ]])
-    child.cmd([[ write ]])
+
+    local buf = child.api.nvim_get_current_buf()
+    local lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines, {
+        "# File 6",
+        "remove",
+        "remove",
+        "remove",
+    })
+    eq(
+        vim.fs.find("remove.md", { path = './tests/test-data/files/garbage/' }),
+        {"tests/test-data/files/garbage/remove.md"}
+    )
+
+    vim.fs.rm("tests/test-data/files/garbage/remove.md")
 end
 
 -- INFO: issue in CI with this test - not sure why

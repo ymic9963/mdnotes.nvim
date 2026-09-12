@@ -67,6 +67,7 @@ M.default_ui_select = vim.ui.select
 ---@field asset_insert_behaviour '"copy"'|'"move"'? Behaviour when inserting assets from clipboard
 ---@field asset_overwrite_behaviour '"overwrite"'|'"error"'? Behaviour when the asset being inserted already exists
 ---@field asset_delete_behaviour '"remove"'|'"garbage"'? Behaviour when the deleting an asset
+---@field wikilink_delete_behaviour '"remove"'|'"garbage"'? Behaviour when the deleting a WikiLink
 ---@field open_behaviour '"buffer"'|'"tab"'|'"split"'|'"vsplit"'? Behaviour when opening buffers
 ---@field strong_format '"**"'|'"__"'? Strong format delimiter
 ---@field emphasis_format '"*"'|'"_"'? Emphasis format delimiter
@@ -85,6 +86,7 @@ local default_config = {
     asset_insert_behaviour = "copy",
     asset_overwrite_behaviour = "error",
     asset_delete_behaviour = "garbage",
+    wikilink_delete_behaviour = "garbage",
     open_behaviour = "buffer",
     strong_format = "**",
     emphasis_format = "*",
@@ -133,6 +135,7 @@ local function validate_config(user_config)
     vim.validate("asset_insert_behaviour", config.asset_insert_behaviour, "string", false, "'copy' or 'move'")
     vim.validate("asset_overwrite_behaviour", config.asset_overwrite_behaviour, "string", false, "'overwrite' or 'error'")
     vim.validate("asset_delete_behaviour", config.asset_delete_behaviour, "string", false, "'remove' or 'garbage'")
+    vim.validate("wikilink_delete_behaviour", config.wikilink_delete_behaviour, "string", false, "'remove' or 'garbage'")
     vim.validate("open_behaviour", config.open_behaviour, "string", false, "'buffer', 'tab', 'split', or 'vsplit'")
     vim.validate("strong_format", config.strong_format, "string", false, "'**' or '__'")
     vim.validate("emphasis_format", config.emphasis_format, "string", false, "'*' or '_'")
@@ -245,6 +248,18 @@ end
 ---Set the current working directory
 function M.set_cwd()
     M.cwd = vim.fs.normalize(vim.fs.dirname(vim.api.nvim_buf_get_name(0)))
+end
+
+---Get the garbage directory
+function M.get_garbage_dir()
+    local garbage_path = vim.fs.normalize(vim.fs.joinpath(M.cwd, "garbage"))
+
+    -- Create directory if it does not exist
+    if vim.fn.isdirectory(garbage_path) == 0 then
+        uv.fs_mkdir(garbage_path, tonumber('777', 8))
+    end
+
+    return garbage_path
 end
 
 ---Open the buffer using the cwd

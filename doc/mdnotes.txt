@@ -121,6 +121,7 @@ The default config for `mdnotes` is shown below,
 	asset_insert_behaviour = "copy",
 	asset_overwrite_behaviour = "error",
 	asset_delete_behaviour = "garbage",
+	wikilink_delete_behaviour = "garbage",
 	open_behaviour = "buffer",
 	strong_format = "**",
 	emphasis_format = "*",
@@ -182,6 +183,12 @@ asset_delete_behaviour = `string`			*mdnotes-asset_delete_behaviour*
 
     Can take the values of `"remove"` or `"garbage"` which defines how the plugin 
     deletes the asset. With `"remove"` it completely deletes the file. With
+    `"garbage"` it will move the file to a folder named `garbage`.
+
+wikilink_delete_behaviour = `string`			*mdnotes-wikilinkt_delete_behaviour*
+
+    Can take the values of `"remove"` or `"garbage"` which defines how the plugin 
+    deletes the WikiLink. With `"remove"` it completely deletes the file. With
     `"garbage"` it will move the file to a folder named `garbage`.
 
 open_behaviour = `string`				*mdnotes-open_behaviour*
@@ -374,7 +381,8 @@ to write the buffers if any command changes buffer contents.
 
 :Mdn wikilink delete					*:Mdn-wikilink-delete*
 
-    Delete WikiLink under the cursor.
+    Delete WikiLink under the cursor from the |mdnotes.cwd|. Behaviour depends on
+    |mdnotes-wikilink_delete_behaviour|.
 
 :Mdn wikilink normalize					*:Mdn-wikilink-normalize*
 
@@ -855,6 +863,12 @@ set_cwd()						*mdnotes.set_cwd()*
 
     Set the current working directory based on the currently opened buffer.
     Used in `set_cwd` in |mdnotes-autocmds|.
+
+get_garbage_dir() 					*mdnotes.get_garbage_dir()*
+
+    Get the `garbage` folder directory. This directory is used when the
+    |mdnotes-asset_delete_behaviour| and |mdnotes-wikilinkt_delete_behaviour|
+    options are set to `"garbage"`.
 
 open_buf({buf}, {opts})					*mdnotes.open_buf()*
 
@@ -2895,10 +2909,13 @@ wikilink.create({opts})					*mdnotes.wikilink.create()*
 
 wikilink.delete()					*mdnotes.wikilink.delete()*
 
-    Delete WikiLink under the cursor.
+    Delete WikiLink under the cursor from the |mdnotes.cwd|. Behaviour depends on
+    |mdnotes-wikilink_delete_behaviour|.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:
+              • {file} (`string?`)
+		file to delete
               • {location} (`MdnInLineLocation?`, defaults to current location)
 		specify location of WikiLink to parse
               • {move_cursor} (`boolean?`, default `true`)
@@ -3040,6 +3057,7 @@ MdnConfig	 					*mdnotes.MdnConfig*
     • {asset_insert_behaviour} (`'"copy"'|'"move"'?`) Behaviour when inserting assets from clipboard
     • {asset_overwrite_behaviour} (`'"overwrite"'|'"error"'?`) Behaviour when the asset being inserted already exists
     • {asset_delete_behaviour} (`'"remove"'|'"garbage"'?`) Behaviour when the deleting an asset
+    • {wikilink_delete_behaviour} (`'"remove"'|'"garbage"'?`) Behaviour when the deleting a WikiLink
     • {open_behaviour} (`'"buffer"'|'"tab"'|'"split"'|'"vsplit"'?`) Behaviour when opening buffers
     • {strong_format} (`'"**"'|'"__"'?`) Strong format delimiter
     • {emphasis_format} (`'"*"'|'"_"'?`) Emphasis format delimiter

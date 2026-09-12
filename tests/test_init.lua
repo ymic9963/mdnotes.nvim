@@ -213,7 +213,7 @@ T['get_files_in_cwd()'] = function()
     ret = child.lua([[
     return Mdn.get_files_in_cwd({ hidden = false, fs_type = "directory"})
     ]])
-    eq(ret, {"assets"})
+    eq(ret, {"assets", "garbage"})
 
     ret = child.lua([[
     return Mdn.get_files_in_cwd({ extension = ".md", hidden = false, fs_type = "file", pattern = "^.*7.*"})
@@ -223,7 +223,7 @@ T['get_files_in_cwd()'] = function()
     ret = child.lua([[
     return Mdn.get_files_in_cwd({ hidden = true })
     ]])
-    eq(ret, {".hidden.md", "assets", "file1.md", "file2.md", "file3.md", "file4.md", "file5.md", "file6.md", "file7.md", "greptest.md"})
+    eq(ret, {".hidden.md", "assets", "file1.md", "file2.md", "file3.md", "file4.md", "file5.md", "file6.md", "file7.md", "garbage", "greptest.md"})
 end
 
 -- Test is based on these rules
