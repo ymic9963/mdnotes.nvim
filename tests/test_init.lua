@@ -206,6 +206,7 @@ T['get_files_in_cwd()'] = function()
     child.cmd([[edit tests/test-data/files/file7.md]])
     local ret = child.lua([[
     Mdn.set_cwd()
+    Mdn.get_garbage_dir()
     return Mdn.get_files_in_cwd({ extension = ".md" })
     ]])
     eq(ret, {
