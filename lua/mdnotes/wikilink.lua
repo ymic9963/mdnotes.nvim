@@ -380,8 +380,47 @@ function M.create(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
-    local insert_format = require('mdnotes.formatting').insert_format
-    insert_format("[[]]", { split_delimiter = true, location = opts.location, move_cursor = opts.move_cursor })
+    local text
+    local wldata = M.parse({ location = opts.location })
+    if wldata == nil then
+        local txtdata = require('mdnotes').get_text({ location = opts.location })
+        text = txtdata.raw
+    else
+        text = wldata.file
+    end
+
+    local temp_qflist = vim.fn.getqflist()
+    local mdn_grep = require('mdnotes').mdn_grep
+
+    mdn_grep(text, require('mdnotes').cwd)
+
+    local wl_list = vim.fn.getqflist()
+    vim.fn.setqflist(temp_qflist)
+
+    -- Create WikiLinks where the text shows up
+    for _,v in ipairs(wl_list) do
+        -- Some external tools don't provide end_col
+        if v.end_col == 0 then
+            v.end_col = v.col + #text
+        end
+        vim.api.nvim_buf_call(v.bufnr, function()
+            -- Ignore text in headings
+            local pattern = require('mdnotes.patterns').heading
+            if not v.text:match(pattern) then
+                local locopts = {
+                    lnum = v.lnum,
+                    col_start = v.col,
+                    col_end = v.end_col
+                }
+
+                local wl = M.parse({ location = locopts })
+                if wl == nil then
+                    local insert_format = require('mdnotes.formatting').insert_format
+                    insert_format("[[]]", { split_delimiter = true, location = locopts, move_cursor = false })
+                end
+            end
+        end)
+    end
 end
 
 ---Delete the current WikiLink and the associated file
@@ -450,6 +489,9 @@ function M.delete(opts)
         else
             vim.notify(("Mdn: Unknown input '%s'"):format(user_input), vim.log.levels.ERROR)
         end
+    else
+        vim.notify(("Mdn: File '%s' does not exist. Continuing with deleting its WikiLinks"):format(wl_path), vim.log.levels.WARN)
+        is_deleted = true
     end
 
     -- Reset the text if a location for it was found

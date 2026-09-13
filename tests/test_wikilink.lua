@@ -194,15 +194,38 @@ T['undo_rename()'] = function()
 end
 
 T['create()'] = function()
-    local lines = {
-        "Test"
-    }
-    create_md_buffer(child, lines)
+    child.cmd([[edit tests/test-data/files/file8.md]])
 
-    child.fn.cursor(1,1)
+    child.fn.cursor(4,1)
+    child.lua([[Mdn.wikilink.create()]])
+    local lines = child.api.nvim_buf_get_lines(child.api.nvim_get_current_buf(), 0, -1, false)
+    eq(lines, {
+        "# File 8",
+        "Used for wikilink.create()",
+        "",
+        "[[uniquename]]",
+        "text before [[uniquename]]",
+        "[[uniquename]]",
+    })
+
+    child.api.nvim_buf_set_lines(0, 0, -1, false, {
+        "# File 8",
+        "Used for wikilink.create()",
+        "",
+        "[[uniquename]]",
+        "text before [[uniquename]]",
+        "uniquename",
+    })
     child.lua([[Mdn.wikilink.create()]])
     lines = child.api.nvim_buf_get_lines(child.api.nvim_get_current_buf(), 0, -1, false)
-    eq(lines[1], "[[Test]]")
+    eq(lines, {
+        "# File 8",
+        "Used for wikilink.create()",
+        "",
+        "[[uniquename]]",
+        "text before [[uniquename]]",
+        "[[uniquename]]",
+    })
 end
 
 T['delete()'] = function()
@@ -258,6 +281,7 @@ T['get_orphans()'] = function()
         "file4.md",
         "file6.md",
         "file7.md",
+        "file8.md",
         "greptest.md",
     })
 end

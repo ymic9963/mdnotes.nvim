@@ -360,7 +360,13 @@ to write the buffers if any command changes buffer contents.
 
 :Mdn wikilink create 					*:Mdn-wikilink-create*
 
-    Create a WikiLink by highlighting or hovering over a word and executing. 
+    Create a WikiLink by highlighting or hovering over a word and executing.
+    This adds `[[` and `]]` around the term across all files in the |mdnotes.cwd|.
+    When used on an existing WikiLink, the same terms containing that WikiLink
+    get converted.
+
+    If executed accidentally, executing |:Mdn-wikilink-delete| would undo the
+    process for all terms.
 
 :Mdn wikilink find_references 				*:Mdn-wikilink-find_references*
 
@@ -381,8 +387,9 @@ to write the buffers if any command changes buffer contents.
 
 :Mdn wikilink delete					*:Mdn-wikilink-delete*
 
-    Delete WikiLink under the cursor from the |mdnotes.cwd|. Behaviour depends on
-    |mdnotes-wikilink_delete_behaviour|.
+    Delete WikiLink under the cursor from the |mdnotes.cwd|.
+    Deletes the file and all WikiLinks leaving behind the text. Behaviour
+    depends on |mdnotes-wikilink_delete_behaviour|.
 
 :Mdn wikilink normalize					*:Mdn-wikilink-normalize*
 
@@ -2893,7 +2900,13 @@ wikilink.undo_rename({opts})				*mdnotes.wikilink.undo_rename()*
 
 wikilink.create({opts})					*mdnotes.wikilink.create()*
 
-    Create a WikiLink by highlighting or hovering over a word and executing. 
+    Create a WikiLink by highlighting or hovering over a word and executing.
+    This adds `[[` and `]]` around the term across all files in the |mdnotes.cwd|.
+    When used on an existing WikiLink, the same terms containing that WikiLink
+    get converted.
+
+    If executed accidentally, executing |:Mdn-wikilink-delete| would undo the
+    process for all terms.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:
@@ -2904,13 +2917,11 @@ wikilink.create({opts})					*mdnotes.wikilink.create()*
               • {write} (`boolean?`, default `true`)
 		write result to the buffer
 
-    Return: ~
-    • (`MdnTableContents?`)
-
 wikilink.delete()					*mdnotes.wikilink.delete()*
 
-    Delete WikiLink under the cursor from the |mdnotes.cwd|. Behaviour depends on
-    |mdnotes-wikilink_delete_behaviour|.
+    Delete WikiLink under the cursor from the |mdnotes.cwd|.
+    Deletes the file and all WikiLinks leaving behind the text. Behaviour
+    depends on |mdnotes-wikilink_delete_behaviour|.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:
