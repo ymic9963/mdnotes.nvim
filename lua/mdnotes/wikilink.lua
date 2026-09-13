@@ -389,10 +389,14 @@ function M.create(opts)
         text = wldata.file
     end
 
+    local buf = vim.api.nvim_get_current_buf()
     local temp_qflist = vim.fn.getqflist()
     local mdn_grep = require('mdnotes').mdn_grep
 
     mdn_grep(text, require('mdnotes').cwd)
+    if vim.api.nvim_get_current_buf() ~= buf then
+        vim.cmd.buffer(buf)
+    end
 
     local wl_list = vim.fn.getqflist()
     vim.fn.setqflist(temp_qflist)
@@ -506,7 +510,7 @@ function M.delete(opts)
             vim.api.nvim_buf_call(v.bufnr, function()
                 local wl = M.parse({  location = {
                     lnum = v.lnum,
-                    col_start = v.col,
+                    cur_col = v.col,
                 }})
                 if wl == nil then return is_deleted, wl_path end
                 vim.api.nvim_buf_set_text(wl.buf, wl.lnum - 1, wl.col_start - 1, wl.lnum - 1, wl.col_end - 1, {wl.file})

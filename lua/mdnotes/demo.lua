@@ -366,10 +366,10 @@ function M.run()
                     "",
                     "## WikiLinks",
                     "- Create WikiLink",
-                    "- Follow [[WikiLink]]",
-                    "- Delete [[WikiLink]]",
-                    "- Find references to [[WikiLink]]",
-                    "- Rename references to [[WikiLink]]",
+                    "- Follow WikiLink",
+                    "- Delete WikiLink",
+                    "- Find references to WikiLink",
+                    "- Rename references to WikiLink",
                     "- Undo the rename",
                 })
             end,
@@ -377,6 +377,7 @@ function M.run()
         },
         {
             action = function()
+                vim.cmd.write()
                 vim.fn.cursor(5, 10)
             end,
             delay = 1000,
@@ -384,12 +385,12 @@ function M.run()
         {
             action = function()
                 vim.api.nvim_feedkeys(":Mdn wikilink create\n", "n", false)
-                vim.cmd.write()
             end,
             delay = 1000,
         },
         {
             action = function()
+                vim.cmd.write()
                 vim.fn.cursor(6, 10)
             end,
             delay = 1000,
@@ -422,7 +423,13 @@ function M.run()
         },
         {
             action = function()
-                vim.api.nvim_feedkeys("\ny\n", "n", false)
+                vim.api.nvim_feedkeys("\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys("y\n", "n", false)
             end,
             delay = 1000,
         },
@@ -448,8 +455,13 @@ function M.run()
         },
         {
             action = function()
-                vim.cmd([[ccl]])
                 vim.api.nvim_set_current_win(demo_win)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.cmd([[ccl]])
             end,
             delay = 1000,
         },
