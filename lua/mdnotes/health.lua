@@ -25,6 +25,11 @@ M.check = function()
         config_ok = false
     end
 
+    if not vim.tbl_contains({"remove", "garbage"}, config.wikilink_delete_behaviour) then
+        vim.health.error(("Mdn: 'wikilink_delete_behaviour' value '%s' is invalid. Can only use 'remove' or 'garbage'. Defaulting to 'garbage'."):format(M.config.wikilink_overwrite_behaviour))
+        config_ok = false
+    end
+
     if not vim.tbl_contains({"buffer", "tab", "split", "vsplit"}, config.open_behaviour) then
         vim.health.error(("'open_behaviour' value '%s' is invalid. Can only use 'buffer', 'tab', 'split', or 'vsplit'. Defaulting to 'buffer'."):format(M.config.open_behaviour))
         config_ok = false

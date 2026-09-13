@@ -553,41 +553,35 @@ function M.delete(opts)
     vim.validate("skip_input", skip_input, "boolean")
     vim.validate("destination", opts.destination, "string", true)
 
+    local destination = opts.destination
     local mdn_il = require('mdnotes.inline_link')
 
     local ildata
-    if opts.destination == nil then
+    if destination == nil then
         ildata = mdn_il.parse({ location = opts.location, keep_pointy_brackets = false }) or {}
-        opts.destination = ildata.destination
-        if opts.destination == nil then return false, nil end
+        if destination == nil then return false, nil end
+        destination = ildata.destination
     end
 
-
-    local asset_path, err = require('mdnotes').get_path_from_destination(opts.destination, true)
+    local asset_path, err = require('mdnotes').get_path_from_destination(destination, true)
     if err ~= nil then return false, nil end
 
-    local behaviour = require('mdnotes').config.asset_delete_behaviour
-    local cwd = require('mdnotes').cwd
-    local garbage_path = vim.fs.normalize(vim.fs.joinpath(cwd, M.get_assets_folder_name(), "../garbage"))
     local asset_name = vim.fs.basename(asset_path)
+    local behaviour = require('mdnotes').config.asset_delete_behaviour
+    local garbage_path = require('mdnotes').get_garbage_dir()
     local is_deleted = false
 
-    local user_input, text1 = "", ""
+    local verb = ""
     local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
     if behaviour == "remove" then
         prompt = "Remove file at '" .. asset_path .. "'. " .. prompt
-        text1 = "Removed"
+        verb = "Removed"
     elseif behaviour == "garbage" then
         prompt = "Move file at '" .. asset_path .. "' to garbage folder. " .. prompt
-        text1 = "Moved"
-        -- Create directory if it does not exist
-        if vim.fn.isdirectory(garbage_path) == 0 then
-            uv.fs_mkdir(garbage_path, tonumber('777', 8))
-        end
-    else
-        return false, nil
+        verb = "Moved"
     end
 
+    local user_input = ""
     if skip_input == false then
         vim.ui.input( { prompt = prompt, }, function(input)
             user_input = input
@@ -603,7 +597,7 @@ function M.delete(opts)
         elseif behaviour == "garbage" then
             uv.fs_rename(asset_path, vim.fs.joinpath(garbage_path, asset_name))
         end
-        vim.notify(("Mdn: %s '%s'"):format(text1, asset_path), vim.log.levels.WARN)
+        vim.notify(("Mdn: %s '%s'"):format(verb, asset_path), vim.log.levels.WARN)
         is_deleted = true
     elseif user_input == 'n' or '' then
         vim.notify(("Mdn: Skipped '%s'"):format(asset_path), vim.log.levels.WARN)
@@ -616,7 +610,7 @@ function M.delete(opts)
         local mdn_grep = require('mdnotes').mdn_grep
         local temp_qflist = vim.fn.getqflist()
 
-        mdn_grep(opts.destination, cwd)
+        mdn_grep(destination, require('mdnotes').cwd)
         local assets_list = vim.fn.getqflist()
 
         for _,v in ipairs(assets_list) do
