@@ -110,7 +110,7 @@ end
 
 local function insert_asset_il_in_buf(asset_path, txtdata)
     -- Create appropriate inline link
-    local iltext = txtdata.raw
+    local iltext = txtdata.raw or ""
     if iltext == "" then
         iltext = vim.fs.basename(asset_path)
     end
@@ -128,7 +128,7 @@ local function insert_asset_il_in_buf(asset_path, txtdata)
         title = ""
     })
 
-    if txtdata.raw == "" then
+    if txtdata.raw == nil then
         vim.api.nvim_buf_set_text(txtdata.buf, txtdata.lnum - 1, txtdata.cur_col - 1, txtdata.lnum - 1, txtdata.cur_col - 1, {asset_il})
     else
         vim.api.nvim_buf_set_text(txtdata.buf, txtdata.lnum - 1, txtdata.col_start - 1, txtdata.lnum - 1, txtdata.col_end, {asset_il})
@@ -148,8 +148,6 @@ function M.insert(opts)
     local silent = opts.silent or false
     local picker = opts.picker or false
     local check_exists = opts.check_exists ~= false
-
-    local txtdata = require('mdnotes').get_text({ location = opts.location })
 
     if asset == nil and picker == true then
         asset = M.picker(function(sel_obj) M.insert({ asset = sel_obj }) end)
@@ -176,6 +174,7 @@ function M.insert(opts)
         return
     end
 
+    local txtdata = require('mdnotes').get_text({ location = opts.location })
     insert_asset_il_in_buf(rel_asset_path, txtdata)
 
     return rel_asset_path
@@ -196,8 +195,6 @@ function M.insert_file(file_path, opts)
     opts = opts or {}
 
     local silent = opts.silent or false
-
-    local txtdata = require('mdnotes').get_text({ location = opts.location })
 
     -- Process file
     local mdnotes_config = require('mdnotes').config
@@ -244,6 +241,7 @@ function M.insert_file(file_path, opts)
         end
     end
 
+    local txtdata = require('mdnotes').get_text({ location = opts.location })
     insert_asset_il_in_buf(rel_asset_path, txtdata)
 
     return rel_asset_path

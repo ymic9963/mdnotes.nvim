@@ -151,6 +151,9 @@ function M.insert(opts)
     end
 
     local txtdata = require('mdnotes').get_text({ location = opts.location })
+    if txtdata.raw == nil then
+        return
+    end
 
     -- Set the line and cursor position
     vim.api.nvim_buf_set_text(txtdata.buf, txtdata.lnum - 1, txtdata.col_start - 1, txtdata.lnum - 1, txtdata.col_end, {'[' .. txtdata.raw .. '](' .. destination .. ')'})

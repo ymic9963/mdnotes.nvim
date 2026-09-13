@@ -384,6 +384,9 @@ function M.create(opts)
     local wldata = M.parse({ location = opts.location })
     if wldata == nil then
         local txtdata = require('mdnotes').get_text({ location = opts.location })
+        if txtdata.raw == nil then
+            return
+        end
         text = txtdata.raw
     else
         text = wldata.file
