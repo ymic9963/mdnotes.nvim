@@ -667,10 +667,6 @@ function M.convert_text_to_gfm(text)
     return text
 end
 
-local tbl = {}
-tbl[5] = "test"
-vim.print(tbl)
-
 ---Parse the fragments in the specified buffer and update buf_fragments
 ---@param buf integer? Buffer number to parse the fragments
 function M.populate_buf_fragments(buf)
