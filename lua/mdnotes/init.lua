@@ -313,6 +313,25 @@ function M.mdn_grep(pattern, path)
     end
 
     vim.cmd.grep({args = {pattern, path}, mods = {emsg_silent = true}})
+
+    if vim.o.grepprg == "internal" then
+        -- do nothing
+    else
+        -- Remove subdirectories from results
+        -- Replicates appending * to cwd
+        local qflist = vim.fn.getqflist()
+        local new_qflist = {}
+        for _, v in ipairs(qflist) do
+            local bufname = vim.api.nvim_buf_get_name(v.bufnr)
+            local dirname = vim.fs.dirname(bufname)
+            if dirname == path then
+                table.insert(new_qflist, v)
+            end
+        end
+
+        vim.fn.setqflist(new_qflist)
+    end
+
 end
 
 ---Check text for valid Markdown syntax

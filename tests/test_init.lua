@@ -32,7 +32,7 @@ T['mdn_grep()'] = function()
     cd tests/test-data/files
     ]])
 
-    child.lua([[ Mdn.mdn_grep("greptest", ".") ]])
+    child.lua([[ Mdn.mdn_grep("greptest", Mdn.cwd) ]])
 
     if child.o.grepprg == "internal" then
         eq(child.fn.getqflist(), { {
@@ -60,6 +60,40 @@ T['mdn_grep()'] = function()
             nr = -1,
             pattern = "",
             text = "greptest",
+            type = "",
+            valid = 1,
+            vcol = 0
+        } })
+    end
+
+    child.lua([[ Mdn.mdn_grep("file1", Mdn.cwd) ]])
+
+    if child.o.grepprg == "internal" then
+        eq(child.fn.getqflist(), { {
+            bufnr = 2,
+            col = 9,
+            end_col = 0,
+            end_lnum = 0,
+            lnum = 2,
+            module = "",
+            nr = -1,
+            pattern = "",
+            text = "this is file1",
+            type = "",
+            valid = 1,
+            vcol = 0
+        } })
+    else
+        eq(child.fn.getqflist(), { {
+            bufnr = 2,
+            col = 9,
+            end_col = 0,
+            end_lnum = 0,
+            lnum = 2,
+            module = "",
+            nr = -1,
+            pattern = "",
+            text = "this is file1",
             type = "",
             valid = 1,
             vcol = 0
