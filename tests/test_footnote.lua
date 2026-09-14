@@ -97,20 +97,18 @@ T['populate_buf_footnotes()'] = function()
     return Mdn.footnote.buf_footnotes
     ]])
     eq(ret, {
+        vim.NIL,
         {
-            buf = 2,
-            footnotes = {
-                {
-                    identifier = "1",
-                    text = "This is footnote 1",
-                    lnum = 4
-                },
-                {
-                    identifier = "2",
-                    text = "This is footnote 2",
-                    lnum = 5
-                },
-            }
+            {
+                identifier = "1",
+                text = "This is footnote 1",
+                lnum = 4
+            },
+            {
+                identifier = "2",
+                text = "This is footnote 2",
+                lnum = 5
+            },
         }
     })
 end

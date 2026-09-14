@@ -9,12 +9,10 @@ local default_ui_select = require('mdnotes').default_ui_select
 ---@field destination string Reference link destination
 ---@field lnum integer Reference link definition line number
 
----@class MdnBufReferenceLinkDefintions
----@field buf integer Buffer number
----@field defintions table<MdnReferenceLinkDefinition>
-
 ---Table containing buffer reference link defintions
----@type table<MdnBufReferenceLinkDefintions>
+---@alias MdnBufReferenceLinkDefintions table<table<MdnReferenceLinkDefinition>>
+
+---@type MdnBufReferenceLinkDefintions
 M.buf_reference_link_definitions = {}
 
 ---@class MdnReferenceLinkData: MdnText
@@ -91,22 +89,9 @@ function M.populate_buf_reference_link_definitions(buf)
     vim.validate("buf", buf, "number", true)
     buf = buf or vim.api.nvim_get_current_buf()
 
-    local rldef_table = M.get_buf_reference_link_definitions({ buf = buf })
-
-    local exists = false
-    for _,v in ipairs(M.buf_reference_link_definitions) do
-        if v.buf == buf then
-            exists = true
-            if v.definitions ~= rldef_table then
-                v.definitions = rldef_table
-            end
-
-            break
-        end
-    end
-
-    if exists == false then
-        table.insert(M.buf_reference_link_definitions, {buf = buf, definitions = rldef_table})
+    local rldef_tbl = M.get_buf_reference_link_definitions({ buf = buf })
+    if M.buf_reference_link_definitions[buf] ~= rldef_tbl then
+        M.buf_reference_link_definitions[buf] = rldef_tbl
     end
 end
 
@@ -163,14 +148,14 @@ function M.get_rl_definition(label, buf)
     vim.validate("buf", buf, "number", true)
     buf = buf or vim.api.nvim_get_current_buf()
 
-    for _, v in pairs(M.buf_reference_link_definitions) do
-        if v.buf == buf then
-            for _, vv in pairs(v.definitions) do
-                if vv.label == string.lower(label) then
-                    return vv
-                end
-            end
-            break
+    local buf_rl_def = M.buf_reference_link_definitions[buf]
+    if buf_rl_def == nil then
+        return
+    end
+
+    for _, v in pairs(buf_rl_def) do
+        if v.label == string.lower(label) then
+            return v
         end
     end
 end

@@ -49,11 +49,9 @@ M.plugin_install_dir = nil
 ---@field gfm string GFM style text of fragment
 ---@field lnum integer Line number of the heading
 
----@class MdnBufFragments
----@field buf integer Buffer number
----@field fragments table<MdnFragment> 
+---@alias MdnBufFragments table<table<MdnFragment>>
 
----@type table<MdnBufFragments>
+---@type MdnBufFragments
 M.buf_fragments = {}
 
 ---Store default function to check for picker override
@@ -669,6 +667,10 @@ function M.convert_text_to_gfm(text)
     return text
 end
 
+local tbl = {}
+tbl[5] = "test"
+vim.print(tbl)
+
 ---Parse the fragments in the specified buffer and update buf_fragments
 ---@param buf integer? Buffer number to parse the fragments
 function M.populate_buf_fragments(buf)
@@ -676,21 +678,8 @@ function M.populate_buf_fragments(buf)
     buf = buf or vim.api.nvim_get_current_buf()
 
     local fragments_tbl = M.get_buf_fragments({buf = buf})
-
-    local exists = false
-    for _,v in ipairs(M.buf_fragments) do
-        if v.buf == buf then
-            exists = true
-            if v.fragments ~= fragments_tbl then
-                v.fragments = fragments_tbl
-            end
-
-            break
-        end
-    end
-
-    if exists == false then
-        table.insert(M.buf_fragments, {buf = buf, fragments = fragments_tbl})
+    if M.buf_fragments[buf] ~= fragments_tbl then
+        M.buf_fragments[buf] = fragments_tbl
     end
 end
 
@@ -730,14 +719,7 @@ function M.find_fragment_in_buf_fragments(buf, fragment)
     vim.validate("buf", buf, "number")
     vim.validate("fragment", fragment, "string")
 
-    local fragments
-    for _, v in ipairs(M.buf_fragments) do
-        if v.buf == buf then
-            fragments = v.fragments
-            break
-        end
-    end
-
+    local fragments = M.buf_fragments[buf]
     if fragments == nil then
         return nil
     end
@@ -1058,13 +1040,8 @@ end
 
 ---Pretty print buf_fragments
 function M.view_fragments()
-    local fragments = {}
-    for _, v in pairs(M.buf_fragments) do
-        if v.buf == vim.api.nvim_get_current_buf() then
-            fragments = v.fragments
-            break
-        end
-    end
+    local buf = vim.api.nvim_get_current_buf()
+    local fragments = M.buf_fragments[buf]
 
     local text = "\t-Heading- | -GFM Style-\n"
     for i, v in pairs(fragments) do

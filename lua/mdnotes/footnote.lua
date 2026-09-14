@@ -7,12 +7,10 @@ local M = {}
 ---@field text string Footnote text
 ---@field lnum integer Footnote line number
 
----@class MdnBufFootnotes
----@field buf integer Buffer number
----@field footnotes table<MdnFootnote>
-
 ---Table containing buffer footnotes
----@type table<MdnBufFootnotes>
+---@alias MdnBufFootnotes table<table<MdnFootnote>>
+
+---@type MdnBufFootnotes
 M.buf_footnotes = {}
 
 ---Counter for footnote number
@@ -94,21 +92,8 @@ function M.populate_buf_footnotes(buf)
     buf = buf or vim.api.nvim_get_current_buf()
 
     local footnotes_tbl = M.get_buf_footnotes({ buf = buf })
-
-    local exists = false
-    for _,v in ipairs(M.buf_footnotes) do
-        if v.buf == buf then
-            exists = true
-            if v.footnotes ~= footnotes_tbl then
-                v.footnotes = footnotes_tbl
-            end
-
-            break
-        end
-    end
-
-    if exists == false then
-        table.insert(M.buf_footnotes, {buf = buf, footnotes = footnotes_tbl})
+    if M.buf_footnotes[buf] ~= footnotes_tbl then
+        M.buf_footnotes[buf] = footnotes_tbl
     end
 end
 
@@ -134,13 +119,9 @@ function M.insert(opts)
 
     if identifier == nil then
         -- Ensure fcounter is at the correct value
-        for _, v in pairs(M.get_buf_footnotes({buf = buf}) or {}) do
-            if v.buf == buf then
-                if M.fcounter ~= #v.footnotes then
-                    M.fcounter = #v.footnotes
-                    break
-                end
-            end
+        local buf_footnotes = M.get_buf_footnotes({buf = buf}) or {}
+        if M.fcounter ~= #buf_footnotes then
+            M.fcounter = #buf_footnotes
         end
 
         -- Set identifier based on fcounter if not given
@@ -180,15 +161,14 @@ function M.get_footnote(identifier, buf)
     vim.validate("buf", buf, "number", true)
 
     buf = buf or vim.api.nvim_get_current_buf()
+    local buf_footnotes = M.buf_footnotes[buf]
+    if buf_footnotes == nil then
+        return
+    end
 
-    for _, v in pairs(M.buf_footnotes) do
-        if v.buf == buf then
-            for _, vv in pairs(v.footnotes) do
-                if vv.identifier == string.lower(identifier) then
-                    return vv
-                end
-            end
-            break
+    for _, v in pairs(buf_footnotes) do
+        if v.identifier == string.lower(identifier) then
+            return v
         end
     end
 end
@@ -295,7 +275,7 @@ function M.update(opts)
         end
     end
 
-    -- Execute changes for reference links
+    -- Execute changes for footnotes
     for _, v in pairs(parsed_tbl) do
         if v.identifier == identifier then
             v.identifier = new_identifier
@@ -303,7 +283,7 @@ function M.update(opts)
         end
     end
 
-    -- Execute changes in reference link definition
+    -- Execute changes in footnote
     footnote.identifier = new_identifier or ""
     footnote.text = new_text or ""
     vim.api.nvim_buf_set_lines(buf, footnote.lnum - 1, footnote.lnum, false, {M.get_footnote_from_obj(footnote)})

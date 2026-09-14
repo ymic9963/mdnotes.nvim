@@ -681,8 +681,9 @@ to write the buffers if any command changes buffer contents.
 							*Mdn-reference_link-populate_buf_reference_link_definitions*
 :Mdn reference_link populate_buf_reference_link_definitions
 
-    Manually parse the reference link definitions in the specified buffer
-    and update |mdnotes.buf_reference_link_definitions|.
+    Update or populate the |mdnotes.reference_link.buf_reference_link_definitions|
+    table containing the fragments for the current buffer. Happens automatically
+    if its option in |mdnotes-autocmds is set.
 
 :Mdn reference_link rename 				*Mdn-reference_link-rename*
 
@@ -731,7 +732,9 @@ to write the buffers if any command changes buffer contents.
 
 :Mdn footnote populate_buf_footnotes 			*Mdn-footnote-populate_buf_footnotes*
 
-    Populate the buf_footnotes table.
+    Update or populate the |mdnotes.buf_footnotes| table containing
+    the fragments for the current buffer. Happens automatically
+    if its option in |mdnotes-autocmds is set.
 
 :Mdn miscellaneous set_cwd				*Mdn-miscellaneous-set_cwd*
 
@@ -813,7 +816,8 @@ plugin_install_dir					*mdnotes.plugin_install_dir*
 
 buf_fragments						*mdnotes.buf_fragments*
 
-    Table of type |mdnotes.MdnBufFragments|.
+    Table of type |mdnotes.MdnBufFragments|. Accessed using
+    `buf_fragments[buf]`.
 
 default_ui_select 					*mdnotes.default_ui_select*		
 
@@ -1523,7 +1527,8 @@ formatting.parse_list_item({line})			*mdnotes.formatting.parse_list_item()*
 
 footnote.buf_footnotes			 		*mdnotes.footnote.buf_footnotes*
 
-    Table of type |mdnotes.MdnBufFootnotes|.
+    Table of type |mdnotes.MdnBufFootnotes|. Accessed using
+    `buf_footnotes[buf]`.
 
 footnote.fcounter 					*mdnotes.footnote.fcounter*
 
@@ -2121,9 +2126,10 @@ patterns						*mdnotes.patterns*
     formats at the current cursor position. The patterns must return start
     and end cursor positions (e.g. `"()~~(.-)~~()"`). See `MdnPatterns`.
 
-reference_link.buf_reference_link_defintions 		*mdnotes.reference_link.buf_reference_link_defintions*
+reference_link.buf_reference_link_definitions 		*mdnotes.reference_link.buf_reference_link_definitions*
 
-    Table of type |mdnotes.MdnBufReferenceLinkDefintions|.
+    Table of type |mdnotes.MdnBufReferenceLinkDefintions|. Accessed using
+    `buf_reference_link_definitions[buf]`.
 
 reference_link.parse({opts})		 		*mdnotes.reference_link.parse()*
 
@@ -2163,7 +2169,7 @@ reference_link.get_buf_reference_link_definitions({opts})
 reference_link.populate_buf_reference_link_definitions({buf})
 
     Parse the reference link definitions in the specified buffer
-    and update |mdnotes.buf_reference_link_definitions|.
+    and update |mdnotes.reference_link.buf_reference_link_definitions|.
 
     Parameters: ~
     • {buf} (`integer?`, defaults to current buffer)
@@ -3036,11 +3042,7 @@ MdnFragment	 					*mdnotes.MdnFragment*
 
 MdnBufFragments	 					*mdnotes.MdnBufFragments*
 
-    Format of the |mdnotes.buf_fragments| table.
-
-    Fields: ~
-    • {buf} (`integer`) Buffer number
-    • {fragments} (`table<MdnFragment>`)
+    Format of the |mdnotes.buf_fragments| table. Alias for `table<table<MdnFragment>>`.
 
 MdnConfig	 					*mdnotes.MdnConfig*
 
@@ -3080,7 +3082,7 @@ MdnAutocmdsConfig	 				*mdnotes.MdnAutocmdsConfig*
     • {table_best_fit} (`boolean`) |mdnotes.table.best_fit()| autocmd for tables
     • {outliner_state_notification} (`boolean`) autocmd for Outliner mode state notification
     • {journal_insert_entry} (`boolean`) autocmd for inserting a journal entry on opening the journal file
-    • {populate_buf_reference_link_definitions} (`boolean`) |mdnotes.reference_link.populate_buf_reference_link_defintions()| autocmd for reference links
+    • {populate_buf_reference_link_definitions} (`boolean`) |mdnotes.reference_link.populate_buf_reference_link_definitions()| autocmd for reference links
     • {populate_buf_footnotes} (`boolean`) |mdnotes.footnote.populate_buf_footnotes()| autocmd for footnotes
 
 MdnGetFilesInCwdOpts 					*mdnotes.MdnGetFilesInCwdOpts*
@@ -3190,11 +3192,8 @@ MdnReferenceLinkDefinition				*mdnotes.MdnReferenceLinkDefinition*
 
 MdnBufReferenceLinkDefinitions				*mdnotes.MdnBufReferenceLinkDefinitions*
 
-    Reference link definition objects per buffer.
-
-    Fields: ~
-    • {buf} (`integer`) Buffer number
-    • {definitions} (`table<MdnReferenceLinkDefinition>`) Table of reference defintion objects
+    Format of the |mdnotes.buf_reference_link_definitions| table. Alias for
+    `table<table<MdnReferenceLinkDefinition>>`.
 
 MdnReferenceLinkData 					*mdnotes.MdnReferenceLinkData*
 

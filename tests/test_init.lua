@@ -282,22 +282,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL,
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
-            },
+            {
+                gfm = "heading-1",
+                hash = "#",
+                lnum = 1,
+                text = "Heading 1"
+            }, {
+                gfm = "heading-2",
+                hash = "##",
+                lnum = 4,
+                text = "Heading 2"
+            }
         }
     })
 
@@ -308,22 +305,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
-            },
+            {
+                gfm = "heading-1",
+                hash = "#",
+                lnum = 1,
+                text = "Heading 1"
+            }, {
+                gfm = "heading-2",
+                hash = "##",
+                lnum = 4,
+                text = "Heading 2"
+            }
         }
     })
 
@@ -335,21 +329,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "###",
-                    text = "Heading 3",
-                    gfm = "heading-3",
-                    lnum = 1,
-                },
+            {
+                hash = "###",
+                text = "Heading 3",
+                gfm = "heading-3",
+                lnum = 1,
             },
         }
     })
 
     --Create another buffer to test if it is added
-    local new_buf = create_md_buffer(child, lines)
+    create_md_buffer(child, lines)
 
     ret = child.lua([[
     local cur_buf = vim.api.nvim_get_current_buf()
@@ -357,33 +349,28 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "###",
-                    text = "Heading 3",
-                    gfm = "heading-3",
-                    lnum = 1,
-                },
+            {
+                hash = "###",
+                text = "Heading 3",
+                gfm = "heading-3",
+                lnum = 1,
             },
         },
         {
-            buf = new_buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
+            {
+                hash = "#",
+                text = "Heading 1",
+                gfm = "heading-1",
+                lnum = 1,
             },
+            {
+                hash = "##",
+                text = "Heading 2",
+                gfm = "heading-2",
+                lnum = 4,
+            }
         }
     })
 end
