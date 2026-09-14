@@ -42,8 +42,11 @@ function M.insert_format(format_char, opts)
     vim.validate("move_cursor", move_cursor, "boolean")
 
     if split_delimiter == nil then split_delimiter = false end
-    local txtdata = require('mdnotes').get_text({ location = opts.location })
     local fi1, fi2 = "", ""
+    local txtdata = require('mdnotes').get_text({ location = opts.location })
+    if txtdata.raw == nil then
+        return
+    end
 
     if split_delimiter == true then
         fi1 = format_char:sub(1,#format_char / 2)

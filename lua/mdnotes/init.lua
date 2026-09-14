@@ -418,9 +418,22 @@ function M.get_text(opts)
         end
     end
 
-    -- Reset markers
-    vim.fn.setpos("'<", {0,1,1,0})
-    vim.fn.setpos("'>", {0,1,1,0})
+    -- Reset markers to starting values
+    vim.fn.setpos("'<", {0,0,0,0})
+    vim.fn.setpos("'>", {0,0,0,0})
+
+    -- Case where get_text() was called on a space character
+    -- while in Normal mode and no prior Visual mode selection occured
+    if col_start == 0 and col_end == 0 then
+        return {
+            buf = buf,
+            lnum = lnum,
+            col_start = col_start,
+            col_end = col_end,
+            cur_col = cur_col,
+            raw = nil,
+        }
+    end
 
     return {
         buf = buf,

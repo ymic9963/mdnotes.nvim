@@ -320,30 +320,26 @@ end
 
 T['normalize()'] = function()
     local lines = {
-        "[test](link/ has spaces/ test)"
+        "[test](link/ has spaces/ test)",
+        "[test](<File#Fragment to GFM>)",
+        "[test](<File with spaces#Fragment to GFM>)"
     }
 
     local buf = create_md_buffer(child, lines)
+
     child.lua([[Mdn.inline_link.normalize()]])
     lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
     eq(lines[1], "[test](<link/ has spaces/ test>)")
-end
-
-T['convert_fragment_to_gfm()'] = function()
-    local lines = {
-        "[test](#Fragment to GFM)",
-        "[test](File#Fragment to GFM)"
-    }
-
-    local buf = create_md_buffer(child, lines)
-    child.lua([[Mdn.inline_link.convert_fragment_to_gfm()]])
-    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
-    eq(lines[1], "[test](#fragment-to-gfm)")
 
     child.fn.cursor(2,1)
-    child.lua([[Mdn.inline_link.convert_fragment_to_gfm()]])
+    child.lua([[Mdn.inline_link.normalize()]])
     lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
     eq(lines[2], "[test](File#fragment-to-gfm)")
+
+    child.fn.cursor(3,1)
+    child.lua([[Mdn.inline_link.normalize()]])
+    lines = child.api.nvim_buf_get_lines(buf, 0, -1, false)
+    eq(lines[3], "[test](<File with spaces#fragment-to-gfm>)")
 end
 
 T['parse_lines()'] = function()

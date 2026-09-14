@@ -6,9 +6,8 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - Toggle inline links with `:Mdn inline_link toggle` which pastes your copied text over the selected text or word under cursor. This command also removes the inline link and saves it to be used later with the same command.
 - Rename the link text with `:Mdn inline_link rename`. 
 - Re-link the inline link with `:Mdn inline_link relink`. 
-- Normalize an inline link with `:Mdn inline_link normalize` to have consistent paths. 
+- Normalize an inline link with `:Mdn inline_link normalize` to have consistent paths and fragment styles. 
 - Validate an inline link without opening it by executing `:Mdn inline_link validate`. This ensures that your inline link has a valid destination.
-- Convert an inline link with a fragment to a [GFM-style fragment](https://github.github.com/gfm/#example-510) with `Mdn inline_link convert_fragment_to_gfm`. Useful when using LSP auto-completion and you want to create valid Markdown links on GitHub.
 
 ## 🖇️ WikiLinks
 - Create a WikiLink by highlighting or hovering over a word and executing `:Mdn wikilink create`.

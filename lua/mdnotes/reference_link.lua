@@ -131,6 +131,9 @@ function M.insert(opts)
     end
 
     local txtdata = require('mdnotes').get_text({ location = opts.location })
+    if txtdata.raw == nil then
+        return
+    end
 
     local link_label = opts.label or ""
     local def_label = opts.label or txtdata.text
