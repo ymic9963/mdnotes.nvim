@@ -10,13 +10,13 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - Validate an inline link without opening it by executing `:Mdn inline_link validate`. This ensures that your inline link has a valid destination.
 
 ## 🖇️ WikiLinks
-- Create a WikiLink by highlighting or hovering over a word and executing `:Mdn wikilink create`.
+- Create WikiLinks in all files by highlighting or hovering over a word and executing `:Mdn wikilink create`. This creates WikiLinks for all identical terms in the current directory.
 - Open WikiLinks with `:Mdn wikilink follow/_hor/_vert {wikilink}`. Use the `_hor/_vert` variations of the command to open WikiLinks in a horizontal or vertical split. Hover over a WikiLink to open. Optionally specify a `{wikilink}` through autocomplete, or through the provided picker.
 
 - Rename link references and the file itself using `:Mdn wikilink rename_references`. Also rename references of the current buffer when not hovering over a Wikilink.
 - Find the references of a Wikilink by hovering over the link and executing `:Mdn wikilink find_references`. Also find references of the current buffer when not hovering over a Wikilink.
 - Undo the most recent reference rename with `:Mdn wikilink undo_rename`. **Only** available when `prefer_lsp = false`.
-- Delete the WikiLink under the cursor with `:Mdn wikilink delete`. 
+- Delete the WikiLink under the cursor from the current directory with `:Mdn wikilink delete`. 
 - Normalize your WikiLink path with `:Mdn wikilink normalize`. 
 - Find orphan pages (pages with no references) in current directory with `:Mdn wikilink find_orphans`. 
 
