@@ -501,19 +501,14 @@ to write the buffers if any command changes buffer contents.
 
 :Mdn inline_link normalize				*:Mdn-inline_link-normalize*
 
-    Execute |vim.fs.normalize()| on the inline link below the cursor and also
-    add < and > if the link contains spaces.
+    Execute |vim.fs.normalize()| on the inline link below the cursor, add `<`
+    and `>` if the link contains spaces, and convert the fragment to a GFM
+    style fragment.
 
 :Mdn inline_link validate				*:Mdn-inline_link-validate*
 
     Validate any inline link without opening it to ensure it has a valid
     destination.
-
-:Mdn inline_link convert_fragment_to_gfm		*:Mdn-inline_link-convert_fragment_to_gfm*
-
-    Convert an inline link with a fragment to a GFM-style fragment. Useful when
-    using LSP auto-completion and you want to create valid Markdown links on
-    GitHub.
 
 :Mdn formatting strong_toggle				*:Mdn-formatting-strong_toggle*
 
@@ -2009,21 +2004,9 @@ inline_link.rename({opts})				*mdnotes.inline_link.rename()*
 
 inline_link.normalize({opts})				*mdnotes.inline_link.normalize()*
 
-    Execute |vim.fs.normalize()| on the inline link below the cursor and also
-    add < and > if the link contains spaces.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {move_cursor} (`boolean?`, default `true`)
-		place cursor where the new inline link was changed
-              • {location} (`MdnInLineLocation?`, defaults to current location)
-		specify location of inline link to normalise
-
-inline_link.convert_fragment_to_gfm({opts})		*mdnotes.inline_link.convert_fragment_to_gfm()*
-
-    Convert the fragment of the inline link under the cursor to GFM-style
-    fragment. Useful when using LSP auto-completion and you want to create
-    valid Markdown links on GitHub.
+    Execute |vim.fs.normalize()| on the inline link below the cursor, add `<`
+    and `>` if the link contains spaces, and convert the fragment to a GFM
+    style fragment.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:

@@ -288,43 +288,22 @@ function M.normalize(opts)
 
     local move_cursor = opts.move_cursor ~= false
     local ildata = M.parse({ location = opts.location })
-    local new_destination = ""
+    if ildata == nil then return end
 
-    if ildata == nil or ildata.text == nil or ildata.destination == nil then return end
-
-    new_destination = vim.fs.normalize(ildata.destination)
-    ildata.destination = new_destination
-    local new_il = M.get_il_from_obj(ildata)
-
-    vim.api.nvim_buf_set_text(ildata.buf, ildata.lnum - 1, ildata.col_start - 1, ildata.lnum - 1, ildata.col_end - 1, {new_il})
-
-    if move_cursor == true then
-        vim.cmd.buffer(ildata.buf)
-        vim.fn.cursor({ildata.lnum, ildata.col_start})
-    end
-end
-
----Convert the fragment of the inline link under the cursor to GFM-style fragment
----@param opts {move_cursor: boolean?, location: MdnInLineLocation?}?
-function M.convert_fragment_to_gfm(opts)
-    vim.validate("opts", opts, "table", true)
-    opts = opts or {}
-
-    local move_cursor = opts.move_cursor ~= false
-    local ildata = M.parse({ location = opts.location })
-    local new_fragment = ""
-    local convert_text_to_gfm = require('mdnotes').convert_text_to_gfm
-
-    if ildata == nil or ildata.text == nil then return end
-
-    -- Remove any < or > from destination
+    -- Remove any < or > from destination and normalize path
     local destination = ildata.destination:gsub("[<>]?", "")
+    destination = vim.fs.normalize(destination)
 
-    local fragment = destination:match(require("mdnotes.patterns").fragment) or ""
-    new_fragment = convert_text_to_gfm(fragment)
-
-    local hash_location = destination:find("#") or 1
-    local new_destination = destination:sub(1, hash_location) .. new_fragment
+    local new_destination = ""
+    local fragment = destination:match(require("mdnotes.patterns").fragment)
+    if fragment ~= nil then
+        local convert_text_to_gfm = require('mdnotes').convert_text_to_gfm
+        local new_fragment = convert_text_to_gfm(fragment)
+        local hash_location = destination:find("#")
+        new_destination = destination:sub(1, hash_location) .. new_fragment
+    else
+        new_destination = destination
+    end
 
     ildata.destination = new_destination
     local new_il = M.get_il_from_obj(ildata)
