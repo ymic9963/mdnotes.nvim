@@ -249,7 +249,7 @@ function M.run()
         --             "- Toggle [link](https://neovim.io/)",
         --             "- Rename [link](https://neovim.io/)",
         --             "- Relink [link](https://neovim.io/)",
-        --             "- Normalize [path](a/../path/to/../normalize)",
+        --             "- Normalize [path](a/../path/to/../normalize#Fragment to normalize)",
         --         })
         --     end,
         --     delay = 1000,
