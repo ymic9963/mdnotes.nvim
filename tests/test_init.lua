@@ -32,7 +32,7 @@ T['mdn_grep()'] = function()
     cd tests/test-data/files
     ]])
 
-    child.lua([[ Mdn.mdn_grep("greptest", ".") ]])
+    child.lua([[ Mdn.mdn_grep("greptest", Mdn.cwd) ]])
 
     if child.o.grepprg == "internal" then
         eq(child.fn.getqflist(), { {
@@ -60,6 +60,40 @@ T['mdn_grep()'] = function()
             nr = -1,
             pattern = "",
             text = "greptest",
+            type = "",
+            valid = 1,
+            vcol = 0
+        } })
+    end
+
+    child.lua([[ Mdn.mdn_grep("file1", Mdn.cwd) ]])
+
+    if child.o.grepprg == "internal" then
+        eq(child.fn.getqflist(), { {
+            bufnr = 10,
+            col = 9,
+            end_col = 14,
+            end_lnum = 2,
+            lnum = 2,
+            module = "",
+            nr = 0,
+            pattern = "",
+            text = "this is file1",
+            type = "",
+            valid = 1,
+            vcol = 0
+        } })
+    else
+        eq(child.fn.getqflist(), { {
+            bufnr = 2,
+            col = 9,
+            end_col = 0,
+            end_lnum = 0,
+            lnum = 2,
+            module = "",
+            nr = -1,
+            pattern = "",
+            text = "this is file1",
             type = "",
             valid = 1,
             vcol = 0
@@ -226,7 +260,8 @@ T['get_files_in_cwd()'] = function()
     ]])
     eq(ret, {
         "assets",
-        "garbage"
+        "garbage",
+        "nested-dir"
     })
 
     ret = child.lua([[
@@ -251,7 +286,8 @@ T['get_files_in_cwd()'] = function()
         "file7.md",
         "file8.md",
         "garbage",
-        "greptest.md"
+        "greptest.md",
+        "nested-dir"
     })
 end
 
@@ -282,22 +318,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL,
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
-            },
+            {
+                gfm = "heading-1",
+                hash = "#",
+                lnum = 1,
+                text = "Heading 1"
+            }, {
+                gfm = "heading-2",
+                hash = "##",
+                lnum = 4,
+                text = "Heading 2"
+            }
         }
     })
 
@@ -308,22 +341,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
-            },
+            {
+                gfm = "heading-1",
+                hash = "#",
+                lnum = 1,
+                text = "Heading 1"
+            }, {
+                gfm = "heading-2",
+                hash = "##",
+                lnum = 4,
+                text = "Heading 2"
+            }
         }
     })
 
@@ -335,21 +365,19 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "###",
-                    text = "Heading 3",
-                    gfm = "heading-3",
-                    lnum = 1,
-                },
+            {
+                hash = "###",
+                text = "Heading 3",
+                gfm = "heading-3",
+                lnum = 1,
             },
         }
     })
 
     --Create another buffer to test if it is added
-    local new_buf = create_md_buffer(child, lines)
+    create_md_buffer(child, lines)
 
     ret = child.lua([[
     local cur_buf = vim.api.nvim_get_current_buf()
@@ -357,33 +385,28 @@ T['populate_buf_fragments()'] = function()
     return Mdn.buf_fragments
     ]])
     eq(ret, {
+        vim.NIL, -- buf 1
         {
-            buf = buf,
-            fragments = {
-                {
-                    hash = "###",
-                    text = "Heading 3",
-                    gfm = "heading-3",
-                    lnum = 1,
-                },
+            {
+                hash = "###",
+                text = "Heading 3",
+                gfm = "heading-3",
+                lnum = 1,
             },
         },
         {
-            buf = new_buf,
-            fragments = {
-                {
-                    hash = "#",
-                    text = "Heading 1",
-                    gfm = "heading-1",
-                    lnum = 1,
-                },
-                {
-                    hash = "##",
-                    text = "Heading 2",
-                    gfm = "heading-2",
-                    lnum = 4,
-                }
+            {
+                hash = "#",
+                text = "Heading 1",
+                gfm = "heading-1",
+                lnum = 1,
             },
+            {
+                hash = "##",
+                text = "Heading 2",
+                gfm = "heading-2",
+                lnum = 4,
+            }
         }
     })
 end

@@ -136,25 +136,23 @@ T['populate_buf_reference_links()'] = function()
     return Mdn.reference_link.buf_reference_link_definitions
     ]])
     eq(ret, {
+        vim.NIL,
         {
-            buf = 2,
-            definitions = {
-                {
-                    destination = "https://github.com/ymic9963/mdnotes.nvim",
-                    label = "mdnotes",
-                    lnum = 13
-                },
-                {
-                    destination = "https://www.neovim.io",
-                    label = "neovim",
-                    lnum = 14
-                },
-                {
-                    destination = "https://example.org",
-                    label = "test",
-                    lnum = 15
-                },
-            }
+            {
+                destination = "https://github.com/ymic9963/mdnotes.nvim",
+                label = "mdnotes",
+                lnum = 13
+            },
+            {
+                destination = "https://www.neovim.io",
+                label = "neovim",
+                lnum = 14
+            },
+            {
+                destination = "https://example.org",
+                label = "test",
+                lnum = 15
+            },
         }
     })
 end

@@ -34,19 +34,10 @@ function M.generate(opts)
     end
 
     local toc = {}
-    local fragments = {}
-    local found = false
     local buf_fragments = require('mdnotes').buf_fragments
+    local fragments = buf_fragments[buf]
 
-    for _, v in ipairs(buf_fragments) do
-        if v.buf == buf then
-            fragments = v.fragments
-            found = true
-            break
-        end
-    end
-
-    if found == false then
+    if fragments == nil then
         if silent == false then
             vim.notify("Mdn: Parsed fragments for buffer '" .. buf .. "' not found", vim.log.levels.ERROR)
         end
