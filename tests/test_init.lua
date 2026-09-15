@@ -70,13 +70,13 @@ T['mdn_grep()'] = function()
 
     if child.o.grepprg == "internal" then
         eq(child.fn.getqflist(), { {
-            bufnr = 2,
+            bufnr = 10,
             col = 9,
-            end_col = 0,
-            end_lnum = 0,
+            end_col = 14,
+            end_lnum = 2,
             lnum = 2,
             module = "",
-            nr = -1,
+            nr = 0,
             pattern = "",
             text = "this is file1",
             type = "",
@@ -260,7 +260,8 @@ T['get_files_in_cwd()'] = function()
     ]])
     eq(ret, {
         "assets",
-        "garbage"
+        "garbage",
+        "nested-dir"
     })
 
     ret = child.lua([[
@@ -285,7 +286,8 @@ T['get_files_in_cwd()'] = function()
         "file7.md",
         "file8.md",
         "garbage",
-        "greptest.md"
+        "greptest.md",
+        "nested-dir"
     })
 end
 
