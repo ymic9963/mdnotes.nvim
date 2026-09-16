@@ -17,7 +17,7 @@ local function stop_demo()
         "# Mdnotes Demo",
         "(Press <ESC> to stop demo)",
     })
-    vim.cmd.write()
+    vim.cmd.write({mods = {silent = true}})
     vim.cmd("bw! " .. demo_buf)
     vim.notify("Mdn: Demo stopped")
 end
@@ -148,9 +148,9 @@ function M.run()
         --             "",
         --             "## Formatting",
         --             "Toggle fenced code blocks:",
-        --             "// fenced",
-        --             "// code block",
-        --             "// example",
+        --             "int main(int argc, char **argv) {",
+        --             "    printf("Hello Neovimmer",
+        --             "}",
         --         })
         --     end,
         --     delay = 1000,
@@ -306,7 +306,7 @@ function M.run()
         --     action = function()
         --         vim.api.nvim_feedkeys(":Mdn inline_link rename\n", "n", false)
         --     end,
-        --     delay = 1000,
+        --     delay = 1t00,
         -- },
         -- {
         --     action = function()
@@ -358,113 +358,211 @@ function M.run()
         -- },
         -- Inline Link Demo End
         -- WikiLink Demo Start
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## WikiLinks",
+        --             "- Create WikiLink",
+        --             "- Follow WikiLink",
+        --             "- Delete WikiLink",
+        --             "- Find references to WikiLink",
+        --             "- Rename references to WikiLink",
+        --             "- Undo the rename",
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd.write({mods = {silent = true}})
+        --         vim.fn.cursor(5, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink create\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd.write({mods = {silent = true}})
+        --         vim.fn.cursor(6, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink follow\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         local buf = vim.api.nvim_get_current_buf()
+        --         require('mdnotes.history').go_back()
+        --         vim.cmd("bw! " .. buf)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(7, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink delete", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("y\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd([[undo]])
+        --         local cwd = require('mdnotes').cwd
+        --         vim.uv.fs_copyfile(vim.fs.joinpath(cwd, "WikiLink-backup.md"), vim.fs.joinpath(cwd, "WikiLink.md"))
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(8, 22)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink find_references\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_set_current_win(demo_win)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd([[ccl]])
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(9, 24)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink rename_references", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Renamed", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(10, 3)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn wikilink undo_rename\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- WikiLink Demo End
+        -- Assets Demo Start
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Assets",
+        --             "(Cannot demo these since they require the system clipboard and other external programs)",
+        --             "- Insert",
+        --             "- Manage",
+        --             "- View",
+        --             "- Delete",
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(6, 2)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- Assets Demo End
+        -- Tables Demo Start
         {
             action = function()
                 vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
                     "# Mdnotes Demo",
                     "(Press <ESC> to stop demo)",
                     "",
-                    "## WikiLinks",
-                    "- Create WikiLink",
-                    "- Follow WikiLink",
-                    "- Delete WikiLink",
-                    "- Find references to WikiLink",
-                    "- Rename references to WikiLink",
-                    "- Undo the rename",
+                    "## Tables",
+                    "Create: ",
+                    "",
+                    "",
+                    "",
                 })
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.cmd.write()
-                vim.fn.cursor(5, 10)
+                vim.cmd.write({mods = {silent = true}})
+                vim.fn.cursor(7, 2)
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn wikilink create\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn table create 5 5\n", "n", false)
             end,
             delay = 1000,
         },
-        {
-            action = function()
-                vim.cmd.write()
-                vim.fn.cursor(6, 10)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn wikilink follow\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                local buf = vim.api.nvim_get_current_buf()
-                require('mdnotes.history').go_back()
-                vim.cmd("bw! " .. buf)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.fn.cursor(7, 10)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn wikilink delete", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("y\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.cmd([[undo]])
-                local cwd = require('mdnotes').cwd
-                vim.uv.fs_copyfile(vim.fs.joinpath(cwd, "WikiLink-backup.md"), vim.fs.joinpath(cwd, "WikiLink.md"))
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.fn.cursor(8, 22)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn wikilink find_references\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_set_current_win(demo_win)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.cmd([[ccl]])
-            end,
-            delay = 1000,
-        },
+        -- Tables Demo End
     })
 end
 

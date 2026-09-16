@@ -290,6 +290,7 @@ function M.rename_references(opts)
     vim.cmd.write({bang = true, mods = {silent = true}})
 
     if silent == false then
+        vim.cmd.redraw()
         vim.notify(("Mdn: Succesfully renamed '%s' links to '%s'"):format(wldata.raw:sub(3, -3), new_name), vim.log.levels.INFO)
     end
 
@@ -347,6 +348,7 @@ function M.undo_rename(opts)
     end
 
     if silent == false then
+        vim.cmd.redraw()
         vim.notify(("Mdn: Undo renaming '%s' to '%s'"):format(newest_old_filename, newest_filename), vim.log.levels.INFO)
     end
 
@@ -379,6 +381,8 @@ end
 function M.create(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
+
+    local cur_pos = vim.fn.getpos(".")
 
     local text
     local wldata = M.parse({ location = opts.location })
@@ -428,6 +432,8 @@ function M.create(opts)
             end
         end)
     end
+
+    vim.fn.setpos(".", cur_pos)
 end
 
 ---Delete the current WikiLink and the associated file

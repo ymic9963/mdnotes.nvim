@@ -278,7 +278,7 @@ toc_depth = `integer`		 			*mdnotes-toc_depth*
 
 user_commands = `table`		 			*mdnotes-user_commands*
 
-    Custom user commands organised within the Mdn namespace unser the
+    Custom user commands organised within the Mdn namespace under the
     `:Mdn user` command. Each function can accept one argument. Example below,
 >lua
      user_commands = {

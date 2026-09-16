@@ -25,16 +25,16 @@ For a complete descriptive feature list with their associated commands, please s
 - **Tables**: Create, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
 - **Reference links**: Open, insert, update, manage, convert from inline links and vice versa
 - **Footnotes**: insert, update, renumber, go-to, find references, and cleanup
+- **ToC**: Generate, update, and browse table of contents
+- Ordered and unordered list continuation and renumbering, with task list toggling
 - Navigate to index file or dynamic journal files
 - Sequential Markdown buffer history
 - Heading navigation
-- Ordered and unordered list continuation and renumbering
-- Task list toggling
-- Generate, update, and browse Table of Contents
 - Outliner mode
 - View statistics of current buffer
+- Uses wildmenu command line completion for a variety of commands
 - Create user commands within the plugin namespace for organisation
-- Supports multiple pickers
+- Supports multiple pickers (`:h mdnotes-pickers`)
 - Most internal functions are exposed as an API for extensibility (`:h mdnotes-api`)
 
 ## 👽 Setup
