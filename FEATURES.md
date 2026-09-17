@@ -31,7 +31,7 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - View an asset in your assets direcory with `:Mdn assets view` or specify it using `:Mdn assets view {asset}`. Currently uses the default Neovim picker.
 
 ## 🫦 Tables
-- See [TABLES.md](TABLES.md) for how `mdnotes` integrates with Neovim to edit tables.
+- See [SUPPLEMENTARY.md](SUPPLEMENTARY.md#editing-tables) for how `mdnotes` integrates with Neovim to edit tables.
 - Create a `ROW` by `COLS` table with `:Mdn table create ROW COLS`.
 - Automatting setting of the best fit of your columns so that all your cells line up (opt-out). Can also be done manually with `:Mdn table best_fit` and can also add padding around your cells (`table_best_fit_padding` in config).
 - Insert columns to the left or right of your current column with `:Mdn table column_insert_left/right`.
@@ -41,6 +41,7 @@ All the features of `mdnotes` and their associated commands are listed and categ
 - Toggle column alignment with `:Mdn table column_alignment_toggle`.
 - Sort the table by the current column ascending or descending with `:Mdn table column_sort_ascending/descending`. Can also use the API to create custom sorting.
 - Insert empty rows to the above or below of your current line with `:Mdn table row_insert_above/below`.
+- Populate a table interactively with `:Mdn table populate`.
 
 ## 🧭 General Navigation
 - Set your index and journal files and go there with `:Mdn index` and `:Mdn journal`.

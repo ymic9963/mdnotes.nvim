@@ -631,6 +631,10 @@ to write the buffers if any command changes buffer contents.
 
    Sort table in descending order by the current column.
 
+:Mdn table populate					*Mdn-table-populate*
+
+   Interactively populate a table.
+
 :Mdn heading previous					*Mdn-header-previous*
 
    Go to the previous Markdown heading. Wraps around.
@@ -2702,6 +2706,15 @@ table.column_sort_descending({opts}) 			*mdnotes.table.column_sort_descending()*
 
     Return: ~
     • (`MdnTableContents`)
+
+table.populate({opts}) 					*mdnotes.table.populate()*
+
+    Interactively populate a table using |vim.ui.input()|. Also highlights the
+    currently affected cell.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {search} (`MdnSearchOpts?`, defaults to under the cursor)
 
 table.parse_columns_to_lines({contents}) 		*mdnotes.table.parse_columns_to_lines()
 

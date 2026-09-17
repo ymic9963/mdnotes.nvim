@@ -22,7 +22,7 @@ For a complete descriptive feature list with their associated commands, please s
 - **Inline links**: open, toggle, rename, relink, and normalize
 - **WikiLinks**: Create, follow, delete, and find or rename references
 - **Assets**: Insert, manage, view, and delete assets
-- **Tables**: Create, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
+- **Tables**: Create, populate, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
 - **Reference links**: Open, insert, update, manage, convert from inline links and vice versa
 - **Footnotes**: insert, update, renumber, go-to, find references, and cleanup
 - Navigate to index file or dynamic journal files

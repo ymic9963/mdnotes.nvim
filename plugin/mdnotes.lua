@@ -153,6 +153,7 @@ local get_commands = function() return {
         column_sort_descending = require("mdnotes.table").column_sort_descending,
         row_insert_above = require("mdnotes.table").row_insert_above,
         row_insert_below = require("mdnotes.table").row_insert_below,
+        populate = require("mdnotes.table").populate,
     },
     history = {
         go_back = require("mdnotes.history").go_back,
