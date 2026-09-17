@@ -342,6 +342,36 @@ T['normalize()'] = function()
     eq(lines[3], "[test](<File with spaces#fragment-to-gfm>)")
 end
 
+T['validate()'] = function()
+    local lines = {
+        "",
+        "[file1](tests/test-data/files/file1 space.md)",
+        "[file1](tests/test-data/files/file.md)",
+        "[file1](tests/test-data/files/file1.md#section-500)",
+        "[file1](tests/test-data/files/file1.md#section-2)",
+    }
+    create_md_buffer(child, lines)
+
+    local ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {false, "no valid inline link detected"})
+
+    child.fn.cursor(2,1)
+    ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {false, "destinations with spaces must be enclosed with < and >"})
+
+    child.fn.cursor(3,1)
+    ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {false, "invalid path"})
+
+    child.fn.cursor(4,1)
+    ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {false, "invalid fragment"})
+
+    child.fn.cursor(5,1)
+    ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {true})
+end
+
 T['parse_lines()'] = function()
     local lines = {
         "# Heading",

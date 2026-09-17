@@ -318,7 +318,7 @@ end
 
 ---Validate inline link without opening it
 ---@param opts {silent: boolean?, location: MdnInLineLocation?}?
----@return boolean valid, string error
+---@return boolean valid, string? error
 function M.validate(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
@@ -344,7 +344,7 @@ function M.validate(opts)
 
     ildata.destination = ildata.destination:gsub("[<>]?", "")
 
-    local _, perror = M.get_path_from_destination(ildata.destination, true)
+    local _, perror = require('mdnotes').get_path_from_destination(ildata.destination, true)
     if perror == -2 then
         if silent == false then
             vim.notify("Mdn: Inline link does not seem to point to a valid path", vim.log.levels.WARN)
@@ -353,7 +353,7 @@ function M.validate(opts)
         return false, "invalid path"
     end
 
-    local _, ferror = M.get_fragment_from_destination(ildata.destination, true)
+    local _, ferror = require('mdnotes').get_fragment_from_destination(ildata.destination, true)
     if ferror ~= nil and ferror ~= -1 then
         if silent == false then
             vim.notify("Mdn: Inline link does not seem to point to a valid fragment", vim.log.levels.WARN)
@@ -366,7 +366,7 @@ function M.validate(opts)
         vim.notify("Mdn: Valid inline link", vim.log.levels.INFO)
     end
 
-    return true, "valid"
+    return true, nil
 end
 
 ---Open a picker to get the inline link from

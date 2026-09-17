@@ -2037,6 +2037,7 @@ inline_link.validate({opts})				*mdnotes.inline_link.validate()*
 
     Return: ~
     • (`boolean`): `true` if valid and `false` when invalid
+    • (`string?`): error text or `nil` on success
 
 inline_link.picker({on_end}, {buf}) 			*mdnotes.inline_link.picker()*
 
