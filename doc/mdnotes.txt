@@ -3072,7 +3072,7 @@ MdnConfig	 					*mdnotes.MdnConfig*
     • {open_behaviour} (`'"buffer"'|'"tab"'|'"split"'|'"vsplit"'?`) Behaviour when opening buffers
     • {strong_format} (`'"**"'|'"__"'?`) Strong format delimiter
     • {emphasis_format} (`'"*"'|'"_"'?`) Emphasis format delimiter
-    • {date_format} (`string?`) Date format when using journal_insert_entry(), see :h strftime()
+    • {date_format} (`string?`) Date format when using journal_insert_entry(), see |strftime()|
     • {prefer_lsp} (`boolean?`) To prefer Markdown LSP functions rather than the mdnotes functions
     • {auto_list_continuation} (`boolean?`) Automatic list continuation
     • {auto_list_renumber} (`boolean?`) Automatic renumbering of ordered lists
@@ -3642,7 +3642,7 @@ Neovim features that are defitely useful when taking any kind of notes. I've lis
 them below, and I'll update this list as I find out more. Contributions are welcome!
 
 							*mdnotes-repeating-last-command*
-Use `@:` to repeat your last used command, see `:h @:`.
+Use `@:` to repeat your last used command, see |@:|.
 
 This one is especially useful if you are executing a toggle command like
 `:Mdn formatting task_list_toggle` when you want to quickly execut the command multiple
@@ -3650,7 +3650,7 @@ times.
 
 							*mdnotes-find-and-replace*
 An easy way to search your entire notes directory without any external tools is `vimgrep`,
-see `:h vimgrep`. It uses the Vim patterns and populates the quickfix list (`:h quickfix`)
+see |vimgrep|. It uses the Vim patterns and populates the quickfix list (|quickfix|)
 which you can then use to execute commands on the results. For example,
 >vim
     :vimgrep /balls/ **
