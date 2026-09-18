@@ -427,15 +427,7 @@ to write the buffers if any command changes buffer contents.
     behaviour is identical to |:Mdn-assets-insert|, except there is no
     autocomplete or picker launched.
 
-:Mdn assets unused_delete				*:Mdn-assets-unused_delete*
-
-    Cleanup unused assets in your |mdnotes-assets_path|. A |vim.ui.input()|
-    will be used to prompt for `y/n/a(ll`) or `cancel` deletion actions. Uses
-    |vim.fs.rm()|.
-
-    Note: Data loss will obviously happen with this command so BE CAREFUL.
-
-:Mdn assets unused_move					*:Mdn-assets-unused_move*
+:Mdn assets move_unused 				*:Mdn-assets-move_unused*
 
     Move unused assets in your |mdnotes-assets_path| to an `../unused_assets/` 
     folder relative to your assets folder. A |vim.ui.input()| will be used 
@@ -1330,20 +1322,7 @@ assets.get_unused_assets({opts}) 			*mdnotes.assets.get_unused_assets()*
     Return: ~
     • (`string[]`): List of asset file names
 
-assets.unused_delete({opts})				*mdnotes.assets.unused_delete()*
-
-    Cleanup unused assets in your |mdnnote-assets_path|. A |vim.ui.input()|
-    will be used to prompt for `y/n/a(ll`) or `cancel` deletion actions. Uses
-    |vim.fs.rm()|.
-
-    Note: Data loss will obviously happen with this command so BE CAREFUL.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {skip_input} (`boolean`, default `false`)
-		skip the input prompt
-
-assets.unused_move()					*mdnotes.assets.unused_move()*
+assets.move_unused					 *mdnotes.assets.move_unused()*
 
     Move unused assets in your |mdnnote-assets_path| to an `../unused_assets/` 
     folder relative to your assets folder. A |vim.ui.input()| will be used 

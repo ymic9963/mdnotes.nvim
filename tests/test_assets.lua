@@ -99,7 +99,7 @@ T['get_unused_assets()'] = function()
     eq(ret, {"asset3.txt"})
 end
 
-T['unused_delete()'] = function()
+T['move_unused()'] = function()
     child.cmd([[edit tests/test-data/files/file7.md]])
     eq(
         vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/assets' })[1]),
@@ -107,27 +107,7 @@ T['unused_delete()'] = function()
     )
     child.lua([[
     Mdn.set_cwd()
-    return Mdn.assets.unused_delete({ skip_input = true })
-    ]])
-    eq(
-        vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/assets' })[1]),
-        nil
-    )
-    child.cmd([[
-    edit tests/test-data/files/assets/asset3.txt
-    write
-    ]])
-end
-
-T['unused_move()'] = function()
-    child.cmd([[edit tests/test-data/files/file7.md]])
-    eq(
-        vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/assets' })[1]),
-        "asset3.txt"
-    )
-    child.lua([[
-    Mdn.set_cwd()
-    return Mdn.assets.unused_move({ skip_input = true })
+    return Mdn.assets.move_unused({ skip_input = true })
     ]])
     eq(
         vim.fs.basename(vim.fs.find("asset3.txt", { path = './tests/test-data/files/unused_assets' })[1]),
