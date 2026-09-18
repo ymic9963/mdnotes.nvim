@@ -10,7 +10,7 @@ local M = {}
 ---@field end_col integer Cell end position
 ---@field lnum integer Line in the table
 
----@alias MdnTableContents table<table<MdnTableCell>> Contents of a table
+---@alias MdnTableContents table<table<MdnTableCell>> Contents of a table which is a list of rows
 ---@alias MdnTableContentsComplex table<table<MdnTableCellComplex>> Complex table data which is just more information about each cell
 
 ---@class MdnTable: MdnMultiLineLocation
@@ -41,12 +41,23 @@ function M.check_table_valid(opts)
         return { valid = false }
     end
 
+    local table_separator_count = 0
     for i = origin_lnum, lower_limit_lnum, -1 do
         local cur_line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
         local count = select(2, cur_line:gsub("|", ""))
         if count < 2 then
             break
         end
+
+        -- Gets initialised here from within the loop
+        if table_separator_count == 0 then
+            table_separator_count = count
+        end
+
+        if table_separator_count ~= count then
+            return { valid = false }
+        end
+
         table_startl = i
     end
 
@@ -66,6 +77,10 @@ function M.check_table_valid(opts)
         local count = select(2, cur_line:gsub("|", ""))
         if count < 2 then
             break
+        end
+
+        if table_separator_count ~= count then
+            return { valid = false }
         end
         table_endl = i
     end
@@ -1001,6 +1016,53 @@ function M.parse_columns_to_lines(contents)
     end
 
     return table_lines
+end
+
+---Interactively populate a table
+---@param opts {search: MdnSearchOpts?}?
+function M.populate(opts)
+    vim.validate("opts", opts, "table", true)
+
+    opts = opts or {}
+    local tdata = M.parse({ search = opts.search })
+    if tdata == nil then
+        -- Errors would already be outputted
+        return
+    end
+
+    local col_locs = M.get_column_locations() or {{0}}
+    local contents = M.convert_contents_to_complex(tdata.contents, col_locs)
+
+    for r, row in ipairs(contents) do
+        -- Ignore delimiter row
+        if r ~= 2 then
+            local hl_offset = 0 -- for cell highlights
+
+            for c, cell in ipairs(row) do
+                local ns = vim.api.nvim_create_namespace("populate_table()")
+                local mark = vim.api.nvim_buf_set_extmark(tdata.buf, ns, tdata.startl + cell.lnum - 2, cell.start_col + hl_offset, {
+                    end_row = tdata.startl + cell.lnum - 2,
+                    end_col = cell.end_col - 1 + hl_offset,
+                    hl_group = "Visual",
+                })
+                vim.cmd.redraw()
+
+                vim.ui.input({ prompt = ("Content for row %s column %s: "):format(r, c), default = cell.text },
+                function(input)
+                    if input == nil then
+                        input = cell.text
+                    end
+                    tdata.contents[r][c] = input
+                end)
+                hl_offset = hl_offset + #tdata.contents[r][c] - #cell.text -- offset for new highlight
+
+                vim.api.nvim_buf_del_extmark(tdata.buf, ns, mark)
+
+                M.write_table(tdata)
+                vim.cmd.redraw()
+            end
+        end
+    end
 end
 
 return M

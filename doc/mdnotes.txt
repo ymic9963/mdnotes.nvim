@@ -427,15 +427,7 @@ to write the buffers if any command changes buffer contents.
     behaviour is identical to |:Mdn-assets-insert|, except there is no
     autocomplete or picker launched.
 
-:Mdn assets unused_delete				*:Mdn-assets-unused_delete*
-
-    Cleanup unused assets in your |mdnotes-assets_path|. A |vim.ui.input()|
-    will be used to prompt for `y/n/a(ll`) or `cancel` deletion actions. Uses
-    |vim.fs.rm()|.
-
-    Note: Data loss will obviously happen with this command so BE CAREFUL.
-
-:Mdn assets unused_move					*:Mdn-assets-unused_move*
+:Mdn assets move_unused 				*:Mdn-assets-move_unused*
 
     Move unused assets in your |mdnotes-assets_path| to an `../unused_assets/` 
     folder relative to your assets folder. A |vim.ui.input()| will be used 
@@ -630,6 +622,10 @@ to write the buffers if any command changes buffer contents.
 :Mdn table column_sort_descending			*Mdn-table-column_sort_descending*
 
    Sort table in descending order by the current column.
+
+:Mdn table populate					*Mdn-table-populate*
+
+   Interactively populate a table.
 
 :Mdn heading previous					*Mdn-header-previous*
 
@@ -1326,20 +1322,7 @@ assets.get_unused_assets({opts}) 			*mdnotes.assets.get_unused_assets()*
     Return: ~
     • (`string[]`): List of asset file names
 
-assets.unused_delete({opts})				*mdnotes.assets.unused_delete()*
-
-    Cleanup unused assets in your |mdnnote-assets_path|. A |vim.ui.input()|
-    will be used to prompt for `y/n/a(ll`) or `cancel` deletion actions. Uses
-    |vim.fs.rm()|.
-
-    Note: Data loss will obviously happen with this command so BE CAREFUL.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {skip_input} (`boolean`, default `false`)
-		skip the input prompt
-
-assets.unused_move()					*mdnotes.assets.unused_move()*
+assets.move_unused					 *mdnotes.assets.move_unused()*
 
     Move unused assets in your |mdnnote-assets_path| to an `../unused_assets/` 
     folder relative to your assets folder. A |vim.ui.input()| will be used 
@@ -2033,6 +2016,7 @@ inline_link.validate({opts})				*mdnotes.inline_link.validate()*
 
     Return: ~
     • (`boolean`): `true` if valid and `false` when invalid
+    • (`string?`): error text or `nil` on success
 
 inline_link.picker({on_end}, {buf}) 			*mdnotes.inline_link.picker()*
 
@@ -2703,6 +2687,15 @@ table.column_sort_descending({opts}) 			*mdnotes.table.column_sort_descending()*
     Return: ~
     • (`MdnTableContents`)
 
+table.populate({opts}) 					*mdnotes.table.populate()*
+
+    Interactively populate a table using |vim.ui.input()|. Also highlights the
+    currently affected cell.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {search} (`MdnSearchOpts?`, defaults to under the cursor)
+
 table.parse_columns_to_lines({contents}) 		*mdnotes.table.parse_columns_to_lines()
 
     Parse columns back to lines.
@@ -3059,7 +3052,7 @@ MdnConfig	 					*mdnotes.MdnConfig*
     • {open_behaviour} (`'"buffer"'|'"tab"'|'"split"'|'"vsplit"'?`) Behaviour when opening buffers
     • {strong_format} (`'"**"'|'"__"'?`) Strong format delimiter
     • {emphasis_format} (`'"*"'|'"_"'?`) Emphasis format delimiter
-    • {date_format} (`string?`) Date format when using journal_insert_entry(), see :h strftime()
+    • {date_format} (`string?`) Date format when using journal_insert_entry(), see |strftime()|
     • {prefer_lsp} (`boolean?`) To prefer Markdown LSP functions rather than the mdnotes functions
     • {auto_list_continuation} (`boolean?`) Automatic list continuation
     • {auto_list_renumber} (`boolean?`) Automatic renumbering of ordered lists
@@ -3629,7 +3622,7 @@ Neovim features that are defitely useful when taking any kind of notes. I've lis
 them below, and I'll update this list as I find out more. Contributions are welcome!
 
 							*mdnotes-repeating-last-command*
-Use `@:` to repeat your last used command, see `:h @:`.
+Use `@:` to repeat your last used command, see |@:|.
 
 This one is especially useful if you are executing a toggle command like
 `:Mdn formatting task_list_toggle` when you want to quickly execut the command multiple
@@ -3637,7 +3630,7 @@ times.
 
 							*mdnotes-find-and-replace*
 An easy way to search your entire notes directory without any external tools is `vimgrep`,
-see `:h vimgrep`. It uses the Vim patterns and populates the quickfix list (`:h quickfix`)
+see |vimgrep|. It uses the Vim patterns and populates the quickfix list (|quickfix|)
 which you can then use to execute commands on the results. For example,
 >vim
     :vimgrep /balls/ **

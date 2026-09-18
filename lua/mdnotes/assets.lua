@@ -367,57 +367,44 @@ function M.get_unused_assets(opts)
     return unused_assets
 end
 
----Move or delete assets
----@param action '"move"'|'"delete"' Select to move or delete the assets
----@param skip_input boolean? Skip the user input prompt
-local function process_unused_assets(action, skip_input)
+---Move unused assets to a new folder
+---@param opts {skip_input: boolean?}?
+function M.move_unused(opts)
     if M.check_assets_path() == false then return end
-    if skip_input == nil then skip_input = false end
+    vim.validate("opts", opts, "table", true)
+
+    opts = opts or {}
+
+    local skip_input = opts.skip_input or false
+    vim.validate("skip_input", skip_input, "boolean")
 
     local cwd = require('mdnotes').cwd
     local unused_assets_path = vim.fs.normalize(vim.fs.joinpath(cwd, M.get_assets_folder_name(), "../unused_assets"))
     local all, cancel = false, false
     local user_input = ""
-    local text1, text2 = "", ""
 
-    if action == "move" then
-        -- Create directory if it does not exist
-        if vim.fn.isdirectory(unused_assets_path) == 0 then
-            uv.fs_mkdir(unused_assets_path, tonumber('777', 8))
-        end
-        text1, text2 = "move", "Moved"
-    elseif action == "delete" then
-        text1, text2 = "delete", "Deleted"
-    else
-        return
+    -- Create directory if it does not exist
+    if vim.fn.isdirectory(unused_assets_path) == 0 then
+        uv.fs_mkdir(unused_assets_path, tonumber('777', 8))
     end
 
-    -- Function to make for-loop easier to read
-    local function action_func(file_assets_path, file_unused_assets_path)
-        if action == "move" then
-            return uv.fs_rename(file_assets_path, file_unused_assets_path)
-        elseif action == "delete" then
-            return vim.fs.rm(file_assets_path)
-        end
-    end
-
-    vim.notify(("Mdn: Starting the %s assets process..."):format(text1), vim.log.levels.INFO)
+    vim.notify("Mdn: Starting the move unused assets process...", vim.log.levels.INFO)
 
     for _, name in ipairs(M.get_unused_assets()) do
         local file_assets_path = vim.fs.joinpath(cwd, M.get_assets_folder_name(), name)
         local file_unused_assets_path = vim.fs.joinpath(unused_assets_path, name)
         if cancel == true then break end
         if all == false and skip_input == false then
-            vim.ui.input( { prompt = ("Mdn: File '%s' not linked anywhere. Type y/n/a(ll) to %s file(s) or 'c' to cancel (default 'n'): "):format(name, text1), }, function(input)
+            vim.ui.input( { prompt = ("Mdn: File '%s' not linked anywhere. Type y/n/a(ll) to move file or 'c' to cancel (default 'n'): "):format(name), }, function(input)
                 user_input = input
             end)
             vim.cmd.echo()
             if user_input == 'y' then
-                action_func(file_assets_path, file_unused_assets_path)
-                vim.notify(("Mdn: %s '%s'. Press any key to continue..."):format(text2, name), vim.log.levels.WARN)
+                uv.fs_rename(file_assets_path, file_unused_assets_path)
+                vim.notify(("Mdn: Moved '%s'. Press any key to continue..."):format(name), vim.log.levels.WARN)
             elseif user_input == 'a' then
                 all = true
-                action_func(file_assets_path, file_unused_assets_path)
+                uv.fs_rename(file_assets_path, file_unused_assets_path)
                 vim.notify(("Mdn: Process will be done for all corresponding files. Press any key to continue..."):format(name), vim.log.levels.WARN)
             elseif user_input == 'c' then
                 cancel = true
@@ -429,40 +416,12 @@ local function process_unused_assets(action, skip_input)
             end
             vim.fn.getchar()
         else
-            action_func(file_assets_path, file_unused_assets_path)
+            uv.fs_rename(file_assets_path, file_unused_assets_path)
         end
     end
 
-    vim.cmd.echo()
-    vim.notify(("Mdn: Finished %s process"):format(text1), vim.log.levels.INFO)
-end
-
----Delete unused assets
----@param opts {skip_input: boolean?}? opts.skip_input: Skip the user input prompt
-function M.unused_delete(opts)
-    if M.check_assets_path() == false then return end
-    vim.validate("opts", opts, "table", true)
-
-    opts = opts or {}
-
-    local skip_input = opts.skip_input or false
-    vim.validate("skip_input", skip_input, "boolean")
-
-    process_unused_assets("delete", skip_input)
-end
-
----Move unused assets to a new folder
----@param opts {skip_input: boolean?}? opts.skip_input: Skip the user input prompt
-function M.unused_move(opts)
-    if M.check_assets_path() == false then return end
-    vim.validate("opts", opts, "table", true)
-
-    opts = opts or {}
-
-    local skip_input = opts.skip_input or false
-    vim.validate("skip_input", skip_input, "boolean")
-
-    process_unused_assets("move", skip_input)
+    vim.cmd.redraw()
+    vim.notify("Mdn: Finished moving unused assets", vim.log.levels.INFO)
 end
 
 ---Download the the HTML of the inline link URL and place it in assets folder

@@ -153,6 +153,7 @@ local get_commands = function() return {
         column_sort_descending = require("mdnotes.table").column_sort_descending,
         row_insert_above = require("mdnotes.table").row_insert_above,
         row_insert_below = require("mdnotes.table").row_insert_below,
+        populate = require("mdnotes.table").populate,
     },
     history = {
         go_back = require("mdnotes.history").go_back,
@@ -161,8 +162,7 @@ local get_commands = function() return {
     },
     assets = {
         insert = require("mdnotes.assets").insert,
-        unused_delete = require("mdnotes.assets").unused_delete,
-        unused_move = require("mdnotes.assets").unused_move,
+        move_unused = require("mdnotes.assets").move_unused,
         open_containing_folder = require("mdnotes.assets").open_containing_folder,
         download_website_html  = require("mdnotes.assets").download_website_html,
         delete  = require("mdnotes.assets").delete,
@@ -181,7 +181,6 @@ local get_commands = function() return {
         relink = require("mdnotes.inline_link").relink,
         normalize = require("mdnotes.inline_link").normalize,
         validate = require("mdnotes.inline_link").validate,
-        convert_fragment_to_gfm = require("mdnotes.inline_link").convert_fragment_to_gfm,
         convert_from_reference = require("mdnotes.inline_link").convert_from_reference
     },
     toc = {
