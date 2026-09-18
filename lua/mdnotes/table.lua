@@ -41,12 +41,23 @@ function M.check_table_valid(opts)
         return { valid = false }
     end
 
+    local table_separator_count = 0
     for i = origin_lnum, lower_limit_lnum, -1 do
         local cur_line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
         local count = select(2, cur_line:gsub("|", ""))
         if count < 2 then
             break
         end
+
+        -- Gets initialised here from within the loop
+        if table_separator_count == 0 then
+            table_separator_count = count
+        end
+
+        if table_separator_count ~= count then
+            return { valid = false }
+        end
+
         table_startl = i
     end
 
@@ -66,6 +77,10 @@ function M.check_table_valid(opts)
         local count = select(2, cur_line:gsub("|", ""))
         if count < 2 then
             break
+        end
+
+        if table_separator_count ~= count then
+            return { valid = false }
         end
         table_endl = i
     end

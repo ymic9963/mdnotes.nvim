@@ -32,9 +32,12 @@ T['check_table_valid()'] = function()
     create_md_buffer(child, lines)
 
     local ret = child.lua([[return Mdn.table.check_table_valid()]])
-    eq(ret.valid, true)
-    eq(ret.startl, 1)
-    eq(ret.endl, 4)
+    eq(ret, {
+        buf = 2,
+        valid = true,
+        startl = 1,
+        endl = 4,
+    })
 
     lines = {
         "|1r1c|1r2c|1r3c|",
@@ -43,9 +46,26 @@ T['check_table_valid()'] = function()
     create_md_buffer(child, lines)
 
     ret = child.lua([[return Mdn.table.check_table_valid()]])
-    eq(ret.valid, false)
-    eq(ret.startl, nil)
-    eq(ret.endl, nil)
+    eq(ret, {
+        valid = false,
+        startl = nil,
+        endl = nil,
+    })
+
+    lines = {
+        "|1r1c1r2c|1r3c|",
+        "|----|----|----|",
+        "|2r1c|2r2c|2r3c|",
+        "|3r1c|3r2c|3r3c|",
+    }
+    create_md_buffer(child, lines)
+
+    ret = child.lua([[return Mdn.table.check_table_valid()]])
+    eq(ret, {
+        valid = false,
+        startl = nil,
+        endl = nil,
+    })
 end
 
 T['write_table()'] = function()
