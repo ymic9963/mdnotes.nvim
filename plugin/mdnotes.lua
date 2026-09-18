@@ -182,7 +182,6 @@ local get_commands = function() return {
         relink = require("mdnotes.inline_link").relink,
         normalize = require("mdnotes.inline_link").normalize,
         validate = require("mdnotes.inline_link").validate,
-        convert_fragment_to_gfm = require("mdnotes.inline_link").convert_fragment_to_gfm,
         convert_from_reference = require("mdnotes.inline_link").convert_from_reference
     },
     toc = {
