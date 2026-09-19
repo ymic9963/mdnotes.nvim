@@ -541,7 +541,7 @@ function M.run()
                     "(Press <ESC> to stop demo)",
                     "",
                     "## Tables",
-                    "Create: ",
+                    "Create and populate: ",
                     "",
                     "",
                     "",
@@ -558,10 +558,58 @@ function M.run()
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn table create 5 5\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn table create 3 3\n", "n", false)
             end,
             delay = 1000,
         },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table populate\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 1\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 2\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 3\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Table\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("contents\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("here\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
         -- Tables Demo End
     })
 end
