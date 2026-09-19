@@ -89,7 +89,7 @@ function M.check_table_valid(opts)
         return { valid = false }
     end
 
-    if (table_endl - table_startl) < 3 then
+    if (table_endl - table_startl + 1) < 3 then
         return { valid = false }
     end
 
