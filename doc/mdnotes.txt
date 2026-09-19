@@ -7,16 +7,23 @@ Authors:
 ==============================================================================
 INTRODUCTION						*mdnotes-intro*
 
-Markdown Notes (mdnotes or Mdn) is a plugin that aims to improve the Neovim
-Markdown note-taking experience, as well as providing ways of extending its
-functionality through the |mdnotes-api|.
+Mdnotes aims to improve the Markdown note-taking experience in Neovim, with
+minimal configuration. It also exposes most of the functions used internally,
+so that the user can create an extensible note-taking experience similar to
+Neovim's philosophy.
 
-See |mdnotes-tips| for some tips when writing notes in out-of-the-box Neovim,
-and |mdnotes-migrating| if migrating from a previous note-taking application.
+Check out |mdnotes-tips| for some tips when writing notes in out-of-the-box
+Neovim, and |mdnotes-migrating| if migrating from a previous note-taking
+application. Execute `:checkhealth mdnotes` to ensure there are no problems
+with your plugin config.
 
 Note: Remember to create backups of your notes if executing any mass
 data-altering commands!
 
+Optional supplementary documentation to read before using is in
+SUPPLEMENTARY.md. It provides information about the rationale behind certain
+design decisions, using LSPs, how mdnotes aims to format your notes, and
+testing.
 ==============================================================================
 QUICK START            	             			*mdnotes-quickstart*
 
