@@ -678,8 +678,8 @@ function M.convert_text_to_gfm(text)
     text = vim.trim(text)
 
     -- Remove any non-alphanumeric
-    -- characters but keep spaces
-    text = text:gsub("[^%w ]+", "")
+    -- characters but keep spaces, dashes
+    text = text:gsub("[^%w -]+", "")
 
     -- Replaces spaces with dashes
     text = text:gsub(" ", "-")
@@ -1005,10 +1005,12 @@ function M.get_fragment_from_destination(destination, check_valid, opts)
                 return fragment, -3, "fragment not parsed"
             end
 
+            local cur_pos = vim.fn.getpos(".")
             local search_ret = 0
             vim.api.nvim_buf_call(buf, function()
                 search_ret = vim.fn.search("# " .. new_fragment)
             end)
+            vim.fn.setpos(".", cur_pos)
 
             if search_ret == 0 then
                 return fragment, -4, "invalid fragment: ".. new_fragment

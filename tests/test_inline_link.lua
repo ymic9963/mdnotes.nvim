@@ -349,6 +349,9 @@ T['validate()'] = function()
         "[file1](tests/test-data/files/file.md)",
         "[file1](tests/test-data/files/file1.md#section-500)",
         "[file1](tests/test-data/files/file1.md#section-2)",
+        "[this file](#test)",
+        "",
+        "# Test with space-and dash"
     }
     create_md_buffer(child, lines)
 
@@ -368,6 +371,10 @@ T['validate()'] = function()
     eq(ret, {false, "invalid fragment"})
 
     child.fn.cursor(5,1)
+    ret = child.lua([[return {Mdn.inline_link.validate()}]])
+    eq(ret, {true})
+
+    child.fn.cursor(6,1)
     ret = child.lua([[return {Mdn.inline_link.validate()}]])
     eq(ret, {true})
 end

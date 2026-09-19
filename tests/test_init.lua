@@ -298,7 +298,7 @@ T['convert_text_to_gfm()'] = function()
     return Mdn.convert_text_to_gfm("text -/';+123    @💩")
     ]])
 
-    eq(ret, "text-123----")
+    eq(ret, "text--123----")
 end
 
 T['populate_buf_fragments()'] = function()
