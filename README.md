@@ -123,7 +123,7 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
     - [academic.nvim](https://github.com/ficd0/academic.nvim) - academic english dictionary
     - [vim-dirtytalk](https://github.com/psliwka/vim-dirtytalk) - programmers dictionary
 
-Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) mdnotes.
+Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdown-related-plugins) that you may want to use alongside (or instead of) mdnotes.
 
 ### ⌨️ Keymaps
  The keymappings below can be enabled by setting `default_keymaps = true` as they are not enabled by default, and they will only be available in Markdown buffers. Place any mdnotes keymaps in a  `<Neovim config path>/after/ftplugin/markdown.lua` file so that they're also Markdown specific. For organisation they use the `<leader>m` prefix.
