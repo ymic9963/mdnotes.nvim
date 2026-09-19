@@ -52,13 +52,6 @@ Using the lazy.nvim package manager,
 ```lua
 {
     "ymic9963/mdnotes.nvim",
-}
-```
-
-and specify your config using `opts = {}` or with a `setup({})` function,
-```lua
-{
-    "ymic9963/mdnotes.nvim",
     opts = {
         -- Config here
     }
