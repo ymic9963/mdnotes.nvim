@@ -677,8 +677,8 @@ function M.convert_text_to_gfm(text)
     text = vim.trim(text)
 
     -- Remove any non-alphanumeric
-    -- characters but keep spaces
-    text = text:gsub("[^%w ]+", "")
+    -- characters but keep spaces, dashes
+    text = text:gsub("[^%w -]+", "")
 
     -- Replaces spaces with dashes
     text = text:gsub(" ", "-")
