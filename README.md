@@ -8,11 +8,11 @@
 ---
 
 ## ☀️ Introduction
-Mdnotes aims to be a lightweight plugin that improves the Markdown note-taking experience in Neovim, with minimal configuration required. It also exposes most of the functions used internally, so that the user can create an extensible note-taking experience similar to Neovim's philosophy.
+Mdnotes aims to improve the Markdown note-taking experience in Neovim, with minimal configuration. It also exposes most of the functions used internally, so that the user can create an extensible note-taking experience similar to Neovim's philosophy.
 
 All documentation is available with `:h mdnotes.txt`. Check out `:h mdnotes-tips` for some tips when writing notes in out-of-the-box Neovim, and `:h mdnotes-migrating` if migrating from a previous note-taking application. Execute `:checkhealth mdnotes` to ensure there are no problems with your plugin config and remember to create backups of your notes if executing any mass data-altering commands!
 
-Optional supplementary documentation to read before using is in [SUPPLEMENTARY.md](SUPPLEMENTARY.md). It provides information about the rationale behind certain design decisions, how mdnotes aims to format your notes, and testing.
+Optional supplementary documentation to read before using is in [SUPPLEMENTARY.md](SUPPLEMENTARY.md). It provides information about the rationale behind certain design decisions, using LSPs, how mdnotes aims to format your notes, and testing.
 
 ## 🔥 Features
 For a complete descriptive feature list with their associated commands, please see [FEATURES.md](FEATURES.md).
@@ -49,13 +49,6 @@ require("mdnotes").setup({
 ```
 
 Using the lazy.nvim package manager,
-```lua
-{
-    "ymic9963/mdnotes.nvim",
-}
-```
-
-and specify your config using `opts = {}` or with a `setup({})` function,
 ```lua
 {
     "ymic9963/mdnotes.nvim",
@@ -115,7 +108,7 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
 - Live Previewer for Markdown files in browser,
     - [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Older, more widely used, has dependencies
     - [live-preview.nvim](https://github.com/brianhuster/live-preview.nvim) - Newer, no dependencies
-- LSP - Please see the [Using LSPs Section](RATIONALE.md#using-lsps) for more information regarding LSPs, but I recommend one of,
+- LSP - Please see the [Using LSPs Section](SUPPLEMENTARY.md#using-lsps) for more information regarding LSPs, but I recommend one of,
     - [markdown-oxide](https://github.com/Feel-ix-343/markdown-oxide)
     - [marksman](https://github.com/artempyanykh/marksman)
     - [iwe-org/iwe](https://github.com/iwe-org/iwe) with [iwe-org/iwe.nvim](https://github.com/iwe-org/iwe.nvim) (See their comparison [here](https://iwe.md/docs/concepts/comparison/#detailed-comparisons))
@@ -123,7 +116,7 @@ For the best Neovim Markdown note-taking experience, I've listed some other proj
     - [academic.nvim](https://github.com/ficd0/academic.nvim) - academic english dictionary
     - [vim-dirtytalk](https://github.com/psliwka/vim-dirtytalk) - programmers dictionary
 
-Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdownrelated-plugins) that you may want to use alongside (or instead of) mdnotes.
+Check out some [Other Cool Markdown-related Plugins](#-other-cool-markdown-related-plugins) that you may want to use alongside (or instead of) mdnotes.
 
 ### ⌨️ Keymaps
  The keymappings below can be enabled by setting `default_keymaps = true` as they are not enabled by default, and they will only be available in Markdown buffers. Place any mdnotes keymaps in a  `<Neovim config path>/after/ftplugin/markdown.lua` file so that they're also Markdown specific. For organisation they use the `<leader>m` prefix.
