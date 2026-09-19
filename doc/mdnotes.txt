@@ -31,12 +31,6 @@ or by using lazy.nvim,
 >lua
     {
 	"ymic9963/mdnotes.nvim",
-    }
-
-Can use either `opts` or `config` with the traditional `setup({}`) function,
->lua
-    {
-	"ymic9963/mdnotes.nvim",
 	opts = {
 	    -- Config here
 	}
