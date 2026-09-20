@@ -160,6 +160,7 @@ end
 T['insert()'] = function()
     local lines = {
         "test",
+        "test2",
     }
     create_md_buffer(child, lines)
 
@@ -168,7 +169,18 @@ T['insert()'] = function()
     lines = child.api.nvim_buf_get_lines(0, 0, -1, false)
     eq(lines, {
         "[test][label]",
+        "test2",
         "[label]: destination"
+    })
+
+    child.fn.cursor(2,1)
+    child.lua([[ Mdn.reference_link.insert({ destination = "destination" }) ]])
+    lines = child.api.nvim_buf_get_lines(0, 0, -1, false)
+    eq(lines, {
+        "[test][label]",
+        "[test2][]",
+        "[label]: destination",
+        "[test2]: destination"
     })
 end
 

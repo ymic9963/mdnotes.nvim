@@ -121,11 +121,11 @@ function M.insert(opts)
     end
 
     local link_label = opts.label or ""
-    local def_label = opts.label or txtdata.text
+    local def_label = opts.label or txtdata.raw
 
     vim.api.nvim_buf_set_text(txtdata.buf, txtdata.lnum - 1, txtdata.col_start - 1, txtdata.lnum - 1, txtdata.col_end, {'[' .. txtdata.raw .. '][' .. link_label .. ']'})
 
-    local rldef = M.get_rl_definition(opts.label)
+    local rldef = M.get_rl_definition(link_label)
     if rldef == nil then
         vim.api.nvim_buf_set_lines(txtdata.buf, vim.fn.line("$"), vim.fn.line("$") + 1, false, {'[' .. def_label .. ']: ' ..  destination})
     end
