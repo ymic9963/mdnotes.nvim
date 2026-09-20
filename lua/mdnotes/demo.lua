@@ -741,6 +741,20 @@ function M.run()
             delay = 1000,
         },
         -- Tables Demo End
+        -- Reference Link Demo Start
+        {
+            action = function()
+                vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+                    "# Mdnotes Demo",
+                    "(Press <ESC> to stop demo)",
+                    "",
+                    "## Reference links",
+                    "",
+                })
+            end,
+            delay = 1000,
+        },
+        -- Reference Link Demo End
     })
 end
 
