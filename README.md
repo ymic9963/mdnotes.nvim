@@ -19,7 +19,7 @@ For a complete descriptive feature list with their associated commands, please s
 
 - Uses subcommands with opt-in default key mappings and opt-out autocmds
 - **Formatting**: Toggling for strong, emphasis, inline code, strikethrough, autolink, fenced code blocks
-- **Inline links**: open, toggle, rename, relink, and normalize
+- **Inline links**: Open, toggle, rename, relink, and normalize
 - **WikiLinks**: Create, follow, delete, and find or rename references
 - **Assets**: Insert, manage, view, and delete assets
 - **Tables**: Create, populate, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
