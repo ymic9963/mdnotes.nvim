@@ -42,11 +42,11 @@ or by using lazy.nvim,
 	    -- Config here
 	}
 	-- or
-	config = {
+	config = function()
 	    require("mdnotes").setup({
 		-- Config here
 	    })
-	}
+	end
     }
 <
 Explanation for the options is given in the next |mdnotes-config| section.
