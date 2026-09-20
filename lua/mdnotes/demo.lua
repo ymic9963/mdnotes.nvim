@@ -749,7 +749,12 @@ function M.run()
                     "(Press <ESC> to stop demo)",
                     "",
                     "## Reference links",
-                    "",
+                    "- Open [link.md](link.md#fragment)",
+                    "- Insert [link](https://neovim.io/)",
+                    "- Delete [link](https://neovim.io/)",
+                    "- Update [link](https://neovim.io/)",
+                    "- Cleanup unused",
+                    "- Convert from inline links"
                 })
             end,
             delay = 1000,
