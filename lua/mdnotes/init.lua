@@ -621,10 +621,9 @@ function M.get_files_in_cwd(opts)
         end
     end
 
-    local cwd = require('mdnotes').cwd
     local hidden = opts.hidden or false
 
-    for name, type in vim.fs.dir(cwd) do
+    for name, type in vim.fs.dir(M.cwd) do
         table.insert(files, name)
 
         if opts.extension ~= nil then
@@ -931,7 +930,6 @@ function M.get_path_from_destination(destination, check_valid, opts)
 
     opts = opts or {} -- unused
 
-    local cwd =require('mdnotes').cwd
     path = destination:match(require("mdnotes.patterns").dest_no_fragment) or ""
 
     if check_valid == true then
@@ -942,7 +940,7 @@ function M.get_path_from_destination(destination, check_valid, opts)
                 return vim.fs.abspath(path), nil
             end
 
-            path = vim.fs.joinpath(cwd, path)
+            path = vim.fs.joinpath(M.cwd, path)
 
             -- If a Markdown file exists then it is a Markdown file
             -- GitHub does not like it when there is no .md in the inline link
@@ -998,9 +996,9 @@ function M.get_fragment_from_destination(destination, check_valid, opts)
                 buf = vim.api.nvim_get_current_buf()
             end
 
-            require('mdnotes').populate_buf_fragments(buf)
+            M.populate_buf_fragments(buf)
 
-            local new_fragment = require('mdnotes').find_fragment_in_buf_fragments(buf, fragment)
+            local new_fragment = M.find_fragment_in_buf_fragments(buf, fragment)
             if new_fragment == nil then
                 return fragment, -3, "fragment not parsed"
             end
@@ -1044,6 +1042,14 @@ function M.open(destination)
     -- Check if the file exists and is a Markdown file
     if path ~= "" and uv.fs_stat(path) and vim.endswith(path, ".md") then
         M.open_buf(path)
+        if fragment ~= "" then
+            -- Navigate to fragment
+            vim.fn.cursor(vim.fn.search("# " .. fragment), 1)
+            vim.api.nvim_input('zz')
+        end
+
+        return vim.api.nvim_get_current_buf()
+    elseif path == "" then -- this would happen in scratch buffers
         if fragment ~= "" then
             -- Navigate to fragment
             vim.fn.cursor(vim.fn.search("# " .. fragment), 1)

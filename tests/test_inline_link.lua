@@ -349,7 +349,7 @@ T['validate()'] = function()
         "[file1](tests/test-data/files/file.md)",
         "[file1](tests/test-data/files/file1.md#section-500)",
         "[file1](tests/test-data/files/file1.md#section-2)",
-        "[this file](#test)",
+        "[this file](#test-with-space-and-dash)",
         "",
         "# Test with space-and dash"
     }
