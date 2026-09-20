@@ -23,8 +23,8 @@ For a complete descriptive feature list with their associated commands, please s
 - **WikiLinks**: Create, follow, delete, and find or rename references
 - **Assets**: Insert, manage, view, and delete assets
 - **Tables**: Create, populate, best-fit, insert/move/duplicate/align/sort columns, and insert empty rows
-- **Reference links**: Open, insert, update, manage, convert from inline links and vice versa
-- **Footnotes**: insert, update, renumber, go-to, find references, and cleanup
+- **Reference links**: Open, insert, delete, update, manage, convert from inline links and vice versa
+- **Footnotes**: Insert, update, renumber, go-to, find references, and cleanup
 - **ToC**: Generate, update, and browse table of contents
 - Ordered and unordered list continuation and renumbering, with task list toggling
 - Navigate to index file or dynamic journal files
