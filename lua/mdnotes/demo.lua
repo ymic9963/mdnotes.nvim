@@ -750,11 +750,11 @@ function M.run()
                     "",
                     "## Reference links",
                     "- Open [link.md](link.md#fragment)",
-                    "- Insert [link](https://neovim.io/)",
-                    "- Delete [link](https://neovim.io/)",
+                    "- Insert new [link](https://neovim.io/)",
+                    "- Insert labels",
                     "- Update [link](https://neovim.io/)",
                     "- Cleanup unused",
-                    "- Convert from inline links"
+                    "- Convert from inline links [convert](https://neovim.io/)"
                 })
             end,
             delay = 1000,
