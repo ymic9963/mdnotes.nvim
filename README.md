@@ -56,11 +56,11 @@ Using the lazy.nvim package manager,
         -- Config here
     }
     -- or
-    config = {
+    config = function()
         require("mdnotes").setup({
             -- Config here
         })
-    }
+    end
 }
 ```
 ### 🌐 Default Config
