@@ -456,14 +456,16 @@ function M.delete(opts)
     end
 
     local cwd = require('mdnotes').cwd
-    local wl_path = vim.fs.normalize(vim.fs.joinpath(cwd, file))
+    local wl_abspath = vim.fs.normalize(vim.fs.joinpath(cwd, file))
 
     -- Append .md to guarantee a file name
-    local wl_name = vim.fs.basename(wl_path)
+    local wl_name = vim.fs.basename(wl_abspath)
     if not vim.endswith(wl_name, ".md") then
         wl_name = wl_name .. ".md"
-        wl_path = wl_path .. ".md"
+        wl_abspath = wl_abspath .. ".md"
     end
+
+    local wl_relpath = vim.fs.relpath(cwd, wl_abspath)
 
     local behaviour = require('mdnotes').config.wikilink_delete_behaviour
     local garbage_path = require('mdnotes').get_garbage_dir()
@@ -472,10 +474,10 @@ function M.delete(opts)
     local verb = ""
     local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
     if behaviour == "remove" then
-        prompt = "Remove file at '" .. wl_path .. "'. " .. prompt
+        prompt = "Remove file at '" .. wl_relpath .. "'. " .. prompt
         verb = "Removed"
     elseif behaviour == "garbage" then
-        prompt = "Move file at '" .. wl_path .. "' to garbage folder. " .. prompt
+        prompt = "Move file at '" .. wl_relpath .. "' to garbage folder. " .. prompt
         verb = "Moved"
     end
 
@@ -490,22 +492,22 @@ function M.delete(opts)
     end
 
     vim.cmd.redraw()
-    if uv.fs_stat(wl_path) then
+    if uv.fs_stat(wl_abspath) then
         if user_input == 'y' then
             if behaviour == "remove" then
-                vim.fs.rm(wl_path)
+                vim.fs.rm(wl_abspath)
             elseif behaviour == "garbage" then
-                uv.fs_rename(wl_path, vim.fs.joinpath(garbage_path, wl_name))
+                uv.fs_rename(wl_abspath, vim.fs.joinpath(garbage_path, wl_name))
             end
-            vim.notify(("Mdn: %s '%s'"):format(verb, wl_path), vim.log.levels.WARN)
+            vim.notify(("Mdn: %s '%s'"):format(verb, wl_relpath), vim.log.levels.WARN)
             is_deleted = true
         elseif user_input == 'n' or '' then
-            vim.notify(("Mdn: Skipped '%s'"):format(wl_path), vim.log.levels.WARN)
+            vim.notify(("Mdn: Skipped '%s'"):format(wl_relpath), vim.log.levels.WARN)
         else
             vim.notify(("Mdn: Unknown input '%s'"):format(user_input), vim.log.levels.ERROR)
         end
     else
-        vim.notify(("Mdn: File '%s' does not exist. Continuing with deleting its WikiLinks"):format(wl_path), vim.log.levels.WARN)
+        vim.notify(("Mdn: File '%s' does not exist. Continuing with deleting its WikiLinks"):format(wl_relpath), vim.log.levels.WARN)
         is_deleted = true
     end
 
@@ -523,7 +525,7 @@ function M.delete(opts)
                     lnum = v.lnum,
                     cur_col = v.col,
                 }})
-                if wl == nil then return is_deleted, wl_path end
+                if wl == nil then return is_deleted, wl_abspath end
                 vim.api.nvim_buf_set_text(wl.buf, wl.lnum - 1, wl.col_start - 1, wl.lnum - 1, wl.col_end - 1, {wl.file})
             end)
         end
@@ -537,7 +539,7 @@ function M.delete(opts)
         end
     end
 
-    return is_deleted, wl_path
+    return is_deleted, wl_abspath
 end
 
 ---Normalize the WikiLink under the cursor
