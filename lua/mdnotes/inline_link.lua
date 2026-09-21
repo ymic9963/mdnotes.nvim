@@ -180,7 +180,7 @@ function M.delete(opts)
 
     if move_cursor == true then
         vim.cmd.buffer(ildata.buf)
-        vim.fn.cursor({vim.fn.line('.'), ildata.col_start - 1})
+        vim.fn.cursor({vim.fn.line('.'), vim.fn.col('.') - 1})
     end
 
     if store == true then
