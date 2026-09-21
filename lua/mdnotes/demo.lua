@@ -684,7 +684,7 @@ function M.run()
                     "Progress: 4/8 (Press <ESC> to stop demo)",
                     "",
                     "## Tables",
-                    "Toggle column alignment:",
+                    "Toggle column alignment (more visible with a renderer):",
                     "",
                     "|Col1 with extra text to showcase alignment|",
                     "|------------------------------------------|",
@@ -1099,10 +1099,16 @@ function M.run()
             action = function()
                 vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
                     "# Mdnotes Demo",
-                    "Fin!"
+                    "Fin!",
                 })
             end,
             delay = 1000,
+        },
+        {
+            action = function()
+                stop_demo()
+            end,
+            delay = 1,
         },
     })
 end
