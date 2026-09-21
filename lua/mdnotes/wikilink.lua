@@ -244,6 +244,7 @@ function M.rename_references(opts)
     end
 
     if silent == false then
+        vim.cmd.redraw()
         vim.notify("Mdn: Renaming references of '" .. wldata.raw:sub(3, -3) .. "' to '" .. new_name .. "'", vim.log.levels.INFO)
     end
 
@@ -271,6 +272,7 @@ function M.rename_references(opts)
 
     if not ret then
         if silent == false then
+            vim.cmd.redraw()
             vim.notify("Mdn: File rename failed", vim.log.levels.ERROR)
         end
 
@@ -290,6 +292,7 @@ function M.rename_references(opts)
     vim.cmd.write({bang = true, mods = {silent = true}})
 
     if silent == false then
+        vim.cmd.redraw()
         vim.notify(("Mdn: Succesfully renamed '%s' links to '%s'"):format(wldata.raw:sub(3, -3), new_name), vim.log.levels.INFO)
     end
 
