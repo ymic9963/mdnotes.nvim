@@ -883,91 +883,176 @@ function M.run()
         -- },
         -- Reference Link Demo End
         -- Footnotes Demo Start
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Footnotes",
+        --             "- Insert  ",
+        --             "- Update [^5]",
+        --             "- Cleanup",
+        --             "- Renumber",
+        --             "- Go to [^5]",
+        --             "- Find references [^5]",
+        --             "",
+        --             "[^5]: Footnote 5",
+        --             "[^unused]: Unused footnote",
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(5, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote insert\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("anew footnote" .. esc, "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(6, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote update\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("100", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("updated text", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(7, 1)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote cleanup\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(8, 1)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote renumber\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(9, 9)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote go_to\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(10, 19)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn footnote find_references\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_set_current_win(demo_win)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd([[ccl]])
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- Footnotes Demo End
+        -- ToC Demo Start
         {
             action = function()
                 vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
                     "# Mdnotes Demo",
                     "(Press <ESC> to stop demo)",
                     "",
-                    "## Footnotes",
-                    "- Insert  ",
-                    "- Update [^5]",
-                    "- Cleanup",
-                    "- Renumber",
-                    "- Go to [^5]",
-                    "- Find references [^5]",
+                    "## Table of Contents",
+                    "- Create and update",
                     "",
-                    "[^5]: Footnote 5",
-                    "[^unused]: Unused footnote",
+                    ""
                 })
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.fn.cursor(5, 10)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote insert\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("anew footnote" .. esc, "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.fn.cursor(6, 10)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote update\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("100", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("updated text", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
                 vim.fn.cursor(7, 1)
+                vim.cmd.write({mods = {silent = true}})
             end,
             delay = 1000,
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote cleanup\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn toc generate\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(5, 1)
+                vim.api.nvim_feedkeys("o## New Heading" .. esc, "n", false)
+                vim.cmd.write({mods = {silent = true}})
             end,
             delay = 1000,
         },
@@ -979,47 +1064,13 @@ function M.run()
         },
         {
             action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote renumber\n", "n", false)
+                vim.api.nvim_feedkeys(":Mdn toc update\n", "n", false)
             end,
             delay = 1000,
         },
-        {
-            action = function()
-                vim.fn.cursor(9, 9)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote go_to\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.fn.cursor(10, 19)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn footnote find_references\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_set_current_win(demo_win)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.cmd([[ccl]])
-            end,
-            delay = 1000,
-        },
-        -- Footnotes Demo End
+        -- ToC Demo End
+        -- Outliner Demo Start
+        -- Outliner Demo End
     })
 end
 
