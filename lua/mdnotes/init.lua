@@ -402,6 +402,12 @@ function M.get_text(opts)
 
     local line = vim.api.nvim_buf_get_lines(buf, lnum - 1, lnum, false)[1]
 
+    -- Case where linewise-visual was used prior to get_text()
+    -- If visual was used then the number would be reset
+    if col_end == 2147483647 then
+        col_end = col_start
+    end
+
     -- Limit the end column value
     -- Visual mode and grep can give end_col values after the line ending
     if col_end > #line then

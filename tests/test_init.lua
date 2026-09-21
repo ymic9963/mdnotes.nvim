@@ -190,6 +190,25 @@ T['get_text()'] = function()
         cur_col = 1,
         raw = "test5",
     })
+
+    -- Test for linewise-visual prior to get_text() in normal mode
+    local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
+    child.api.nvim_feedkeys("V" .. esc, "n", false)
+    ret = child.lua([[
+    return Mdn.get_text({ location = {
+        buf = vim.api.nvim_get_current_buf(),
+        lnum = 1,
+        cur_col = 7,
+    } })
+    ]])
+    eq(ret, {
+        buf = 2,
+        lnum = 1,
+        col_end = 11,
+        col_start = 7,
+        cur_col = 7,
+        raw = "test2",
+    })
 end
 
 T['get_text_in_pattern()'] = function()
