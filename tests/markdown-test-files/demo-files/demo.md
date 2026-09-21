@@ -1,2 +1,2 @@
 # Mdnotes Demo
-(Press <ESC> to stop demo)
+Progress: 0/8 (Press <ESC> to stop demo)
