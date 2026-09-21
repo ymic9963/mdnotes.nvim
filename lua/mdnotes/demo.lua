@@ -2,6 +2,7 @@
 
 local M = {}
 
+local cwd = vim.fs.normalize(vim.fs.abspath("."))
 local demo_running = false
 local demo_buf = 0
 
@@ -13,6 +14,7 @@ local function stop_demo()
     })
     vim.cmd.write({mods = {silent = true}})
     vim.cmd("bw! " .. demo_buf)
+    vim.cmd("cd " .. cwd) -- preserve path
     vim.notify("Mdn: Demo stopped")
 end
 
@@ -275,7 +277,7 @@ function M.run()
         },
         {
             action = function()
-                vim.fn.cursor(6, 11)
+                vim.fn.cursor(6, 10)
             end,
             delay = 1000,
         },
@@ -299,7 +301,7 @@ function M.run()
         },
         {
             action = function()
-                vim.fn.cursor(7, 11)
+                vim.fn.cursor(7, 10)
             end,
             delay = 1000,
         },
@@ -323,7 +325,7 @@ function M.run()
         },
         {
             action = function()
-                vim.fn.cursor(8, 11)
+                vim.fn.cursor(8, 10)
             end,
             delay = 1000,
         },
@@ -347,7 +349,7 @@ function M.run()
         },
         {
             action = function()
-                vim.fn.cursor(9, 14)
+                vim.fn.cursor(9, 13)
             end,
             delay = 1000,
         },
