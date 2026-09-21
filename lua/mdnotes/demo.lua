@@ -536,230 +536,490 @@ function M.run()
         -- },
         -- Assets Demo End
         -- Tables Demo Start
-        {
-            action = function()
-                if best_fit_check == false then
-                    Mdn.config.autocmds.table_best_fit = true
-                end
-                vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
-                    "# Mdnotes Demo",
-                    "(Press <ESC> to stop demo)",
-                    "",
-                    "## Tables",
-                    "Create and populate with automatic best fit:",
-                    "",
-                    "",
-                    "",
-                })
-                if best_fit_check == false then
-                    Mdn.config.autocmds.table_best_fit = false
-                end
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.cmd.write({mods = {silent = true}})
-                vim.fn.cursor(7, 2)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table create 3 3\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys("i" .. esc, "n", false)
-                vim.api.nvim_feedkeys(":Mdn table populate\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("Heading 1\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("Heading 2\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("Heading 3\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("Table\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("contents\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(ctrl_u, "n", false)
-                vim.api.nvim_feedkeys("here\n", "n", false)
-                vim.api.nvim_feedkeys("i" .. esc, "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_buf_set_lines(demo_buf, 0, 5, false, {
-                    "# Mdnotes Demo",
-                    "(Press <ESC> to stop demo)",
-                    "",
-                    "## Tables",
-                    "Move, duplicate, delete, and insert columns:",
-                })
-                vim.fn.cursor(7, 1)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_move_right\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_duplicate\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_delete\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_move_right\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_insert_left\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
-                    "# Mdnotes Demo",
-                    "(Press <ESC> to stop demo)",
-                    "",
-                    "## Tables",
-                    "Sort columns by ascending or descending:",
-                    "",
-                    "|Col1|Col2     |Col3      |",
-                    "|----|---------|----------|",
-                    "|A   |Column   |now       |",
-                    "|C   |ascending|sorted    |",
-                    "|B   |sorted   |descending|",
-                    "|D   |now      |Column    |",
-                    "",
-                })
-                vim.api.nvim_feedkeys("i" .. esc, "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.fn.cursor(7, 1)
-                vim.api.nvim_feedkeys(":Mdn table column_sort_ascending\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_sort_descending\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
-                    "# Mdnotes Demo",
-                    "(Press <ESC> to stop demo)",
-                    "",
-                    "## Tables",
-                    "Toggle column alignment:",
-                    "",
-                    "|Col1 with extra text to showcase alignment|",
-                    "|------------------------------------------|",
-                    "|A                                         |",
-                    "|B                                         |",
-                    "|C                                         |",
-                    "",
-                })
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
-            end,
-            delay = 1000,
-        },
+        -- {
+        --     action = function()
+        --         if best_fit_check == false then
+        --             Mdn.config.autocmds.table_best_fit = true
+        --         end
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Tables",
+        --             "Create and populate with automatic best fit:",
+        --             "",
+        --             "",
+        --             "",
+        --         })
+        --         if best_fit_check == false then
+        --             Mdn.config.autocmds.table_best_fit = false
+        --         end
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd.write({mods = {silent = true}})
+        --         vim.fn.cursor(7, 2)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table create 3 3\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("i" .. esc, "n", false)
+        --         vim.api.nvim_feedkeys(":Mdn table populate\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 1\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 2\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Heading 3\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("Table\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("contents\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("here\n", "n", false)
+        --         vim.api.nvim_feedkeys("i" .. esc, "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, 5, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Tables",
+        --             "Move, duplicate, delete, and insert columns:",
+        --         })
+        --         vim.fn.cursor(7, 1)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_move_right\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_duplicate\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_delete\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_move_right\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_insert_left\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Tables",
+        --             "Sort columns by ascending or descending:",
+        --             "",
+        --             "|Col1|Col2     |Col3      |",
+        --             "|----|---------|----------|",
+        --             "|A   |Column   |now       |",
+        --             "|C   |ascending|sorted    |",
+        --             "|B   |sorted   |descending|",
+        --             "|D   |now      |Column    |",
+        --             "",
+        --         })
+        --         vim.api.nvim_feedkeys("i" .. esc, "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(7, 1)
+        --         vim.api.nvim_feedkeys(":Mdn table column_sort_ascending\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_sort_descending\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Tables",
+        --             "Toggle column alignment:",
+        --             "",
+        --             "|Col1 with extra text to showcase alignment|",
+        --             "|------------------------------------------|",
+        --             "|A                                         |",
+        --             "|B                                         |",
+        --             "|C                                         |",
+        --             "",
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn table column_alignment_toggle\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
         -- Tables Demo End
         -- Reference Link Demo Start
+        -- {
+        --     action = function()
+        --         vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
+        --             "# Mdnotes Demo",
+        --             "(Press <ESC> to stop demo)",
+        --             "",
+        --             "## Reference links",
+        --             "- Open [link.md][]",
+        --             "- Delete [link.md][]",
+        --             "- Insert new link",
+        --             "- Insert labels",
+        --             "- Update [link][]",
+        --             "- Cleanup unused",
+        --             "- Convert from inline links [convert](https://neovim.io/)",
+        --             "",
+        --             "[link.md]: link.md#fragment",
+        --             "[unused]: this is unused"
+        --         })
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(5, 8)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.cmd.write({mods = {silent = true}})
+        --         vim.api.nvim_feedkeys(":Mdn reference_link open\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         require('mdnotes.history').go_back()
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(6, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn reference_link delete\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(7, 14)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.setreg("+", "https://neovim.io/")
+        --         vim.api.nvim_feedkeys(":Mdn reference_link insert\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(8, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn reference_link insert link\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(9, 10)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn reference_link update_definition\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("new link", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(ctrl_u, "n", false)
+        --         vim.api.nvim_feedkeys("new destination", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys("\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(10, 1)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn reference_link cleanup\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.fn.cursor(11, 29)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- {
+        --     action = function()
+        --         vim.api.nvim_feedkeys(":Mdn reference_link convert_from_inline\n", "n", false)
+        --     end,
+        --     delay = 1000,
+        -- },
+        -- Reference Link Demo End
+        -- Footnotes Demo Start
         {
             action = function()
                 vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
                     "# Mdnotes Demo",
                     "(Press <ESC> to stop demo)",
                     "",
-                    "## Reference links",
-                    "- Open [link.md](link.md#fragment)",
-                    "- Insert new [link](https://neovim.io/)",
-                    "- Insert labels",
-                    "- Update [link](https://neovim.io/)",
-                    "- Cleanup unused",
-                    "- Convert from inline links [convert](https://neovim.io/)"
+                    "## Footnotes",
+                    "- Insert  ",
+                    "- Update [^5]",
+                    "- Cleanup",
+                    "- Renumber",
+                    "- Go to [^5]",
+                    "- Find references [^5]",
+                    "",
+                    "[^5]: Footnote 5",
+                    "[^unused]: Unused footnote",
                 })
             end,
             delay = 1000,
         },
-        -- Reference Link Demo End
+        {
+            action = function()
+                vim.fn.cursor(5, 10)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote insert\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys("anew footnote" .. esc, "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(6, 10)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote update\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(ctrl_u, "n", false)
+                vim.api.nvim_feedkeys("100", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys("\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(ctrl_u, "n", false)
+                vim.api.nvim_feedkeys("updated text", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys("\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(7, 1)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote cleanup\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(8, 1)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote renumber\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(9, 9)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote go_to\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.fn.cursor(10, 19)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_feedkeys(":Mdn footnote find_references\n", "n", false)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.api.nvim_set_current_win(demo_win)
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
+                vim.cmd([[ccl]])
+            end,
+            delay = 1000,
+        },
+        -- Footnotes Demo End
     })
 end
 
