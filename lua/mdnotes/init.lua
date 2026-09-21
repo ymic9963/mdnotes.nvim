@@ -220,6 +220,7 @@ local function set_g()
     _G.Mdn.table = require('mdnotes.table')
     _G.Mdn.toc = require('mdnotes.toc')
     _G.Mdn.wikilink = require('mdnotes.wikilink')
+    _G.Mdn.demo = require('mdnotes.demo')
 end
 
 ---Setup function
@@ -401,6 +402,12 @@ function M.get_text(opts)
     local cur_col = locopts.cur_col or vim.fn.col('.')
 
     local line = vim.api.nvim_buf_get_lines(buf, lnum - 1, lnum, false)[1]
+
+    -- Case where linewise-visual was used prior to get_text()
+    -- If visual was used then the number would be reset
+    if col_end == 2147483647 then
+        col_end = col_start
+    end
 
     -- Limit the end column value
     -- Visual mode and grep can give end_col values after the line ending
