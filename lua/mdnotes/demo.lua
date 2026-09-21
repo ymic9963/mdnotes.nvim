@@ -1052,13 +1052,13 @@ function M.run()
             action = function()
                 vim.fn.cursor(5, 1)
                 vim.api.nvim_feedkeys("o## New Heading" .. esc, "n", false)
-                vim.cmd.write({mods = {silent = true}})
             end,
             delay = 1000,
         },
         {
             action = function()
                 vim.fn.cursor(8, 1)
+                vim.cmd.write({mods = {silent = true}})
             end,
             delay = 1000,
         },
