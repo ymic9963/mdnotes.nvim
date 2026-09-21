@@ -763,6 +763,10 @@ to write the buffers if any command changes buffer contents.
 
     View the headings and GFM-style fragments of the current buffer.
 
+:Mdn miscellaneous run_demo 				*Mdn-miscellaneous-run_demo*
+
+    Run Mdnotes demo in the current buffer.
+
 :Mdn user						*Mdn-user*
 
    Access the user defined commands. See |mdnotes-user_commands|.
@@ -1402,6 +1406,10 @@ assets.picker({on_end})					*mdnotes.assets.picker()*
 
     Parameters: ~
     • {on_end}  (`fun(sel_obj): any`) Callback function for when the coroutine finishes
+
+demo.run()						*mdnotes.demo.run()*
+
+    Run Mdnotes demo in the current buffer.
 
 formatting.insert_format({format_char}, {opts})		*mdnotes.formatting.insert_format()*
 
