@@ -144,7 +144,7 @@ function M.insert(opts)
     if move_cursor == true then
         vim.cmd.buffer(buf)
         if footnote_inserted == true then
-            vim.api.nvim_buf_set_mark(buf, "`", vim.fn.line("."), vim.fn.col("."))
+            vim.api.nvim_buf_set_mark(buf, "`", vim.fn.line("."), vim.fn.col("."), {})
             vim.fn.cursor({last_lnum + 1, 5 + #identifier}) -- 5 are the '[^]: ' characters
         else
             vim.fn.cursor({lnum, vim.fn.col('.') + 1})
@@ -203,7 +203,7 @@ function M.go_to(opts)
     end
 
     vim.cmd.buffer(buf)
-    vim.api.nvim_buf_set_mark(buf, "`", vim.fn.line("."), vim.fn.col("."))
+    vim.api.nvim_buf_set_mark(buf, "`", vim.fn.line("."), vim.fn.col("."), {})
     vim.fn.cursor({footnote.lnum, 1})
 end
 
