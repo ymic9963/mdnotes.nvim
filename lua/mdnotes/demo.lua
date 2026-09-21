@@ -1,10 +1,9 @@
 ---@module 'mdnotes.demo'
----
+
 local M = {}
 
 local demo_running = false
 local demo_buf = 0
-local demo_win = 0
 
 local function stop_demo()
     demo_running = false
@@ -50,6 +49,7 @@ function M.run()
     local demo_path = vim.fs.joinpath(require('mdnotes').plugin_install_dir, "tests/markdown-test-files/demo-files/demo.md")
     demo_buf = vim.fn.bufadd(demo_path)
     vim.bo[demo_buf].filetype = "markdown"
+    vim.cmd.buffer(demo_buf)
 
     vim.api.nvim_buf_set_lines(demo_buf, 0, -1, false, {
         "# Mdnotes Demo",
@@ -58,7 +58,6 @@ function M.run()
 
     demo_running = true
     vim.keymap.set("n", "<Esc>", stop_demo, { buffer = demo_buf, })
-    demo_win = vim.api.nvim_open_win(demo_buf, true, {relative='win', row=1, col=3, width=150, height=40})
 
     local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
     local ctrl_u = vim.api.nvim_replace_termcodes("<C-U>", true, false, true)
@@ -458,7 +457,7 @@ function M.run()
         },
         {
             action = function()
-                vim.api.nvim_set_current_win(demo_win)
+                --delay
             end,
             delay = 1000,
         },
@@ -986,12 +985,6 @@ function M.run()
         {
             action = function()
                 vim.api.nvim_feedkeys(":Mdn footnote find_references\n", "n", false)
-            end,
-            delay = 1000,
-        },
-        {
-            action = function()
-                vim.api.nvim_set_current_win(demo_win)
             end,
             delay = 1000,
         },
