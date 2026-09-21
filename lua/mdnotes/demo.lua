@@ -2,7 +2,7 @@
 
 local M = {}
 
-local cwd = vim.fs.normalize(vim.fs.abspath("."))
+local dir = vim.fs.normalize(vim.fs.abspath("."))
 local demo_running = false
 local demo_buf = 0
 
@@ -14,7 +14,7 @@ local function stop_demo()
     })
     vim.cmd.write({mods = {silent = true}})
     vim.cmd("bw! " .. demo_buf)
-    vim.cmd("cd " .. cwd) -- preserve path
+    vim.cmd("cd " .. dir) -- preserve path
     vim.notify("Mdn: Demo stopped")
 end
 
@@ -440,6 +440,11 @@ function M.run()
         {
             action = function()
                 vim.cmd([[undo]])
+            end,
+            delay = 1000,
+        },
+        {
+            action = function()
                 local cwd = require('mdnotes').cwd
                 vim.uv.fs_copyfile(vim.fs.joinpath(cwd, "WikiLink-backup.md"), vim.fs.joinpath(cwd, "WikiLink.md"))
             end,
