@@ -726,6 +726,8 @@ to write the buffers if any command changes buffer contents.
 :Mdn footnote renumber 					*Mdn-footnote-renumber*
 
     Renumber integer footnote identifiers. Ignores non-numerical identifiers.
+    Performs a cleanup of unused footnotes and footnote references before
+    renumbering.
 
 :Mdn footnote populate_buf_footnotes 			*Mdn-footnote-populate_buf_footnotes*
 
@@ -1695,7 +1697,9 @@ footnote.find_references({opts})			*mdnotes.footnote.find_references()*
 
 footnote.renumber({opts}) 				*mdnotes.footnote.renumber()*
 
-    Renumber integer footnote references.
+    Renumber integer footnote identifiers. Ignores non-numerical identifiers.
+    Performs a cleanup of unused footnotes and footnote references before
+    renumbering.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:
