@@ -543,7 +543,8 @@ function M.delete(opts)
         vim.ui.input( { prompt = prompt, }, function(input)
             user_input = input
         end)
-        vim.cmd.echo()
+        vim.cmd([[echo "\n"]])
+        vim.cmd.redraw()
     elseif skip_input == true then
         user_input = 'y'
     end
