@@ -220,7 +220,7 @@ function M.insert_file(file_path, opts)
     if mdnotes_config.asset_insert_behaviour == "copy" then
         if not uv.fs_copyfile(file_path, full_asset_path) then
             if silent == false then
-                vim.notify(("Mdn: File copy failed"), vim.log.levels.ERROR)
+                vim.notify(("Mdn: File copy from '%s' to '%s' failed. Check for any invalid characters and if the paths are correct"):format(file_path, full_asset_path), vim.log.levels.ERROR)
             end
 
             return "file copy/move failed"
@@ -230,7 +230,7 @@ function M.insert_file(file_path, opts)
     elseif mdnotes_config.asset_insert_behaviour == "move" then
         if not uv.fs_rename(file_path, full_asset_path) then
             if silent == false then
-                vim.notify(("Mdn: File move failed"), vim.log.levels.ERROR)
+                vim.notify(("Mdn: File move from '%s' to '%s' failed. Check for any invalid characters and if the paths are correct"):format(file_path, full_asset_path), vim.log.levels.ERROR)
             end
 
             return "file copy/move failed"
