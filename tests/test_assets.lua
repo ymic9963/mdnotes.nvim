@@ -168,6 +168,25 @@ T['delete()'] = function()
         "asset4.txt",
     })
     child.api.nvim_buf_set_lines(0, -2, -1, false, {})
+
+    child.api.nvim_buf_set_lines(0, -1, -1, false, {"[asset4.txt](assets/asset4.txt)"})
+    ret = child.lua([[
+    Mdn.set_cwd()
+    return {
+        Mdn.assets.delete({
+        destination = "assets/asset4.txt",
+        skip_input = true })
+    }]])
+    child.cmd([[write]])
+    eq(lines,  {
+        "# File 7",
+        "",
+        "[asset1](assets/asset1.txt)",
+        "[asset2 spaces](<assets/asset2 spaces.txt>)",
+        "asset4.txt",
+    })
+
+    child.api.nvim_buf_set_lines(0, -2, -1, false, {})
     child.cmd([[write]])
 end
 

@@ -446,7 +446,8 @@ to write the buffers if any command changes buffer contents.
 :Mdn assets delete					*:Mdn-assets-delete*
 
     Delete the asset in the inline link under the cursor. Behaviour depends on
-    |mdnotes-asset_delete_behaviour|.
+    |mdnotes-asset_delete_behaviour|. If the asset does not exist, it deletes
+    all links to that asset leaving behind the link text.
 
 :Mdn assets view {asset}				*:Mdn-assets-view*
 
@@ -1361,7 +1362,8 @@ assets.delete()						*mdnotes.assets.delete()*
 
     Delete the asset in the inline link under the cursor. Removes the inline
     link and keeps the inline link text. Also handles all the references to
-    the deleted asset in the |mdnotes-cwd|.
+    the deleted asset in the |mdnotes-cwd|. If the asset does not exist, it
+    deletes all links to that asset leaving behind the link text.
 
     Parameters: ~
     • {opts}  (`table?`) Optional parameters:

@@ -520,13 +520,37 @@ function M.delete(opts)
         destination = ildata.destination
     end
 
+    local is_deleted = false
+    local ignore = false
+
     local asset_path, err = require('mdnotes').get_path_from_destination(destination, true)
-    if err ~= nil then return false, nil end
+    if err == -2 then
+        -- Case where file is not found but inline link is to a file in assets
+        local uinput = ""
+        if skip_input == false then
+            local prompt = ("File located at '%s' appears to not exist. Continue with deleting its links? Type y/n (default 'n'): "):format(destination)
+            vim.ui.input( { prompt = prompt, }, function(input)
+                uinput = input
+            end)
+            vim.cmd([[echo "\n"]])
+            vim.cmd.redraw()
+        else
+            uinput = 'y'
+        end
+
+        if uinput == 'y' then
+            is_deleted = true
+            ignore = true
+        else
+            return false, nil
+        end
+    elseif err ~= nil then
+        return false, nil
+    end
 
     local asset_name = vim.fs.basename(asset_path)
     local behaviour = require('mdnotes').config.asset_delete_behaviour
     local garbage_path = require('mdnotes').get_garbage_dir()
-    local is_deleted = false
 
     local verb = ""
     local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
@@ -538,29 +562,31 @@ function M.delete(opts)
         verb = "Moved"
     end
 
-    local user_input = ""
-    if skip_input == false then
-        vim.ui.input( { prompt = prompt, }, function(input)
-            user_input = input
-        end)
-        vim.cmd([[echo "\n"]])
-        vim.cmd.redraw()
-    elseif skip_input == true then
-        user_input = 'y'
-    end
-
-    if user_input == 'y' then
-        if behaviour == "remove" then
-            vim.fs.rm(asset_path)
-        elseif behaviour == "garbage" then
-            uv.fs_rename(asset_path, vim.fs.joinpath(garbage_path, asset_name))
+    if ignore == false then
+        local user_input = ""
+        if skip_input == false then
+            vim.ui.input( { prompt = prompt, }, function(input)
+                user_input = input
+            end)
+            vim.cmd([[echo "\n"]])
+            vim.cmd.redraw()
+        elseif skip_input == true then
+            user_input = 'y'
         end
-        vim.notify(("Mdn: %s '%s'"):format(verb, asset_path), vim.log.levels.WARN)
-        is_deleted = true
-    elseif user_input == 'n' or '' then
-        vim.notify(("Mdn: Skipped '%s'"):format(asset_path), vim.log.levels.WARN)
-    else
-        vim.notify(("Mdn: Unknown input '%s'"):format(user_input), vim.log.levels.ERROR)
+
+        if user_input == 'y' then
+            if behaviour == "remove" then
+                vim.fs.rm(asset_path)
+            elseif behaviour == "garbage" then
+                uv.fs_rename(asset_path, vim.fs.joinpath(garbage_path, asset_name))
+            end
+            vim.notify(("Mdn: %s '%s'"):format(verb, asset_path), vim.log.levels.WARN)
+            is_deleted = true
+        elseif user_input == 'n' or '' then
+            vim.notify(("Mdn: Skipped '%s'"):format(asset_path), vim.log.levels.WARN)
+        else
+            vim.notify(("Mdn: Unknown input '%s'"):format(user_input), vim.log.levels.ERROR)
+        end
     end
 
     -- Reset the text if a location for it was found
