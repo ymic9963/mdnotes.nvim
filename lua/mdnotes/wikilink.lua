@@ -518,6 +518,7 @@ function M.delete(opts)
 
         mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", require('mdnotes').cwd)
         local wl_list = vim.fn.getqflist()
+        vim.fn.setqflist(temp_qflist)
 
         for _,v in ipairs(wl_list) do
             vim.api.nvim_buf_call(v.bufnr, function()
@@ -525,14 +526,15 @@ function M.delete(opts)
                     lnum = v.lnum,
                     cur_col = v.col,
                 }})
-                if wl == nil then return is_deleted, wl_abspath end
+                if wl == nil then return end
                 vim.api.nvim_buf_set_text(wl.buf, wl.lnum - 1, wl.col_start - 1, wl.lnum - 1, wl.col_end - 1, {wl.file})
             end)
         end
 
-        vim.fn.setqflist(temp_qflist)
-
         if wldata ~= nil then
+            if vim.api.nvim_get_current_buf() ~= wldata.buf then
+                vim.cmd.buffer(wldata.buf)
+            end
             local new_col = wldata.cur_col - 2
             if new_col < 1 then new_col = 1 end
             vim.fn.cursor({wldata.lnum, new_col})
