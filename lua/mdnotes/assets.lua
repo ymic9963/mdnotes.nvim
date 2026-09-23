@@ -553,7 +553,7 @@ function M.delete(opts)
     local garbage_path = require('mdnotes').get_garbage_dir()
 
     local verb = ""
-    local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
+    local prompt = "Type y/n (default 'n'): "
     if behaviour == "remove" then
         prompt = "Remove file at '" .. asset_path .. "'. " .. prompt
         verb = "Removed"
