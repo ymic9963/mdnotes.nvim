@@ -516,7 +516,7 @@ function M.delete(opts)
     local ildata
     if destination == nil then
         ildata = mdn_il.parse({ location = opts.location, keep_pointy_brackets = false }) or {}
-        if destination == nil then return false, nil end
+        if ildata.destination == nil then return false, nil end
         destination = ildata.destination
     end
 
