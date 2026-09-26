@@ -1168,6 +1168,46 @@ function M.mdn_picker(items, on_end, ui_opts)
     end
 end
 
+local function extract_node_data(node, buf)
+    local ntype = node:type()
+    if ntype == "inline_link" or ntype == "image" then
+        local img_char = ""
+        if ntype == "image" then
+            img_char = "!"
+        end
+
+        local raw = vim.treesitter.get_node_text(node, buf)
+        local row_start, col_start, _, col_end = node:range()
+
+        local text, destination, title = "", "", ""
+        for child in node:iter_children() do
+            local type = child:type()
+            if type == "link_text" or type  == "image_description" then
+                text = vim.treesitter.get_node_text(child, buf)
+            end
+            if type == "link_destination" then
+                destination = vim.treesitter.get_node_text(child, buf)
+            end
+            if type == "link_title" then
+                title = vim.treesitter.get_node_text(child, buf)
+            end
+        end
+
+        return {
+            raw = raw,
+            text = text,
+            destination = destination,
+            title = title,
+            img_char = img_char,
+            lnum = row_start,
+            col_start = col_start,
+            col_end = col_end,
+        }
+    else
+        return nil
+    end
+end
+
 --- AI Assisted
 function M.parse_lines_ts()
     local buf = vim.api.nvim_get_current_buf()
@@ -1179,42 +1219,7 @@ function M.parse_lines_ts()
 
     local node_data = {}
     local function get_node_data_tbl(node)
-        local ntype = node:type()
-        if ntype == "inline_link" or ntype == "image" then
-            local img_char = ""
-            if ntype == "image" then
-                img_char = "!"
-            end
-
-            local raw = vim.treesitter.get_node_text(node, buf)
-            local row_start, col_start, _, col_end = node:range()
-
-            local text, destination, title = "", "", ""
-            for child in node:iter_children() do
-                local type = child:type()
-                if type == "link_text" or type  == "image_description" then
-                    text = vim.treesitter.get_node_text(child, buf)
-                end
-                if type == "link_destination" then
-                    destination = vim.treesitter.get_node_text(child, buf)
-                end
-                if type == "link_title" then
-                    title = vim.treesitter.get_node_text(child, buf)
-                end
-            end
-
-            table.insert(node_data, {
-                raw = raw,
-                text = text,
-                destination = destination,
-                title = title,
-                img_char = img_char,
-                lnum = row_start,
-                col_start = col_start,
-                col_end = col_end,
-            })
-        end
-
+        table.insert(node_data, extract_node_data(node, buf))
         for child in node:iter_children() do
             get_node_data_tbl(child)
         end
@@ -1240,40 +1245,8 @@ function M.parse_ts()
 
     local found
     while node do
-        local ntype = node:type()
-        if ntype == "inline_link" or ntype == "image" then
-            local img_char = ""
-            if ntype == "image" then
-                img_char = "!"
-            end
-
-            local raw = vim.treesitter.get_node_text(node, buf)
-            local row_start, col_start, _, col_end = node:range()
-
-            local text, destination, title = "", "", ""
-            for child in node:iter_children() do
-                local ctype = child:type()
-                if ctype == "link_text" or ctype  == "image_description" then
-                    text = vim.treesitter.get_node_text(child, buf)
-                end
-                if ctype == "link_destination" then
-                    destination = vim.treesitter.get_node_text(child, buf)
-                end
-                if ctype == "link_title" then
-                    title = vim.treesitter.get_node_text(child, buf)
-                end
-            end
-
-            found = {
-                raw = raw,
-                text = text,
-                destination = destination,
-                title = title,
-                img_char = img_char,
-                lnum = row_start,
-                col_start = col_start,
-                col_end = col_end,
-            }
+        found = extract_node_data(node, buf)
+        if found ~= nil then
             break
         end
 
@@ -1288,43 +1261,8 @@ function M.parse_ts2()
 
     local node_data
     local function get_node_data(node)
-        local ntype = node:type()
-        if ntype == "inline_link" or ntype == "image" then
-            local img_char = ""
-            if ntype == "image" then
-                img_char = "!"
-            end
-
-            local raw = vim.treesitter.get_node_text(node, buf)
-            local row_start, col_start, _, col_end = node:range()
-
-            local text, destination, title = "", "", ""
-            for child in node:iter_children() do
-                local ctype = child:type()
-                if ctype == "link_text" or ctype  == "image_description" then
-                    text = vim.treesitter.get_node_text(child, buf)
-                end
-                if ctype == "link_destination" then
-                    destination = vim.treesitter.get_node_text(child, buf)
-                end
-                if ctype == "link_title" then
-                    title = vim.treesitter.get_node_text(child, buf)
-                end
-            end
-
-            node_data = {
-                raw = raw,
-                text = text,
-                destination = destination,
-                title = title,
-                img_char = img_char,
-                lnum = row_start,
-                col_start = col_start,
-                col_end = col_end,
-            }
-
-            return
-        else
+        node_data = extract_node_data(node, buf)
+        if node_data == nil then
             get_node_data(node:parent())
         end
     end
