@@ -77,6 +77,7 @@ M.default_ui_select = vim.ui.select
 ---@field table_best_fit_padding integer? Add padding around cell contents when using tables_best_fit
 ---@field toc_depth integer? Depth shown in the ToC
 ---@field user_commands table? User commands in the Mdn namespace
+---@field parser '"treesitter"'|'"regex"'? Parse text using treesitter or regex
 local default_config = {
     index_file = "",
     journal_file = "",
@@ -95,7 +96,8 @@ local default_config = {
     autocmds = true,
     table_best_fit_padding = 0,
     toc_depth = 4,
-    user_commands = {}
+    user_commands = {},
+    parser = "treesitter"
 }
 
 ---Mdnotes Config for autocmds
@@ -145,6 +147,7 @@ local function validate_config(user_config)
     vim.validate("table_best_fit_padding", config.table_best_fit_padding, "number")
     vim.validate("toc_depth", config.toc_depth, "number")
     vim.validate("user_commands", config.user_commands, "table")
+    vim.validate("parser", config.parser, "string", false, "'regex' or 'treesitter'")
 
     return config
 end
@@ -1166,111 +1169,6 @@ function M.mdn_picker(items, on_end, ui_opts)
 
         return
     end
-end
-
-local function extract_node_data(node, buf)
-    local ntype = node:type()
-    if ntype == "inline_link" or ntype == "image" then
-        local img_char = ""
-        if ntype == "image" then
-            img_char = "!"
-        end
-
-        local raw = vim.treesitter.get_node_text(node, buf)
-        local row_start, col_start, _, col_end = node:range()
-
-        local text, destination, title = "", "", ""
-        for child in node:iter_children() do
-            local type = child:type()
-            if type == "link_text" or type  == "image_description" then
-                text = vim.treesitter.get_node_text(child, buf)
-            end
-            if type == "link_destination" then
-                destination = vim.treesitter.get_node_text(child, buf)
-            end
-            if type == "link_title" then
-                title = vim.treesitter.get_node_text(child, buf)
-            end
-        end
-
-        return {
-            raw = raw,
-            text = text,
-            destination = destination,
-            title = title,
-            img_char = img_char,
-            lnum = row_start,
-            col_start = col_start,
-            col_end = col_end,
-        }
-    else
-        return nil
-    end
-end
-
---- AI Assisted
-function M.parse_lines_ts()
-    local buf = vim.api.nvim_get_current_buf()
-    local parser, err = vim.treesitter.get_parser(buf, "markdown")
-    if parser == nil or err ~= nil then
-        vim.print(err)
-        return
-    end
-
-    local node_data = {}
-    local function get_node_data_tbl(node)
-        table.insert(node_data, extract_node_data(node, buf))
-        for child in node:iter_children() do
-            get_node_data_tbl(child)
-        end
-    end
-
-    -- Get LanguageTrees of parser
-    local languagetrees = parser:children()
-    for _, languagetree in pairs(languagetrees) do
-        -- Get TSTrees of LanguageTree
-        local tstrees = languagetree:trees()
-        for _, tstree in ipairs(tstrees) do
-            get_node_data_tbl(tstree:root())
-        end
-    end
-
-    vim.print(node_data)
-end
-
---- AI Assisted
-function M.parse_ts()
-    local buf = vim.api.nvim_get_current_buf()
-    local node = vim.treesitter.get_node({ignore_injections = false})
-
-    local found
-    while node do
-        found = extract_node_data(node, buf)
-        if found ~= nil then
-            break
-        end
-
-        node = node:parent()
-    end
-
-    vim.print(found)
-end
-
-function M.parse_ts2()
-    local buf = vim.api.nvim_get_current_buf()
-
-    local node_data
-    local function get_node_data(node)
-        node_data = extract_node_data(node, buf)
-        if node_data == nil then
-            get_node_data(node:parent())
-        end
-    end
-
-    local node = vim.treesitter.get_node({ignore_injections = false})
-    get_node_data(node)
-
-    vim.print(node_data)
 end
 
 return M
