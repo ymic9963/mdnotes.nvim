@@ -79,13 +79,25 @@ function M.parse_ts(opts)
     opts = opts or {}
 
     local inline_link = opts.inline_link
+    local keep_pointy_brackets = opts.keep_pointy_brackets ~= false
+    local locopts = opts.location or {}
+    local buf = locopts.buf or vim.api.nvim_get_current_buf()
+    local lnum = locopts.lnum or vim.fn.line('.')
+    local col_start = locopts.col_start or vim.fn.col('.')
+    local col_end = locopts.col_end or vim.fn.col('.')
+    local cur_col = locopts.cur_col or math.floor((col_start + col_end) / 2)
 
-    vim.validate("inline_link", inline_link, "string", false)
+    vim.validate("inline_link", inline_link, "string", true)
+    vim.validate("keep_pointy_brackets", keep_pointy_brackets, "boolean")
 
     local node, source
-    if inline_link == nil then
-        node = vim.treesitter.get_node({ignore_injections = false})
-        source = vim.api.nvim_get_current_buf()
+    if opts.location ~= nil or inline_link == nil then
+        node = vim.treesitter.get_node({
+            bufnr = buf,
+            ignore_injections = false,
+            pos = {lnum - 1, col_start - 1}
+        })
+        source = buf
     else
         local parser = vim.treesitter.get_string_parser(inline_link, "markdown_inline")
         local tree = parser:parse()[1]
@@ -102,6 +114,23 @@ function M.parse_ts(opts)
     end
 
     get_node_data(node)
+
+    -- Remove any < or > from destination
+    if keep_pointy_brackets == false then
+        node_data.destination = node_data.destination:gsub("[<>]?", "")
+    end
+
+    -- Remove quotes
+    if node_data.title ~= "" then
+        node_data.title = node_data.title:sub(2, #node_data.title - 1)
+    end
+
+    node_data.buf = buf
+    node_data.cur_col = cur_col
+
+    node_data.col_end = node_data.col_end + 1
+    node_data.col_start = node_data.col_start + 1
+    node_data.lnum = node_data.lnum + 1
 
     return node_data
 end
@@ -502,29 +531,6 @@ function M.parse_lines(opts)
     return parse_lines(pattern, M.parse, {location = opts.location, no_duplicates = opts.no_duplicates, get_func = get_func})
 end
 
----@param opts {move_cursor: boolean?, location: MdnInLineLocation}?
-function M.convert_from_reference(opts)
-    vim.validate("opts", opts, "table", true)
-    opts = opts or {}
-
-    local move_cursor = opts.move_cursor ~= false
-    local rldata = require('mdnotes.reference_link').parse({ location = opts.location })
-    if rldata == nil or rldata.text == nil then return end
-
-    local rldef = require('mdnotes.reference_link').get_rl_definition(rldata.label, rldata.buf)
-    if rldef == nil then
-        vim.notify("Mdn: No definition found for label '" .. rldata.label .. "'. If you can confirm it exists, try writing the buf or parse definitions manually with ':Mdn reference_link populate_buf_reference_links'", vim.log.levels.ERROR)
-        return
-    end
-
-    vim.api.nvim_buf_set_text(rldata.buf, rldata.lnum - 1, rldata.col_start - 1, rldata.lnum - 1, rldata.col_end - 1, {'[' .. rldata.text .. '](' .. rldef.destination .. ')'})
-
-    if move_cursor == true then
-        vim.cmd.buffer(rldata.buf)
-        vim.fn.cursor({rldata.lnum, vim.fn.col('.') + 1})
-    end
-end
-
 --- AI Assisted
 function M.parse_lines_ts()
     local buf = vim.api.nvim_get_current_buf()
@@ -553,6 +559,29 @@ function M.parse_lines_ts()
     end
 
     return node_data
+end
+
+---@param opts {move_cursor: boolean?, location: MdnInLineLocation}?
+function M.convert_from_reference(opts)
+    vim.validate("opts", opts, "table", true)
+    opts = opts or {}
+
+    local move_cursor = opts.move_cursor ~= false
+    local rldata = require('mdnotes.reference_link').parse({ location = opts.location })
+    if rldata == nil or rldata.text == nil then return end
+
+    local rldef = require('mdnotes.reference_link').get_rl_definition(rldata.label, rldata.buf)
+    if rldef == nil then
+        vim.notify("Mdn: No definition found for label '" .. rldata.label .. "'. If you can confirm it exists, try writing the buf or parse definitions manually with ':Mdn reference_link populate_buf_reference_links'", vim.log.levels.ERROR)
+        return
+    end
+
+    vim.api.nvim_buf_set_text(rldata.buf, rldata.lnum - 1, rldata.col_start - 1, rldata.lnum - 1, rldata.col_end - 1, {'[' .. rldata.text .. '](' .. rldef.destination .. ')'})
+
+    if move_cursor == true then
+        vim.cmd.buffer(rldata.buf)
+        vim.fn.cursor({rldata.lnum, vim.fn.col('.') + 1})
+    end
 end
 
 return M
