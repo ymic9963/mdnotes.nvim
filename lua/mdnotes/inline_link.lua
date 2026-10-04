@@ -531,7 +531,7 @@ function M.parse_lines(opts)
     return parse_lines(pattern, M.parse, {location = opts.location, no_duplicates = opts.no_duplicates, get_func = get_func})
 end
 
---- AI Assisted
+---AI Assisted
 function M.parse_lines_ts()
     local buf = vim.api.nvim_get_current_buf()
     local parser, err = vim.treesitter.get_parser(buf, "markdown")

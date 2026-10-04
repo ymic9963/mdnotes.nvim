@@ -339,10 +339,23 @@ function M.mdn_grep(pattern, path)
 end
 
 ---Check text for valid Markdown syntax
+---@param check_string MdnPattern|string String used to specify what to check. Could be pattern or node type
+---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
+---@return boolean? valid, table|table<table>? cols_tbl
+function M.check_markdown_syntax(check_string, opts)
+    local parser = require('mdnotes').config.parser
+    if parser == "regex" then
+        return M.check_markdown_syntax_re(check_string, opts)
+    elseif parser == "treesitter" then
+        return M.check_markdown_syntax_ts(check_string, opts)
+    end
+end
+
+---Check Markdown syntax using Lua patterns
 ---@param pattern MdnPattern Pattern that returns the start and end columns, as well as the text
 ---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
 ---@return boolean? valid, table|table<table>? cols_tbl
-function M.check_markdown_syntax(pattern, opts)
+function M.check_markdown_syntax_re(pattern, opts)
     vim.validate("pattern", pattern, "string")
     vim.validate("opts", opts, "table", true)
 
@@ -377,6 +390,84 @@ function M.check_markdown_syntax(pattern, opts)
     end
 
     return false, {}
+end
+
+---Check Markdown syntax using treesitter
+---@param node_type string Treesitter node type to check for
+---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
+---@return boolean? valid, table|table<table>? cols_tbl
+function M.check_markdown_syntax_ts(node_type, opts)
+    --TODO: check per line for the specific markdown syntax
+    --This is so that scan_lines() can be done using treesitter, and therefore parse_lines()
+    --wrappers could be made for scan_lines() and parse_lines() so that a scan_lines_ts() and parse_lines_ts()
+    --functions could still exist so that we are using as much treesitter as possible
+    vim.validate("node_type", node_type, "string")
+    vim.validate("opts", opts, "table", true)
+
+    opts = opts or {}
+
+    local ts_check = require('mdnotes.ts_checks')[node_type]
+    if ts_check == nil then
+        return
+    end
+
+    local entire_line = opts.entire_line or false
+    local locopts = opts.location or {}
+    local buf = locopts.buf or vim.api.nvim_get_current_buf()
+    local lnum = locopts.lnum or vim.fn.line('.')
+    local col_start = locopts.col_start or vim.fn.col('.')
+
+    local node
+    if entire_line == false then
+        node = vim.treesitter.get_node({
+            bufnr = buf,
+            ignore_injections = false,
+            pos = {lnum - 1, col_start - 1}
+        })
+
+        if node == nil then
+            return false, {}
+        end
+
+        local cols_tbl = ts_check(node:parent())
+        if cols_tbl == nil then
+            return false, {}
+        end
+
+        return true, cols_tbl
+    else
+        node = vim.treesitter.get_node({
+            bufnr = buf,
+            ignore_injections = false,
+            pos = {lnum - 1, 0}
+        })
+
+        if node == nil then
+            return false, {}
+        end
+
+        -- Ensure we are not at an injection
+        while node:type() ~= "inline" do
+            node = node:parent()
+            if node == nil then
+                return false, {}
+            end
+        end
+
+        local cols_tbl = {}
+        local function get_node_data_tbl(_node)
+            table.insert(cols_tbl, ts_check(_node, buf))
+            for child in _node:iter_children() do
+                get_node_data_tbl(child)
+            end
+        end
+
+        for child in node:iter_children() do
+            get_node_data_tbl(child)
+        end
+
+        return true, cols_tbl
+    end
 end
 
 ---Check if Markdown LSP server can be used in the current buffer
