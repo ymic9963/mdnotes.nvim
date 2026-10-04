@@ -132,7 +132,7 @@ The default config for `mdnotes` is shown below,
 	default_keymaps = false,
 	autocmds = true,
 	table_best_fit_padding = 0,
-	toc_depth = 4
+	toc_depth = 4,
 	user_commands = {}
     }
 <
