@@ -77,7 +77,7 @@ M.default_ui_select = vim.ui.select
 ---@field table_best_fit_padding integer? Add padding around cell contents when using tables_best_fit
 ---@field toc_depth integer? Depth shown in the ToC
 ---@field user_commands table? User commands in the Mdn namespace
----@field parser '"treesitter"'|'"regex"'? Parse text using treesitter or regex
+---@field parser '"treesitter"'|'"patterns"'? Parse text using treesitter or patterns
 local default_config = {
     index_file = "",
     journal_file = "",
@@ -147,7 +147,7 @@ local function validate_config(user_config)
     vim.validate("table_best_fit_padding", config.table_best_fit_padding, "number")
     vim.validate("toc_depth", config.toc_depth, "number")
     vim.validate("user_commands", config.user_commands, "table")
-    vim.validate("parser", config.parser, "string", false, "'regex' or 'treesitter'")
+    vim.validate("parser", config.parser, "string", false, "'patterns' or 'treesitter'")
 
     return config
 end
@@ -344,7 +344,7 @@ end
 ---@return boolean? valid, table|table<table>? cols_tbl
 function M.check_markdown_syntax(check_string, opts)
     local parser = require('mdnotes').config.parser
-    if parser == "regex" then
+    if parser == "patterns" then
         return M.check_markdown_syntax_re(check_string, opts)
     elseif parser == "treesitter" then
         return M.check_markdown_syntax_ts(check_string, opts)
@@ -397,10 +397,6 @@ end
 ---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
 ---@return boolean? valid, table|table<table>? cols_tbl
 function M.check_markdown_syntax_ts(node_type, opts)
-    --TODO: check per line for the specific markdown syntax
-    --This is so that scan_lines() can be done using treesitter, and therefore parse_lines()
-    --wrappers could be made for scan_lines() and parse_lines() so that a scan_lines_ts() and parse_lines_ts()
-    --functions could still exist so that we are using as much treesitter as possible
     vim.validate("node_type", node_type, "string")
     vim.validate("opts", opts, "table", true)
 
@@ -429,7 +425,7 @@ function M.check_markdown_syntax_ts(node_type, opts)
             return false, {}
         end
 
-        local cols_tbl = ts_check(node:parent())
+        local cols_tbl = (ts_check(node:parent()) or {}).cols
         if cols_tbl == nil then
             return false, {}
         end
@@ -456,7 +452,10 @@ function M.check_markdown_syntax_ts(node_type, opts)
 
         local cols_tbl = {}
         local function get_node_data_tbl(_node)
-            table.insert(cols_tbl, ts_check(_node, buf))
+            local loc_tbl = (ts_check(_node, buf) or {})
+            if loc_tbl.lnum == lnum then
+                table.insert(cols_tbl, loc_tbl.cols)
+            end
             for child in _node:iter_children() do
                 get_node_data_tbl(child)
             end
@@ -464,6 +463,10 @@ function M.check_markdown_syntax_ts(node_type, opts)
 
         for child in node:iter_children() do
             get_node_data_tbl(child)
+        end
+
+        if vim.tbl_isempty(cols_tbl) then
+            return false, {}
         end
 
         return true, cols_tbl
@@ -879,6 +882,7 @@ end
 ---@param opts {location: MdnMultiLineLocation?}?
 ---@return table<MdnScanLines>?
 function M.scan_lines(pattern, opts)
+    --TODO: scan lines treesitter so that parse_lines() can be done with treesitter
     vim.validate("pattern", pattern, "string")
     vim.validate("opts", opts, "table", true)
     opts = opts or {}

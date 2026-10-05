@@ -136,8 +136,6 @@ T['check_markdown_syntax()'] = function()
     return {Mdn.check_markdown_syntax_re(pattern, { entire_line = true })}
     ]])
     eq(ret, {true, {{10, 20}}})
-    -- FIX: Paragraph is two new lines so if it's on the line above it still gets detected
-    -- maybe change ts_check so that the line number of the node can be detected. Return everything from :range()
     ret = child.lua([[
     return {Mdn.check_markdown_syntax_ts("emphasis", { entire_line = true })}
     ]])

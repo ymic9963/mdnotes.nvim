@@ -62,8 +62,8 @@ M.check = function()
         vim.health.warn("Detected no Markdown LSP(s). If you're using any Markdown LSPs, open a Markdon buffer and run checkhealth again.")
     end
 
-    if not vim.tbl_contains({"regex", "treesitter"}, config.parser) then
-        vim.health.error(("'parser' value '%s' is invalid. Can only use 'regex' or 'treesitter'. Defaulting to 'treesitter'."):format(M.config.parser))
+    if not vim.tbl_contains({"patterns", "treesitter"}, config.parser) then
+        vim.health.error(("'parser' value '%s' is invalid. Can only use 'patterns' or 'treesitter'. Defaulting to 'treesitter'."):format(M.config.parser))
         config_ok = false
     end
 

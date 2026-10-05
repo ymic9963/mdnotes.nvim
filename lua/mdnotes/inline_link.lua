@@ -16,14 +16,14 @@ local default_ui_select = require('mdnotes').default_ui_select
 ---@return MdnInlineLinkData?
 function M.parse(opts)
     local parser = require('mdnotes').config.parser
-    if parser == "regex" then
+    if parser == "patterns" then
         return M.parse_re(opts)
     elseif parser == "treesitter" then
         return M.parse_ts(opts)
     end
 end
 
----Parse using regex pattern matching
+---Parse using patterns
 ---@param opts {inline_link: string?, keep_pointy_brackets: boolean?, location: MdnInLineLocation?}?
 ---@return MdnInlineLinkData?
 function M.parse_re(opts)
