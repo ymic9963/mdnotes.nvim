@@ -51,7 +51,7 @@ M.check = function()
 
     local detected_md_lsps = vim.iter(vim.lsp.get_clients())
     :map(function(client)
-        if vim.tbl_contains(client.config.filetypes, "markdown") then
+        if vim.tbl_contains(client.config.filetypes or {}, "markdown") then
             return client.name
         end
     end):totable()
