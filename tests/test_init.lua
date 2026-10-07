@@ -101,7 +101,14 @@ T['mdn_grep()'] = function()
     end
 end
 
-T['check_markdown_syntax()'] = function()
+T['check_markdown_syntax()'] = new_set({
+    parametrize = {
+        { 'check_markdown_syntax_re(pattern' },
+        { 'check_markdown_syntax_ts("emphasis"' }
+    }
+})
+
+T['check_markdown_syntax()']['impl'] = function(func)
     local lines = {
         "*emphasis* emphasis",
         "emphasis *emphasis*",
@@ -112,63 +119,39 @@ T['check_markdown_syntax()'] = function()
     child.fn.cursor(1,1)
     local ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern)}
-    ]])
-    eq(ret, {true, {1, 11}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis")}
+    return {Mdn.]] .. func .. [[)}
     ]])
     eq(ret, {true, {1, 11}})
 
     child.fn.cursor(2,1)
     ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern)}
-    ]])
-    eq(ret, {false, {}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis")}
+    return {Mdn.]] .. func .. [[)}
     ]])
     eq(ret, {false, {}})
 
     ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern, { entire_line = true })}
-    ]])
-    eq(ret, {true, {{10, 20}}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis", { entire_line = true })}
+    return {Mdn.]] .. func .. [[, { entire_line = true })}
     ]])
     eq(ret, {true, {{10, 20}}})
 
     child.fn.cursor(3,1)
     ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern)}
-    ]])
-    eq(ret, {false, {}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis")}
+    return {Mdn.]] .. func .. [[)}
     ]])
     eq(ret, {false, {}})
 
     ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern, { entire_line = true })}
-    ]])
-    eq(ret, {false, {}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis", {entire_line = true})}
+    return {Mdn.]] .. func .. [[, { entire_line = true })}
     ]])
     eq(ret, {false, {}})
 
     ret = child.lua([[
     local pattern = Mdn.patterns.emphasis
-    return {Mdn.check_markdown_syntax_re(pattern, {location = {lnum = 2, col_start = 10, col_end = 19}})}
-    ]])
-    eq(ret, {true, {10, 20}})
-    ret = child.lua([[
-    return {Mdn.check_markdown_syntax_ts("emphasis", {location = {lnum = 2, col_start = 10, col_end = 19}})}
+    return {Mdn.]] .. func .. [[, {location = {lnum = 2, col_start = 10, col_end = 19}})}
     ]])
     eq(ret, {true, {10, 20}})
 end
@@ -514,8 +497,7 @@ T['scan_lines()'] = function()
     create_md_buffer(child, lines)
 
     local ret = child.lua([[
-    local pattern = Mdn.patterns.inline_link
-    return Mdn.scan_lines(pattern, { location = { startl = 1, endl = 3}})
+    return Mdn.scan_lines("inline_link", { location = { startl = 1, endl = 3}})
     ]])
 
     eq(ret, {

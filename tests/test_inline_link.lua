@@ -22,7 +22,14 @@ local T = new_set({
     },
 })
 
-T['parse()'] = function()
+T['parse()'] = new_set({
+    parametrize = {
+        { 'parse_re' },
+        { 'parse_ts' }
+    }
+})
+
+T['parse()']['impl'] = function(func)
     -- Setup test buffer
     local lines = {
         "[file1](tests/test-data/files/file1.md) [file2](tests/test-data/files/file2.md)",
@@ -38,20 +45,7 @@ T['parse()'] = function()
 
     -- File inline links
     child.fn.cursor(1,2)
-    local ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "file1",
-        destination = "tests/test-data/files/file1.md",
-        buf = 2,
-        lnum = 1,
-        col_start = 1,
-        col_end = 40,
-        cur_col = 2,
-        title = "",
-        raw = "[file1](tests/test-data/files/file1.md)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    local ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "file1",
@@ -66,20 +60,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(1,42)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "file2",
-        destination = "tests/test-data/files/file2.md",
-        buf = 2,
-        lnum = 1,
-        col_start = 41,
-        col_end = 80,
-        cur_col = 42,
-        title = "",
-        raw = "[file2](tests/test-data/files/file2.md)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "file2",
@@ -95,20 +76,7 @@ T['parse()'] = function()
 
     -- File inline links with sections
     child.fn.cursor(2,2)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "file1",
-        destination = "tests/test-data/files/file1.md#section-2",
-        buf = 2,
-        lnum = 2,
-        col_start = 1,
-        col_end = 50,
-        cur_col = 2,
-        title = "",
-        raw = "[file1](tests/test-data/files/file1.md#section-2)"
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "file1",
@@ -123,20 +91,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(2,60)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "file2",
-        destination = "tests/test-data/files/file2.md#file-2",
-        buf = 2,
-        lnum = 2,
-        col_start = 51,
-        col_end = 97,
-        cur_col = 60,
-        title = "",
-        raw = "[file2](tests/test-data/files/file2.md#file-2)"
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "file2",
@@ -152,20 +107,7 @@ T['parse()'] = function()
 
     -- Inline images
     child.fn.cursor(3,2)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "!",
-        text = "image1",
-        destination = "tests/test-data/images/neovim-mark-flat.svg",
-        buf = 2,
-        lnum = 3,
-        col_start = 1,
-        col_end = 55,
-        cur_col = 2,
-        title = "",
-        raw = "![image1](tests/test-data/images/neovim-mark-flat.svg)"
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "!",
         text = "image1",
@@ -180,20 +122,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(3,60)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "!",
-        text = "image2",
-        destination = "tests/test-data/images/neovim-mark.svg",
-        buf = 2,
-        lnum = 3,
-        col_start = 56,
-        col_end = 105,
-        cur_col = 60,
-        title = "",
-        raw = "![image2](tests/test-data/images/neovim-mark.svg)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "!",
         text = "image2",
@@ -208,20 +137,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(4,2)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "url1",
-        destination = "https://neovim.io/",
-        buf = 2,
-        lnum = 4,
-        col_start = 1,
-        col_end = 27,
-        cur_col = 2,
-        title = "",
-        raw = "[url1](https://neovim.io/)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "url1",
@@ -236,20 +152,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(4,60)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "url2",
-        destination = "https://neovim.io/doc/user/#Q_ct",
-        buf = 2,
-        lnum = 4,
-        col_start = 28,
-        col_end = 68,
-        cur_col = 60,
-        title = "",
-        raw = "[url2](https://neovim.io/doc/user/#Q_ct)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "url2",
@@ -265,20 +168,7 @@ T['parse()'] = function()
 
     -- Same file section
     child.fn.cursor(5,2)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "section",
-        destination = "#test-section",
-        buf = 2,
-        lnum = 5,
-        col_start = 1,
-        col_end = 25,
-        cur_col = 2,
-        title = "",
-        raw = "[section](#test-section)",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "section",
@@ -293,20 +183,7 @@ T['parse()'] = function()
     })
 
     child.fn.cursor(6,2)
-    ret = child.lua([[ return Mdn.inline_link.parse_re() ]])
-    eq(ret, {
-        img_char = "",
-        text = "section",
-        destination = "#test-section",
-        buf = 2,
-        lnum = 6,
-        col_start = 1,
-        col_end = 33,
-        cur_col = 2,
-        title = "title",
-        raw = "[section](#test-section \"title\")",
-    })
-    ret = child.lua([[ return Mdn.inline_link.parse_ts() ]])
+    ret = child.lua([[ return Mdn.inline_link.]] .. func .. [[() ]])
     eq(ret, {
         img_char = "",
         text = "section",
@@ -509,6 +386,7 @@ T['validate()'] = function()
     eq(ret, {true})
 end
 
+-- FIX: this
 T['parse_lines()'] = function()
     local lines = {
         "# Heading",

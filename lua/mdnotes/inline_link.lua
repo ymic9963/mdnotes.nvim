@@ -36,13 +36,13 @@ function M.parse_re(opts)
     vim.validate("inline_link", inline_link, "string", true)
     vim.validate("keep_pointy_brackets", keep_pointy_brackets, "boolean")
 
-    local check_markdown_syntax = require('mdnotes').check_markdown_syntax
+    local check_markdown_syntax_re = require('mdnotes').check_markdown_syntax_re
     local il_pattern = require("mdnotes.patterns").inline_link
     local txtdata = {}
 
     -- Overwrite if location is given
     if opts.location ~= nil or inline_link == nil then
-        if not check_markdown_syntax(il_pattern, { location = opts.location }) then return nil end
+        if not check_markdown_syntax_re(il_pattern, { location = opts.location }) then return nil end
         txtdata = require('mdnotes').get_text_in_pattern(il_pattern, { location = opts.location })
         inline_link = txtdata.raw or ""
     end
@@ -107,13 +107,19 @@ function M.parse_ts(opts)
 
     local node_data
     local function get_node_data(_node)
-        node_data = M.extract_node_data(_node, source)
-        if node_data == nil then
-            get_node_data(_node:parent())
+        if _node ~= nil then
+            node_data = M.extract_node_data(_node, source)
+            if node_data == nil then
+                get_node_data(_node:parent())
+            end
         end
     end
 
     get_node_data(node)
+
+    if node_data == nil then
+        return nil
+    end
 
     -- Remove any < or > from destination
     if keep_pointy_brackets == false then
@@ -314,7 +320,7 @@ function M.toggle(opts)
     opts = opts or {}
 
     local check_markdown_syntax = require('mdnotes').check_markdown_syntax
-    if check_markdown_syntax(require("mdnotes.patterns").inline_link, { location = opts.location }) then
+    if check_markdown_syntax("inline_link", { location = opts.location }) then
         M.delete({ location = opts.location, store = true })
     else
         M.insert({ destination = opts.destination, location = opts.location })
@@ -399,21 +405,18 @@ function M.rename(opts)
     end
 end
 
----Normalize inline link
+---Normalize inline link using Lua patterns
 ---@param opts {move_cursor: boolean?, location: MdnInLineLocation?}?
 function M.normalize(opts)
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
     local move_cursor = opts.move_cursor ~= false
-    local ildata = M.parse({ location = opts.location })
+    local ildata = M.parse_re({ location = opts.location, keep_pointy_brackets = false })
     if ildata == nil then return end
 
-    -- Remove any < or > from destination and normalize path
-    local destination = ildata.destination:gsub("[<>]?", "")
-    destination = vim.fs.normalize(destination)
-
     local new_destination = ""
+    local destination = vim.fs.normalize(ildata.destination)
     local fragment = destination:match(require("mdnotes.patterns").fragment)
     if fragment ~= nil then
         local convert_text_to_gfm = require('mdnotes').convert_text_to_gfm
@@ -443,7 +446,7 @@ function M.validate(opts)
     opts = opts or {}
 
     local silent = opts.silent or false
-    local ildata = M.parse({ location = opts.location })
+    local ildata = M.parse_re({ location = opts.location })
 
     if ildata == nil or ildata.text == nil or ildata.destination == nil then
         if silent == false then

@@ -345,7 +345,8 @@ end
 function M.check_markdown_syntax(check_string, opts)
     local parser = require('mdnotes').config.parser
     if parser == "patterns" then
-        return M.check_markdown_syntax_re(check_string, opts)
+        local pattern = require('mdnotes.patterns')[check_string]
+        return M.check_markdown_syntax_re(pattern, opts)
     elseif parser == "treesitter" then
         return M.check_markdown_syntax_ts(check_string, opts)
     end
@@ -425,7 +426,7 @@ function M.check_markdown_syntax_ts(node_type, opts)
             return false, {}
         end
 
-        local cols_tbl = (ts_check(node:parent()) or {}).cols
+        local cols_tbl = (ts_check(node:parent(), buf) or {}).cols
         if cols_tbl == nil then
             return false, {}
         end
@@ -877,13 +878,12 @@ end
 ---@field lnum number Line number of specified pattern
 ---@field cols table<number, number> Table containing start and end columns of specified pattern
 
----Scan lines for inline Markdown items
----@param pattern MdnPattern Pattern that also returns start and end column numbers
+---Scan lines for inline Markdown items using Lua patterns
+---@param check_string MdnPattern|string String used to specify what to check. Could be pattern or node type
 ---@param opts {location: MdnMultiLineLocation?}?
 ---@return table<MdnScanLines>?
-function M.scan_lines(pattern, opts)
-    --TODO: scan lines treesitter so that parse_lines() can be done with treesitter
-    vim.validate("pattern", pattern, "string")
+function M.scan_lines(check_string, opts)
+    vim.validate("pattern", check_string, "string")
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
@@ -898,7 +898,7 @@ function M.scan_lines(pattern, opts)
 
     local scan_tbl = {}
     for lnum = startl, endl do
-        local valid, cols_tbl = M.check_markdown_syntax(pattern, {entire_line = true, location = {lnum = lnum, buf = buf}})
+        local valid, cols_tbl = M.check_markdown_syntax(check_string, {entire_line = true, location = {lnum = lnum, buf = buf}})
         if valid == true then
             table.insert(scan_tbl, {lnum = lnum, cols = cols_tbl})
         end
@@ -939,35 +939,34 @@ function M.statistics(opts)
         fn_wordcount = vim.fn.wordcount()
     end)
     local last_lnum = vim.fn.line('$')
-    local mdn_patterns = require('mdnotes.patterns')
 
     bytes = fn_wordcount.bytes
     chars = fn_wordcount.chars
     words = fn_wordcount.words
     lines = last_lnum
 
-    local ils_ret = M.scan_lines(mdn_patterns.inline_link, { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
+    local ils_ret = M.scan_lines("inline_link", { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
     for _, ret in pairs(ils_ret or {}) do
         if ret.cols ~= nil then
             ils = ils + #ret.cols
         end
     end
 
-    local wls_ret = M.scan_lines(mdn_patterns.wikilink, { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
+    local wls_ret = M.scan_lines("wikilink", { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
     for _, ret in pairs(wls_ret) do
         if ret.cols ~= nil then
             wls = wls + #ret.cols
         end
     end
 
-    local rls_ret = M.scan_lines(mdn_patterns.reference_link, { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
+    local rls_ret = M.scan_lines("reference_link", { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
     for _, ret in pairs(rls_ret) do
         if ret.cols ~= nil then
             rls = rls + #ret.cols
         end
     end
 
-    local frefs_ret = M.scan_lines(mdn_patterns.footnote_reference, { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
+    local frefs_ret = M.scan_lines("footnote_reference", { location = { startl = 1, endl = last_lnum, buf = buf } }) or {}
     for _, ret in pairs(frefs_ret) do
         if ret.cols ~= nil then
             frefs = frefs + #ret.cols
