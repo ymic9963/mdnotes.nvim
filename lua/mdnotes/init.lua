@@ -339,16 +339,16 @@ function M.mdn_grep(pattern, path)
 end
 
 ---Check text for valid Markdown syntax
----@param check_string MdnPattern|string String used to specify what to check. Could be pattern or node type
+---@param metype MdnPattern|string String used to specify what to check. Could be pattern or node type
 ---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
 ---@return boolean? valid, table|table<table>? cols_tbl
-function M.check_markdown_syntax(check_string, opts)
+function M.check_markdown_syntax(metype, opts)
     local parser = require('mdnotes').config.parser
     if parser == "patterns" then
-        local pattern = require('mdnotes.patterns')[check_string]
+        local pattern = require('mdnotes.patterns')[metype]
         return M.check_markdown_syntax_re(pattern, opts)
     elseif parser == "treesitter" then
-        return M.check_markdown_syntax_ts(check_string, opts)
+        return M.check_markdown_syntax_ts(metype, opts)
     end
 end
 
@@ -879,11 +879,11 @@ end
 ---@field cols table<number, number> Table containing start and end columns of specified pattern
 
 ---Scan lines for inline Markdown items using Lua patterns
----@param check_string MdnPattern|string String used to specify what to check. Could be pattern or node type
+---@param metype MdnPattern|string String used to specify what markdown element type check. Could be pattern or node type
 ---@param opts {location: MdnMultiLineLocation?}?
 ---@return table<MdnScanLines>?
-function M.scan_lines(check_string, opts)
-    vim.validate("pattern", check_string, "string")
+function M.scan_lines(metype, opts)
+    vim.validate("pattern", metype, "string")
     vim.validate("opts", opts, "table", true)
     opts = opts or {}
 
@@ -898,7 +898,7 @@ function M.scan_lines(check_string, opts)
 
     local scan_tbl = {}
     for lnum = startl, endl do
-        local valid, cols_tbl = M.check_markdown_syntax(check_string, {entire_line = true, location = {lnum = lnum, buf = buf}})
+        local valid, cols_tbl = M.check_markdown_syntax(metype, {entire_line = true, location = {lnum = lnum, buf = buf}})
         if valid == true then
             table.insert(scan_tbl, {lnum = lnum, cols = cols_tbl})
         end

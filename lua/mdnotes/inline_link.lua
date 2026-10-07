@@ -523,7 +523,6 @@ function M.parse_lines(opts)
     opts = opts or {}
 
     local str = opts.str or false
-    local pattern = require('mdnotes.patterns').inline_link
     local parse_lines = require('mdnotes').parse_lines
 
     local get_func = nil
@@ -531,7 +530,7 @@ function M.parse_lines(opts)
         get_func = M.get_il_from_obj
     end
 
-    return parse_lines(pattern, M.parse, {location = opts.location, no_duplicates = opts.no_duplicates, get_func = get_func})
+    return parse_lines("inline_link", M.parse, {location = opts.location, no_duplicates = opts.no_duplicates, get_func = get_func})
 end
 
 ---AI Assisted
