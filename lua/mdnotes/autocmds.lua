@@ -103,3 +103,17 @@ vim.api.nvim_create_autocmd({"BufEnter", "BufWritePost"}, {
     desc = "Mdnotes populating buffer footnotes table autocmd"
 })
 
+-- Check if user just exited linewise-visual mode
+-- Needed is when linewise-visual was used prior to get_text() so col_end would be 2147483647
+-- Without it would not be able to select and entire line with "V" and then execute get_text()
+vim.api.nvim_create_autocmd({"ModeChanged"}, {
+    pattern = {"V:*", "*.md"},
+    callback = function(args)
+        -- Does not differentiate between characterwise and linewise for some reason
+        if args.match:sub(1,1) == "V" then
+            require('mdnotes')._exited_linewise_visual_mode = true
+        end
+    end,
+    desc = "Mdnotes autocmd for detecting if the user just existed linewise-visual mode"
+})
+

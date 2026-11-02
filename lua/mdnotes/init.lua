@@ -75,6 +75,9 @@ M.buf_fragments = {}
 ---Store default function to check for picker override
 M.default_ui_select = vim.ui.select
 
+---Store whether the user exited linewise-visual mode
+M._exited_linewise_visual_mode = false
+
 ---Mdnotes Config Class
 ---@class MdnConfig
 ---@field index_file string? Index file name or path
@@ -544,16 +547,21 @@ function M.get_text(opts)
 
     local line = vim.api.nvim_buf_get_lines(buf, lnum - 1, lnum, false)[1]
 
-    -- Case where linewise-visual was used prior to get_text()
-    -- If visual was used then the number would be reset
-    if col_end == 2147483647 then
-        col_end = col_start
-    end
-
     -- Limit the end column value
     -- Visual mode and grep can give end_col values after the line ending
     if col_end > #line then
-        col_end = #line
+        -- When linewise-visual was used prior to get_text() so col_end would be
+        -- 2147483647. If visual was used then the number would be reset
+        -- Without this check it would not be able to select and entire line with
+        -- "V" and then execute get_text()
+        if col_end == 2147483647 then
+            if M._exited_linewise_visual_mode == true then
+                col_end = col_start
+                M._exited_linewise_visual_mode = false
+            end
+        else
+            col_end = #line
+        end
     end
 
     -- Raw text
