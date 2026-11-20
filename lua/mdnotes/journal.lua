@@ -2,16 +2,16 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+
 ---Resolve the journal file name from the config
 ---@return string path Journal file path
 function M.get_journal_file()
-    local config_journal_file = require('mdnotes').config.journal_file
     local ret = ""
-
-    if type(config_journal_file) == "function" then
-        ret = config_journal_file()
-    elseif type(config_journal_file) == "string" then
-        ret = config_journal_file
+    if type(mdn.config.journal_file) == "function" then
+        ret = mdn.config.journal_file()
+    elseif type(mdn.config.journal_file) == "string" then
+        ret = mdn.config.journal_file
     end
 
     -- Never nil
@@ -39,7 +39,7 @@ function M.go_to(opts)
         return
     end
 
-    require('mdnotes').open_buf(journal_file)
+    mdn.open_buf(journal_file)
 end
 
 ---Insert an entry to the journal file
@@ -75,7 +75,7 @@ function M.insert_entry(opts)
         end
     end
 
-    local strftime = vim.pesc(vim.fn.strftime(require('mdnotes').config.date_format):match("([^\n\r\t]+)"))
+    local strftime = vim.pesc(vim.fn.strftime(mdn.config.date_format):match("([^\n\r\t]+)"))
     local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_get_current_buf(), 0, -1, false)
     local match = false
 

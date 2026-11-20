@@ -3,6 +3,11 @@
 local M = {}
 
 local uv = vim.loop or vim.uv
+local mdn = require('mdnotes')
+local patterns = require('mdnotes.patterns')
+local ts = require('mdnotes.treesitter')
+local fmt = require('mdnotes.formatting')
+local il = require('mdnotes.inline_link')
 
 ---@type table<string>
 M.old_filenames = {}
@@ -15,17 +20,13 @@ M.new_filenames = {}
 ---@field fragment string The fragment in the WikiLink
 ---@field alias string WikiLink alias
 
-local check_markdown_lsp_cur_buf = function() return require('mdnotes').check_markdown_lsp_cur_buf() end
-local get_buf_from_buf_list = function(...) return require('mdnotes').get_buf_from_buf_list(...) end
-
 ---Parse WikiLink
 ---@param opts {wikilink: string?, location: MdnInLineLocation?}?
 ---@return MdnWikiLinkData?
 function M.parse(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_ts(opts)
     end
 end
@@ -41,21 +42,19 @@ function M.parse_re(opts)
 
     vim.validate("wikilink", wikilink, "string", true)
 
-    local mdn_patterns = require('mdnotes.patterns')
-    local check_inline_markdown_syntax_re = require('mdnotes').check_inline_markdown_syntax_re
     local txtdata = {}
 
     -- Overwrite if location is given
     if opts.location ~= nil or wikilink == nil then
-        if not check_inline_markdown_syntax_re(mdn_patterns.wikilink, {location = opts.location}) then return nil end
-        txtdata = require('mdnotes').get_text_in_pattern(mdn_patterns.wikilink, { location = opts.location })
+        if not mdn.check_inline_markdown_syntax_re(patterns.wikilink, {location = opts.location}) then return nil end
+        txtdata = mdn.get_text_in_pattern(patterns.wikilink, { location = opts.location })
         wikilink = txtdata.raw or ""
     end
 
-    local wikilink_contents = wikilink:match(mdn_patterns.wikilink_contents)
-    local file = wikilink_contents:match(mdn_patterns.wikilink_file) or ""
-    local fragment = wikilink_contents:match(mdn_patterns.fragment) or ""
-    local alias = wikilink_contents:match(mdn_patterns.wikilink_alias) or ""
+    local wikilink_contents = wikilink:match(patterns.wikilink_contents)
+    local file = wikilink_contents:match(patterns.wikilink_file) or ""
+    local fragment = wikilink_contents:match(patterns.fragment) or ""
+    local alias = wikilink_contents:match(patterns.wikilink_alias) or ""
 
     return vim.tbl_extend("force", {
         file = file,
@@ -97,7 +96,7 @@ function M.parse_ts(opts)
     end
 
     local node_data
-    local process_node = require('mdnotes.treesitter')["wikilink"] or function() return {} end
+    local process_node = ts["wikilink"] or function() return {} end
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, source, false) or process_node(_node:named_child(), source, false)
@@ -120,7 +119,7 @@ end
 ---Follow the WikiLink under the cursor
 ---@param opts {wikilink: string?, location: MdnInLineLocation?, hor: boolean?, vert: boolean?, picker: boolean?}?
 function M.follow(opts)
-    if check_markdown_lsp_cur_buf() then
+    if mdn.check_markdown_lsp_cur_buf() then
         vim.lsp.buf.definition()
 
         return
@@ -149,16 +148,14 @@ function M.follow(opts)
 
     if wldata == nil then return end
 
-    local cwd = require('mdnotes').cwd
-
     if wldata.file ~= "" then
-        local path = vim.fs.joinpath(cwd, wldata.file)
+        local path = vim.fs.joinpath(mdn.cwd, wldata.file)
 
         if not vim.endswith(path, ".md") then
             path = path .. ".md"
         end
 
-        require('mdnotes').open_buf(path, {hor = hor, vert = vert})
+        mdn.open_buf(path, {hor = hor, vert = vert})
     end
 
     if wldata.fragment ~= "" then
@@ -187,7 +184,7 @@ end
 ---@param opts {location: MdnInLineLocation?, silent: boolean?}?
 ---@return table? qflist Resulting quickfix list
 function M.find_references(opts)
-    if check_markdown_lsp_cur_buf() then
+    if mdn.check_markdown_lsp_cur_buf() then
         vim.lsp.buf.references()
 
         return
@@ -211,14 +208,12 @@ function M.find_references(opts)
     end
 
     local cur_pos = vim.fn.getpos('.')
-    local cwd = require('mdnotes').cwd
-    local mdn_grep = require('mdnotes').mdn_grep
 
     if silent == false then
         vim.notify("Mdn: Searching references for '" .. wldata.raw:sub(3, -3) .. "'...", vim.log.levels.INFO)
     end
 
-    mdn_grep("\\[\\[".. wldata.file .. "(\\.md)?(\\#.*)?\\]\\]", cwd)
+    mdn.mdn_grep("\\[\\[".. wldata.file .. "(\\.md)?(\\#.*)?\\]\\]", mdn.cwd)
 
     local qflist = vim.fn.getqflist()
     if vim.tbl_isempty(qflist) then
@@ -242,7 +237,7 @@ end
 ---@param opts {new_name: string?, location: MdnInLineLocation?, silent: boolean?}?
 ---@return string? old_name, string|nil new_name 
 function M.rename_references(opts)
-    if check_markdown_lsp_cur_buf() then
+    if mdn.check_markdown_lsp_cur_buf() then
         -- I think this renames the current buffer and
         -- not the symbol under cursor
         vim.lsp.buf.rename()
@@ -263,8 +258,6 @@ function M.rename_references(opts)
 
     local temp_qflist = vim.fn.getqflist()
     local prompt = "Rename WikiLink and file: "
-    local cwd = require('mdnotes').cwd
-    local mdn_grep = require('mdnotes').mdn_grep
     local wldata = M.parse({ location = opts.location })
 
     if wldata == nil then
@@ -283,7 +276,7 @@ function M.rename_references(opts)
     end
 
     -- Check if it exists
-    local filepath = vim.fs.normalize(vim.fs.joinpath(cwd, wldata.file .. ".md"))
+    local filepath = vim.fs.normalize(vim.fs.joinpath(mdn.cwd, wldata.file .. ".md"))
     if not uv.fs_stat(filepath) then
         if silent == false then
             vim.notify("Mdn: WikiLink does not seem to link to a valid Markdown file", vim.log.levels.ERROR)
@@ -314,25 +307,25 @@ function M.rename_references(opts)
     end
 
     -- Change all [[WikiLink]] text to be the new name
-    mdn_grep("\\[\\[".. wldata.file .. "(\\.md)?(\\#.*)?\\]\\]", cwd)
+    mdn.mdn_grep("\\[\\[".. wldata.file .. "(\\.md)?(\\#.*)?\\]\\]", mdn.cwd)
     vim.cmd.cdo({args = {('s/%s/%s/'):format("\\[\\[" .. wldata.file, "\\[\\[" .. new_name)}, mods = {emsg_silent = true, noautocmd = true}})
 
     -- Get the buffer number of the renamed file if it is in the buffer list
-    local renamed_bufnum = get_buf_from_buf_list(wldata.file .. ".md")
+    local renamed_bufnum = mdn.get_buf_from_buf_list(wldata.file .. ".md")
 
     -- If the buffer number of the renamed file is in the buffer list
     if renamed_bufnum ~= nil then
         if renamed_bufnum ~= cur_buf then
             vim.api.nvim_buf_delete(renamed_bufnum, {force = true})
         elseif renamed_bufnum == cur_buf then
-            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(cwd, new_name .. ".md"))
+            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(mdn.cwd, new_name .. ".md"))
         end
     end
 
     -- Rename and check if succesful
     local ret, err = uv.fs_rename(
         filepath,
-        vim.fs.joinpath(cwd, new_name .. ".md")
+        vim.fs.joinpath(mdn.cwd, new_name .. ".md")
     )
 
     if not ret then
@@ -368,7 +361,7 @@ end
 ---@param opts {silent: boolean?}?
 ---@return string? old_name, string|nil new_name 
 function M.undo_rename(opts)
-    if check_markdown_lsp_cur_buf() then
+    if mdn.check_markdown_lsp_cur_buf() then
         vim.notify("Mdn: 'undo_rename' is only available when your config has 'prefer_lsp = false'", vim.log.levels.ERROR)
         return
     end
@@ -392,19 +385,17 @@ function M.undo_rename(opts)
     local temp_qflist = vim.fn.getqflist()
     local cur_buf = vim.api.nvim_get_current_buf()
     local cur_pos = vim.fn.getpos('.')
-    local cwd = require('mdnotes').cwd
-    local mdn_grep = require('mdnotes').mdn_grep
 
     if silent == false then
         vim.notify("Mdn: Undoing rename...", vim.log.levels.INFO)
     end
 
-    mdn_grep("\\[\\[".. newest_filename .. "(\\.md)?(\\#.*)?\\]\\]", cwd)
+    mdn.mdn_grep("\\[\\[".. newest_filename .. "(\\.md)?(\\#.*)?\\]\\]", mdn.cwd)
     vim.cmd.cdo({args = {('s/%s/%s/'):format(newest_filename, newest_old_filename)}, mods = {emsg_silent = true, noautocmd = true}})
 
     local ret, err = uv.fs_rename(
-        vim.fs.joinpath(cwd, newest_filename .. ".md"),
-        vim.fs.joinpath(cwd, newest_old_filename .. ".md")
+        vim.fs.joinpath(mdn.cwd, newest_filename .. ".md"),
+        vim.fs.joinpath(mdn.cwd, newest_old_filename .. ".md")
     )
     if not ret then
         if silent == false then
@@ -420,14 +411,14 @@ function M.undo_rename(opts)
     end
 
     -- Get the buffer number of the renamed file if it is in the buffer list
-    local renamed_bufnum = get_buf_from_buf_list(newest_old_filename .. ".md")
+    local renamed_bufnum = mdn.get_buf_from_buf_list(newest_old_filename .. ".md")
 
     -- If the buffer number of the renamed file is in the buffer list
     if renamed_bufnum ~= nil then
         if renamed_bufnum ~= cur_buf then
             vim.api.nvim_buf_delete(renamed_bufnum, {force = true})
         elseif renamed_bufnum == cur_buf then
-            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(cwd, newest_old_filename .. ".md"))
+            vim.api.nvim_buf_set_name(cur_buf, vim.fs.joinpath(mdn.cwd, newest_old_filename .. ".md"))
         end
     end
 
@@ -454,7 +445,7 @@ function M.create(opts)
     local text
     local wldata = M.parse({ location = opts.location })
     if wldata == nil then
-        local txtdata = require('mdnotes').get_text({ location = opts.location })
+        local txtdata = mdn.get_text({ location = opts.location })
         if txtdata.raw == nil then
             return
         end
@@ -465,9 +456,8 @@ function M.create(opts)
 
     local buf = vim.api.nvim_get_current_buf()
     local temp_qflist = vim.fn.getqflist()
-    local mdn_grep = require('mdnotes').mdn_grep
 
-    mdn_grep(text, require('mdnotes').cwd)
+    mdn.mdn_grep(text, mdn.cwd)
     if vim.api.nvim_get_current_buf() ~= buf then
         vim.cmd.buffer(buf)
     end
@@ -484,8 +474,7 @@ function M.create(opts)
         end
 
         -- Ignore text in headings
-        local pattern = require('mdnotes.patterns').heading
-        if not v.text:match(pattern) then
+        if not v.text:match(patterns.heading) then
             local locopts = {
                 buf = v.bufnr,
                 lnum = v.lnum,
@@ -496,8 +485,7 @@ function M.create(opts)
             vim.api.nvim_buf_call(locopts.buf, function()
                 local wl = M.parse({ location = locopts })
                 if wl == nil or (wl.lnum ~= v.lnum and wl.raw:sub(3, -3) == v.text) then
-                    local insert_format = require('mdnotes.formatting').insert_format
-                    insert_format("wikilink", { location = locopts, move_cursor = false })
+                    fmt.insert_format("wikilink", { location = locopts, move_cursor = false })
                 end
             end)
         end
@@ -523,8 +511,7 @@ function M.delete(opts)
         file = wldata.file
     end
 
-    local cwd = require('mdnotes').cwd
-    local wl_abspath = vim.fs.normalize(vim.fs.joinpath(cwd, file))
+    local wl_abspath = vim.fs.normalize(vim.fs.joinpath(mdn.cwd, file))
 
     -- Append .md to guarantee a file name
     local wl_name = vim.fs.basename(wl_abspath)
@@ -533,12 +520,12 @@ function M.delete(opts)
         wl_abspath = wl_abspath .. ".md"
     end
 
-    local behaviour = require('mdnotes').config.wikilink_delete_behaviour
-    local garbage_path = require('mdnotes').get_garbage_dir()
+    local behaviour = mdn.config.wikilink_delete_behaviour
+    local garbage_path = mdn.get_garbage_dir()
     local is_deleted = false
 
-    local wl_relpath = vim.fs.relpath(cwd, wl_abspath)
-    local garb_relpath = vim.fs.relpath(cwd, garbage_path)
+    local wl_relpath = vim.fs.relpath(mdn.cwd, wl_abspath)
+    local garb_relpath = vim.fs.relpath(mdn.cwd, garbage_path)
 
     local verb = ""
     local prompt = "Type y/n/a(ll) or 'c' to cancel (default 'n'): "
@@ -582,10 +569,9 @@ function M.delete(opts)
 
     -- Reset the text if a location for it was found
     if is_deleted == true then
-        local mdn_grep = require('mdnotes').mdn_grep
         local temp_qflist = vim.fn.getqflist()
 
-        mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", require('mdnotes').cwd)
+        mdn.mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", mdn.cwd)
         local wl_list = vim.fn.getqflist()
         vim.fn.setqflist(temp_qflist)
 
@@ -658,9 +644,7 @@ function M.get_orphans(opts)
     local orphans = {}
     local tempqf_list = vim.fn.getqflist()
     local count = 0
-    local cwd = require('mdnotes').cwd
-    local mdn_grep = require('mdnotes').mdn_grep
-    local files_cwd = require('mdnotes').get_files_in_cwd({ extension = ".md", hidden = false, fs_type = "file" })
+    local files_cwd = mdn.get_files_in_cwd({ extension = ".md", hidden = false, fs_type = "file" })
     local buf = vim.api.nvim_get_current_buf()
 
     local progress = {
@@ -676,7 +660,7 @@ function M.get_orphans(opts)
 
     for i, file in ipairs(files_cwd) do
         file = file:gsub(".md", "")
-        mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", cwd)
+        mdn.mdn_grep("\\[\\[".. file .. "(\\.md)?(\\#.*)?\\]\\]", mdn.cwd)
         if vim.api.nvim_get_current_buf() ~= buf then
             vim.cmd.buffer(buf) -- to prevent jumps while searching
         end
@@ -706,10 +690,9 @@ function M.find_orphans()
         return
     end
 
-    local cwd = require('mdnotes').cwd
     local qflist = {}
     for _, v in pairs(orphans) do
-        table.insert(qflist, {filename = vim.fs.joinpath(cwd, v)})
+        table.insert(qflist, {filename = vim.fs.joinpath(mdn.cwd, v)})
     end
 
     vim.fn.setqflist(qflist)
@@ -761,17 +744,16 @@ function M.picker(on_end, buf)
         end,
     }
 
-    return require('mdnotes').mdn_picker(parsed_tbl, on_end, ui_opts)
+    return mdn.mdn_picker(parsed_tbl, on_end, ui_opts)
 end
 
 ---Parse the WikiLinks in the specified lines
 ---@param opts MdnParseLinesOpts?
 ---@return table<MdnWikiLinkData>?
 function M.parse_lines(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_lines_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_lines_ts(opts)
     end
 end
@@ -784,8 +766,6 @@ function M.parse_lines_re(opts)
     opts = opts or {}
 
     local str = opts.str or false
-    local pattern = require('mdnotes.patterns').wikilink
-    local parse_lines_re = require('mdnotes').parse_lines_re
 
     local process_func = nil
     if str == true then
@@ -793,7 +773,7 @@ function M.parse_lines_re(opts)
     end
     local _opts = vim.tbl_extend("force", opts, {process_func = process_func})
 
-    return parse_lines_re(pattern, M.parse_re, _opts)
+    return mdn.parse_lines_re(patterns.wikilink, M.parse_re, _opts)
 end
 
 ---Parse the WikiLinks in the specified lines using treesitter
@@ -804,7 +784,6 @@ function M.parse_lines_ts(opts)
     opts = opts or {}
 
     local str = opts.str or false
-    local parse_lines_ts = require('mdnotes').parse_lines_ts
 
     local process_func = nil
     if str == true then
@@ -812,7 +791,7 @@ function M.parse_lines_ts(opts)
     end
     local _opts = vim.tbl_extend("force", opts, {process_func = process_func})
 
-    return parse_lines_ts("wikilink", _opts)
+    return mdn.parse_lines_ts("wikilink", _opts)
 end
 
 ---Convert an inline link to a reference link with its definition
@@ -826,8 +805,7 @@ function M.convert_to_inline(opts)
     local wldata = M.parse({ location = opts.location })
     if wldata == nil or wldata.file == nil then return end
 
-    local cwd = require('mdnotes').cwd
-    local path = vim.fs.joinpath(cwd, wldata.file)
+    local path = vim.fs.joinpath(mdn.cwd, wldata.file)
 
     local text = wldata.file
     if uv.fs_stat(path .. ".md") then
@@ -845,8 +823,7 @@ function M.convert_to_inline(opts)
         buf = wldata.buf
     }
 
-    local get_il_from_obj = require('mdnotes.inline_link').get_il_from_obj
-    vim.api.nvim_buf_set_text(wldata.buf, wldata.lnum - 1, wldata.col_start - 1, wldata.lnum - 1, wldata.col_end - 1, {get_il_from_obj(ildata)})
+    vim.api.nvim_buf_set_text(wldata.buf, wldata.lnum - 1, wldata.col_start - 1, wldata.lnum - 1, wldata.col_end - 1, {il.get_il_from_obj(ildata)})
 
     if move_cursor == true then
         vim.cmd.buffer(wldata.buf)

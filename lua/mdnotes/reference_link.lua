@@ -2,7 +2,10 @@
 
 local M = {}
 
-local default_ui_select = require('mdnotes').default_ui_select
+local mdn = require('mdnotes')
+local patterns = require('mdnotes.patterns')
+local ts = require('mdnotes.treesitter')
+local get_il_from_obj = require('mdnotes.inline_link').get_il_from_obj -- FIX: Loop dependency error
 
 ---@class MdnReferenceLinkDefinition
 ---@field label string Reference link label
@@ -23,10 +26,9 @@ M.buf_reference_link_definitions = {}
 ---@param opts {reference_link: string?, keep_pointy_brackets: boolean?, location: MdnInLineLocation?}?
 ---@return MdnReferenceLinkData?
 function M.parse(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_ts(opts)
     end
 end
@@ -44,17 +46,15 @@ function M.parse_re(opts)
     vim.validate("reference_link", reference_link, "string", true)
     vim.validate("keep_pointy_brackets", keep_pointy_brackets, "boolean")
 
-    local check_inline_markdown_syntax_re = require('mdnotes').check_inline_markdown_syntax_re
-    local rl_pattern = require("mdnotes.patterns").reference_link
     local txtdata = {}
 
     if reference_link == nil then
-        if not check_inline_markdown_syntax_re(rl_pattern, { location = opts.location }) then return nil end
-        txtdata = require('mdnotes').get_text_in_pattern(rl_pattern, { location = opts.location })
+        if not mdn.check_inline_markdown_syntax_re(patterns.reference_link, { location = opts.location }) then return nil end
+        txtdata = mdn.get_text_in_pattern(patterns.reference_link, { location = opts.location })
         reference_link = txtdata.raw or ""
     end
 
-    local text, label = reference_link:match(require("mdnotes.patterns").text_label)
+    local text, label = reference_link:match(patterns.text_label)
 
     if text and label == "" then
         label = text
@@ -102,7 +102,7 @@ function M.parse_ts(opts)
     end
 
     local node_data
-    local process_node = require('mdnotes.treesitter')["reference_link"] or function() return {} end
+    local process_node = ts["reference_link"] or function() return {} end
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, source)
@@ -127,10 +127,9 @@ end
 ---@param opts {buf: integer?, only_labels: boolean?}?
 ---@return table<MdnReferenceLinkDefinition|string>?
 function M.get_buf_reference_link_definitions(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.get_buf_reference_link_definitions_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.get_buf_reference_link_definitions_ts(opts)
     end
 end
@@ -147,10 +146,9 @@ function M.get_buf_reference_link_definitions_re(opts)
 
     local reference_links = {}
     local buf_lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-    local rl_def_pattern = require('mdnotes.patterns').reference_link_definition
 
     for lnum, line in ipairs(buf_lines) do
-        local label, destination = line:match(rl_def_pattern)
+        local label, destination = line:match(patterns.reference_link_definition)
         if label and destination then
             if only_labels == false then
                 table.insert(reference_links, {label = string.lower(label), destination = destination, lnum = lnum})
@@ -183,7 +181,7 @@ function M.get_buf_reference_link_definitions_ts(opts)
     end
 
     local reference_links = {}
-    local process_node_func = require('mdnotes.treesitter')["reference_link_definition"]
+    local process_node_func = ts["reference_link_definition"]
     local function get_node_data_tbl(node)
         local processed_node = process_node_func(node, buf)
         if processed_node ~= nil then
@@ -245,7 +243,7 @@ function M.insert(opts)
         return
     end
 
-    local txtdata = require('mdnotes').get_text({ location = opts.location })
+    local txtdata = mdn.get_text({ location = opts.location })
     if txtdata.raw == nil then
         return
     end
@@ -617,7 +615,7 @@ function M.open(opts)
     end
 
     if rldata == nil then
-        if silent == false and default_ui_select == vim.ui.select then
+        if silent == false and mdn.default_ui_select == vim.ui.select then
             vim.notify("Mdn: No reference link found", vim.log.levels.ERROR)
         end
 
@@ -626,14 +624,14 @@ function M.open(opts)
 
     local rldef = M.get_rl_definition(rldata.label, rldata.buf)
     if rldef == nil then
-        if silent == false and default_ui_select == vim.ui.select then
+        if silent == false and mdn.default_ui_select == vim.ui.select then
             vim.notify("Mdn: No definition found for label '" .. rldata.label .. "'. If you can confirm it exists, try writing the buf or parse definitions manually with ':Mdn reference_link populate_buf_reference_link_definitions'", vim.log.levels.ERROR)
         end
 
         return "no definition found"
     end
 
-    return require('mdnotes').open(rldef.destination)
+    return mdn.open(rldef.destination)
 end
 
 ---Convert a reference link to an inline link
@@ -663,7 +661,6 @@ function M.convert_to_inline(opts)
         buf = rldata.buf
     }
 
-    local get_il_from_obj = require('mdnotes.inline_link').get_il_from_obj
     vim.api.nvim_buf_set_text(rldata.buf, rldata.lnum - 1, rldata.col_start - 1, rldata.lnum - 1, rldata.col_end - 1, {get_il_from_obj(ildata)})
 
     if move_cursor == true then
@@ -678,10 +675,9 @@ end
 ---@param opts MdnParseLinesOpts?
 ---@return table<MdnReferenceLinkData>?
 function M.parse_lines(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_lines_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_lines_ts(opts)
     end
 end
@@ -694,8 +690,6 @@ function M.parse_lines_re(opts)
     opts = opts or {}
 
     local str = opts.str or false
-    local pattern = require('mdnotes.patterns').reference_link
-    local parse_lines_re = require('mdnotes').parse_lines_re
 
     local process_func = nil
     if str == true then
@@ -703,7 +697,7 @@ function M.parse_lines_re(opts)
     end
     local _opts = vim.tbl_extend("force", opts, {process_func = process_func})
 
-    return parse_lines_re(pattern, M.parse_re, _opts)
+    return mdn.parse_lines_re(patterns.reference_link, M.parse_re, _opts)
 end
 
 ---Parse the reference links in the specified lines using treesitter
@@ -714,7 +708,6 @@ function M.parse_lines_ts(opts)
     opts = opts or {}
 
     local str = opts.str or false
-    local parse_lines_ts = require('mdnotes').parse_lines_ts
 
     local process_func = nil
     if str == true then
@@ -722,7 +715,7 @@ function M.parse_lines_ts(opts)
     end
     local _opts = vim.tbl_extend("force", opts, {process_func = process_func})
 
-    return parse_lines_ts("reference_link", _opts)
+    return mdn.parse_lines_ts("reference_link", _opts)
 end
 
 ---Find occurences of the same label in the reference link
@@ -800,7 +793,7 @@ function M.picker(on_end, buf)
         end,
     }
 
-    return require('mdnotes').mdn_picker(parsed_tbl, on_end, ui_opts)
+    return mdn.mdn_picker(parsed_tbl, on_end, ui_opts)
 end
 
 return M

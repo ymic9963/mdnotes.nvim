@@ -2,6 +2,9 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+local ts = require('mdnotes.treesitter')
+
 ---@alias MdnTableCell string
 
 ---@class MdnTableCellComplex
@@ -22,10 +25,9 @@ local M = {}
 ---@param opts {search: MdnSearchOpts?}?
 ---@return MdnSearchResult
 function M.check_table_valid(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.check_table_valid_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.check_table_valid_ts(opts)
     end
 
@@ -143,7 +145,7 @@ function M.check_table_valid_ts(opts)
     })
 
     local node_data
-    local process_node = require('mdnotes.treesitter')["table"] or function() return {} end
+    local process_node = ts["table"] or function() return {} end
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, buf, "multiline")
@@ -272,10 +274,9 @@ end
 ---@param opts {silent: boolean?, search: MdnSearchOpts?}?
 ---@return MdnTable?
 function M.parse(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_re(opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_ts(opts)
     end
 end
@@ -374,7 +375,7 @@ function M.parse_ts(opts)
     })
 
     local node_data
-    local process_node = require('mdnotes.treesitter')["table"] or function() return {} end
+    local process_node = ts["table"] or function() return {} end
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, buf)
@@ -790,9 +791,8 @@ function M.best_fit(opts)
 
     local max_char_count = {}
     local padding = ""
-    local config_best_fit_padding = require('mdnotes').config.table_best_fit_padding
-    if config_best_fit_padding > 0 then
-        padding = (" "):rep(config_best_fit_padding)
+    if mdn.config.table_best_fit_padding > 0 then
+        padding = (" "):rep(mdn.config.table_best_fit_padding)
     end
 
     -- Trim whitespace in each cell

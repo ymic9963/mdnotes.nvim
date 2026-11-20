@@ -2,6 +2,10 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+local patterns = require('mdnotes.patterns')
+local ts = require('mdnotes.treesitter')
+
 ---@class MdnListItemData
 ---@field indent string Indent of list item
 ---@field marker string List item marker
@@ -68,10 +72,9 @@ end
 ---@param line string Line containing list item
 ---@return MdnListItemData?
 function M.parse_list_item(line)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.parse_list_item_re(line)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.parse_list_item_ts(line)
     end
 end
@@ -82,10 +85,8 @@ end
 function M.parse_list_item_re(line)
     vim.validate("line", line, "string")
 
-    local mdnotes_patterns = require('mdnotes.patterns')
-
-    local ul_indent, ul_marker, ul_text = line:match(mdnotes_patterns.unordered_list)
-    local ol_indent, ol_marker, ol_separator, ol_text = line:match(mdnotes_patterns.ordered_list)
+    local ul_indent, ul_marker, ul_text = line:match(patterns.unordered_list)
+    local ol_indent, ol_marker, ol_separator, ol_text = line:match(patterns.ordered_list)
 
     local indent = (ul_indent or ol_indent) or ""
     local marker = ul_marker or ol_marker or ""
@@ -104,8 +105,8 @@ function M.parse_list_item_re(line)
     end
 
     local task_state = ""
-    if text:match(mdnotes_patterns.task) then
-        task_state = text:match(mdnotes_patterns.task)
+    if text:match(patterns.task) then
+        task_state = text:match(patterns.task)
         text = text:sub(#task_state + 2, -1)
     end
 
@@ -126,7 +127,7 @@ function M.parse_list_item_ts(line)
     vim.validate("line", line, "string")
 
     local node_data
-    local process_node = require('mdnotes.treesitter')["list_item"] or function(...) return {} end ---@diagnostic disable-line
+    local process_node = ts["list_item"] or function(...) return {} end ---@diagnostic disable-line
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, line)

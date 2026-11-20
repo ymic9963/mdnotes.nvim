@@ -2,19 +2,18 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+local patterns = require('mdnotes.patterns')
+local ts = require('mdnotes.treesitter')
+
 ---@class MdnFormattingOpts
 ---@field location MdnInLineLocation?
 ---@field move_cursor boolean?
 
-local check_inline_markdown_syntax = function(...) return require('mdnotes').check_inline_markdown_syntax(...) end
-
-local emphasis_delim = function() return require('mdnotes').config.emphasis_format end
-local strong_delim = function() return require('mdnotes').config.strong_format end
-
 ---@alias MdnFormatDelimiters table<MdnSupportedInlineMEType, {ldel: string, rdel: string}>
 M.format_delimiters = {
-    strong = {ldel = strong_delim(), rdel = strong_delim()},
-    emphasis = {ldel = emphasis_delim(), rdel = emphasis_delim()},
+    strong = {ldel = mdn.config.strong_format, rdel = mdn.config.strong_format},
+    emphasis = {ldel = mdn.config.emphasis_format, rdel = mdn.config.emphasis_format},
     strikethrough = {ldel = "~", rdel = "~"},
     inline_code = {ldel = "`", rdel = "`"},
     autolink = {ldel = "<", rdel = ">"},
@@ -36,7 +35,7 @@ function M.insert_format(imetype, opts)
 
     vim.validate("move_cursor", move_cursor, "boolean")
 
-    local txtdata = require('mdnotes').get_text({ location = opts.location })
+    local txtdata = mdn.get_text({ location = opts.location })
     if txtdata.raw == nil then
         return
     end
@@ -56,10 +55,9 @@ end
 ---@param imetype MdnSupportedInlineMEType Inline Markdown element type
 ---@param opts MdnFormattingOpts?
 function M.delete_format(imetype, opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if mdn.config.parser == "patterns" then
         return M.delete_format_re(imetype, opts)
-    elseif parser == "treesitter" then
+    elseif mdn.config.parser == "treesitter" then
         return M.delete_format_ts(imetype, opts)
     end
 end
@@ -76,8 +74,8 @@ function M.delete_format_re(imetype, opts)
     local move_cursor = opts.move_cursor ~= false
     vim.validate("move_cursor", move_cursor, "boolean")
 
-    local pattern = require('mdnotes.patterns')[imetype]
-    local txtdata = require('mdnotes').get_text_in_pattern(pattern, {location = opts.location})
+    local pattern = patterns[imetype]
+    local txtdata = mdn.get_text_in_pattern(pattern, {location = opts.location})
     local delimiter = M.format_delimiters[imetype]
 
     local new_text = txtdata.raw:sub(#delimiter.ldel + 1, #txtdata.raw - #delimiter.rdel)
@@ -108,7 +106,7 @@ function M.delete_format_ts(imetype, opts)
     local col_start = locopts.col_start or vim.fn.col('.')
 
     local node_data
-    local process_node = require('mdnotes.treesitter')[imetype] or function(...) return {} end ---@diagnostic disable-line
+    local process_node = ts[imetype] or function(...) return {} end ---@diagnostic disable-line
     local function get_node_data(_node)
         if _node ~= nil then
             node_data = process_node(_node, buf)
@@ -150,7 +148,7 @@ function M.toggle(imetype, opts)
 
     opts = opts or {}
 
-    local ret = check_inline_markdown_syntax(imetype, { location = opts.location })
+    local ret = mdn.check_inline_markdown_syntax(imetype, { location = opts.location })
     if ret == true then
         M.delete_format(imetype, opts)
     elseif ret == false then
@@ -309,8 +307,7 @@ function M.fenced_code_block_toggle(opts)
     opts = opts or {}
 
     local locopts = opts.location or {}
-    local pattern = require('mdnotes.patterns').code_fence
-    local fcbvalid = M.check_fence_valid(pattern, {search = {buf = locopts.buf}})
+    local fcbvalid = M.check_fence_valid(patterns.code_fence, {search = {buf = locopts.buf}})
     if fcbvalid.valid == true then
         M.delete_fence({location = {
             buf = fcbvalid.buf,

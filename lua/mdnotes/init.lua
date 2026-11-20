@@ -3,6 +3,8 @@
 local M = {}
 
 local uv = vim.loop or vim.uv
+local patterns = require('mdnotes.patterns')
+local ts = require('mdnotes.treesitter')
 
 ---Supported inlinr Markdown element types
 ---@alias MdnSupportedInlineMEType
@@ -381,11 +383,9 @@ end
 ---@param opts {location: MdnInLineLocation?, entire_line: boolean?}?
 ---@return boolean valid, table<table?> cols_tbl
 function M.check_inline_markdown_syntax(imetype, opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
-        local pattern = require('mdnotes.patterns')[imetype]
-        return M.check_inline_markdown_syntax_re(pattern, opts)
-    elseif parser == "treesitter" then
+    if M.config.parser == "patterns" then
+        return M.check_inline_markdown_syntax_re(patterns[imetype], opts)
+    elseif M.config.parser == "treesitter" then
         return M.check_inline_markdown_syntax_ts(imetype, opts)
     end
 
@@ -443,7 +443,7 @@ function M.check_inline_markdown_syntax_ts(imetype, opts)
 
     opts = opts or {}
 
-    local process_node = require('mdnotes.treesitter')[imetype]
+    local process_node = ts[imetype]
     if process_node == nil then
         return false, {}
     end
@@ -780,10 +780,9 @@ end
 ---@param opts {buf: integer?, only_text: boolean?}?
 ---@return table<MdnFragment|string>?
 function M.get_buf_fragments(opts)
-    local parser = require('mdnotes').config.parser
-    if parser == "patterns" then
+    if M.config.parser == "patterns" then
         return M.get_buf_fragments_re(opts)
-    elseif parser == "treesitter" then
+    elseif M.config.parser == "treesitter" then
         return M.get_buf_fragments_ts(opts)
     end
 end
@@ -800,10 +799,9 @@ function M.get_buf_fragments_re(opts)
 
     local fragments = {}
     local buf_lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-    local heading_format_pattern = require('mdnotes.patterns').heading
 
     for lnum, line in ipairs(buf_lines) do
-        local hash, text = line:match(heading_format_pattern)
+        local hash, text = line:match(patterns.heading)
         if text and hash then
             if only_text == false then
                 table.insert(fragments, {hash = hash, text = text, gfm = M.convert_text_to_gfm(text), lnum = lnum})
@@ -833,7 +831,7 @@ function M.get_buf_fragments_ts(opts)
     end
 
     local fragments = {}
-    local process_node_func = require('mdnotes.treesitter')["fragments"]
+    local process_node_func = ts["fragments"]
     local function get_node_data_tbl(node)
         local processed_node = process_node_func(node, buf)
         if processed_node ~= nil then
@@ -946,7 +944,6 @@ function M.statistics(opts)
     lines = last_lnum
 
     local func = function() end
-    local patterns = require('mdnotes.patterns')
     ils = ils + #(M.parse_lines_re(patterns.inline_link, func, { location = { startl = 1, endl = last_lnum, buf = buf }, location_only = true}) or {})
     wls = wls + #(M.parse_lines_re(patterns.wikilink, func, { location = { startl = 1, endl = last_lnum, buf = buf }, location_only = true }) or {})
     rls = rls + #(M.parse_lines_re(patterns.reference_link, func, { location = { startl = 1, endl = last_lnum, buf = buf }, location_only = true }) or {})
@@ -1011,7 +1008,7 @@ function M.get_path_from_destination(destination, check_valid, opts)
 
     opts = opts or {} -- unused
 
-    path = destination:match(require("mdnotes.patterns").dest_no_fragment) or ""
+    path = destination:match(patterns.dest_no_fragment) or ""
 
     if check_valid == true then
         if path ~= "" then
@@ -1057,7 +1054,7 @@ function M.get_fragment_from_destination(destination, check_valid, opts)
 
     opts = opts or {} -- unused
 
-    fragment = destination:match(require("mdnotes.patterns").fragment) or ""
+    fragment = destination:match(patterns.fragment) or ""
 
     if check_valid == true then
         if fragment ~= "" then
@@ -1256,7 +1253,7 @@ function M.parse_lines_ts(tstype, opts)
     end
 
     local node_data = {}
-    local process_node_func = require('mdnotes.treesitter')[tstype]
+    local process_node_func = ts[tstype]
     local function get_node_data_tbl(node)
         local processed_node = process_node_func(node, buf, location) or {lnum = 0}
         if processed_node.lnum >= startl and processed_node.lnum <= endl then

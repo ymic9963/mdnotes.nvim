@@ -2,11 +2,13 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+local list = require('mdnotes.list')
+local il = require('mdnotes.inline_link')
+
 ---@class MdnToc: MdnMultiLineLocation
 ---@field lines table<string>
 ---@field depth integer
-
-local check_markdown_lsp_cur_buf = function() return require('mdnotes').check_markdown_lsp_cur_buf() end
 
 ---Generate Table of Contents (ToC)
 ---@param opts { buf: integer?, lnum: integer?, write: boolean?, depth: integer?, silent: boolean?}?
@@ -17,7 +19,7 @@ function M.generate(opts)
     opts = opts or {}
     local buf = opts.buf or vim.api.nvim_get_current_buf()
     local lnum = opts.lnum or vim.fn.line('.')
-    local depth = opts.depth or require('mdnotes').config.toc_depth
+    local depth = opts.depth or mdn.config.toc_depth
     local write = opts.write ~= false
     local silent = opts.silent or false
 
@@ -34,7 +36,7 @@ function M.generate(opts)
     end
 
     local toc = {}
-    local buf_fragments = require('mdnotes').buf_fragments
+    local buf_fragments = mdn.buf_fragments
     local fragments = buf_fragments[buf]
 
     if fragments == nil then
@@ -83,15 +85,13 @@ function M.check_toc_valid(opts)
 
     local toc_startl = 0
     local toc_endl = 0
-    local resolve_list_content = require('mdnotes.list').parse_list_item
-    local il_parse = require('mdnotes.inline_link').parse
 
     for i = origin_lnum, lower_limit_lnum, -1 do
         local cur_line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
-        local lcontent = resolve_list_content(cur_line)
+        local lcontent = list.parse_list_item(cur_line)
         if lcontent == nil then break end
         if lcontent.text == "" then break end
-        local ildata = il_parse({ inline_link = lcontent.text })
+        local ildata = il.parse({ inline_link = lcontent.text })
         if ildata == nil then break end
         toc_startl = i
     end
@@ -102,10 +102,10 @@ function M.check_toc_valid(opts)
 
     for i = origin_lnum, upper_limit_lnum do
         local cur_line = vim.api.nvim_buf_get_lines(buf, i - 1, i, false)[1]
-        local lcontent = resolve_list_content(cur_line)
+        local lcontent = list.parse_list_item(cur_line)
         if lcontent == nil then break end
         if lcontent.text == "" then break end
-        local ildata = il_parse({ inline_link = lcontent.text })
+        local ildata = il.parse({ inline_link = lcontent.text })
         if ildata == nil then break end
         toc_endl = i
     end
@@ -156,9 +156,8 @@ function M.parse(opts)
     end
 
     local depth = 1
-    local resolve_list_content = require('mdnotes.list').parse_list_item
     for _, line in ipairs(toc_lines) do
-        local indent_count = select(2, resolve_list_content(line).indent:gsub(" ", ""))
+        local indent_count = select(2, list.parse_list_item(line).indent:gsub(" ", ""))
         if indent_count ~= 0 then
             local temp = (indent_count / vim.o.shiftwidth) + 1
             if temp > depth then

@@ -2,6 +2,8 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+
 ---Get the Markdown heading that the specified line is under
 ---Defaults to current buffer and current line
 ---@param opts {buf: integer?, lnum: integer?, silent: boolean?}?
@@ -15,7 +17,7 @@ function M.get_heading(opts)
     local silent = opts.silent or false
 
     local index = 0
-    local get_buf_fragments = require('mdnotes').get_buf_fragments
+    local get_buf_fragments = mdn.get_buf_fragments
 
     local fragments = get_buf_fragments({buf = buf})
     if fragments == nil then
@@ -73,7 +75,7 @@ function M.go_to(heading, opts)
         heading = M.picker(function(sel_obj) M.go_to(sel_obj) end, buf)
     end
 
-    local fragments = require('mdnotes').get_buf_fragments({ buf = buf})
+    local fragments = mdn.get_buf_fragments({ buf = buf})
 
     -- Set to "" to not go anywhere
     if heading ~= "" then
@@ -123,7 +125,7 @@ function M.picker(on_end, buf)
     vim.validate("buf", buf, "number")
     if buf == 0 then buf = vim.api.nvim_get_current_buf() end
 
-    local fragments = require('mdnotes').get_buf_fragments({ buf = buf, only_text = true})
+    local fragments = mdn.get_buf_fragments({ buf = buf, only_text = true})
     if fragments == nil then
         vim.notify("Mdn: No headings in current file", vim.log.levels.ERROR)
         return
@@ -136,7 +138,7 @@ function M.picker(on_end, buf)
         end,
     }
 
-    return require('mdnotes').mdn_picker(fragments, on_end, ui_opts)
+    return mdn.mdn_picker(fragments, on_end, ui_opts)
 end
 
 return M

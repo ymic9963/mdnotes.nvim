@@ -2,30 +2,30 @@
 
 local M = {}
 
+local mdn = require('mdnotes')
+local config = mdn.config
+local list = require('mdnotes.list')
+
 ---@type boolean
 M.outliner_state = false
 
-local config_autolist = function() return require('mdnotes').config.auto_list_continuation end
-
 ---Toggling the Outliner mode
 function  M.toggle()
-    local mdnotes = require('mdnotes')
-
     if M.outliner_state == true then
         M.outliner_state = false
-        mdnotes.config.auto_list_continuation = config_autolist()
+        config.auto_list_continuation = mdn.config
 
         vim.api.nvim_buf_del_keymap(0 ,'i', '<TAB>')
         vim.api.nvim_buf_del_keymap(0 ,'i', '<S-TAB>')
         vim.notify("Mdn: Exited Mdnotes Outliner Mode", vim.log.levels.INFO)
     elseif M.outliner_state == false then
         M.outliner_state = true
-        mdnotes.config.auto_list_continuation = true
+        config.auto_list_continuation = true
 
         vim.keymap.set('i', '<TAB>', '<cmd>Mdn outliner indent<CR>', { buffer = true })
         vim.keymap.set('i', '<S-TAB>', '<cmd>Mdn outliner unindent<CR>', { buffer = true })
         vim.keymap.set("i", "<CR>", function ()
-            return mdnotes.list.new_line_remap("<CR>", true)
+            return mdn.list.new_line_remap("<CR>", true)
         end,
         {
             expr = true,
@@ -46,7 +46,7 @@ function M.indent(opts)
 
     local move_cursor = opts.move_cursor ~= false
     local searchopts = opts.search or {}
-    local lsearch = require('mdnotes.list').check_list_valid({ outliner_list = true, search = searchopts })
+    local lsearch = list.check_list_valid({ outliner_list = true, search = searchopts })
     local lines = vim.api.nvim_buf_get_lines(lsearch.buf, lsearch.startl - 1, lsearch.endl, false) or {}
     local cur_lnum = searchopts.origin_lnum or vim.fn.line('.')
     local new_lines = {}
@@ -71,7 +71,7 @@ function M.unindent(opts)
 
     local move_cursor = opts.move_cursor ~= false
     local searchopts = opts.search or {}
-    local lsearch = require('mdnotes.list').check_list_valid({ outliner_list = true, search = opts.search })
+    local lsearch = list.check_list_valid({ outliner_list = true, search = opts.search })
     local lines = vim.api.nvim_buf_get_lines(lsearch.buf, lsearch.startl - 1, lsearch.endl, false) or {}
     local cur_lnum = searchopts.origin_lnum or vim.fn.line('.')
     local new_lines = {}
