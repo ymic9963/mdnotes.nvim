@@ -5,7 +5,6 @@ local M = {}
 local mdn = require('mdnotes')
 local patterns = require('mdnotes.patterns')
 local ts = require('mdnotes.treesitter')
-local get_il_from_obj = require('mdnotes.inline_link').get_il_from_obj -- FIX: Loop dependency error
 
 ---@class MdnReferenceLinkDefinition
 ---@field label string Reference link label
@@ -661,6 +660,7 @@ function M.convert_to_inline(opts)
         buf = rldata.buf
     }
 
+    local get_il_from_obj = require('mdnotes.inline_link').get_il_from_obj -- FIX: Loop dependency error
     vim.api.nvim_buf_set_text(rldata.buf, rldata.lnum - 1, rldata.col_start - 1, rldata.lnum - 1, rldata.col_end - 1, {get_il_from_obj(ildata)})
 
     if move_cursor == true then
