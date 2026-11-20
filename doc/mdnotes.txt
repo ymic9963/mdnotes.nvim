@@ -995,19 +995,6 @@ get_text_in_pattern({pattern}, {opts}) 			*mdnotes.get_text_in_pattern*
     Return: ~
     • (`MdnText`): See |mdnotes.MdnText|.
 
-new_line_remap({key}, {inc_val}) 			*mdnotes.new_line_remap()*
-
-    Kind of forgot how this works but it is used in the remaps for
-    |mdnotes-auto_list_continuation|.
-
-    Parameters: ~
-    • {key}  (`string`) Only accepts `o`, `O`, and `<CR>` as inputs. Always
-    treats `<CR>` as an expression.
-    • {inc_val}  (`integer`) Value to increment/decrement by.
-
-    Return: ~
-    • (`string?`)
-
 go_to_index_file() 			   		*mdnotes.go_to_index_file()*
 
     Go the index file defined by |mdnotes-index_file|. Used in the
@@ -1438,112 +1425,6 @@ demo.run()						*mdnotes.demo.run()*
 
     Run Mdnotes demo in the current buffer.
 
-formatting.format_delimiters 				*mdnotes.formatting.format_delimiters*
-
-    Table of type |mdnotes.MdnFormatDelimiters|. 
-
-formatting.insert_format({imetype}, {opts})		*mdnotes.formatting.insert_format()*
-
-    Used internally for all formatting using format delimiters. 
-
-    Parameters: ~
-    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
-    • {opts}  (`MdnFormattingOpts?`)
-
-formatting.delete_format({pattern}, {opts})		*mdnotes.formatting.delete_format()*
-
-    Used internall for removing format delimiters from text.
-
-    Behaves as a wrapper for the `delete_format_re()` and `delete_format_ts()` functions which
-    get called depending on the |mdnotes-parser|.
-
-    Parameters: ~
-    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
-    • {opts}  (`MdnFormattingOpts?`)
-
-formatting.toggle({imetype}, {delimiter}, {opts})	*mdnotes.formatting.toggle()*
-
-    Parameters: ~
-    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {move_cursor} (`boolean?`, default `true`)
-		move the cursor to the position of the deleted text
-
-formatting.emphasis_toggle({opts})			*mdnotes.formatting.emphasis_toggle()*
-
-    Toggle Markdown `*emphasis*` syntax. Select a word and execute the command
-    or hover over already strong text to remove.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {split_delimiter} (`boolean?`, default `false`)
-		split format delimiter string in half
-
-formatting.strong_toggle({opts})			*mdnotes.formatting.strong_toggle()*
-
-    Toggle Markdown `**strong**` syntax. Select a word and execute the command
-    or hover over already strong text to remove.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {split_delimiter} (`boolean?`, default `false`)
-		split format delimiter string in half
-
-formatting.strikethrough_toggle({opts})			*mdnotes.formatting.strikethrough_toggle()*
-
-    Toggle Markdown `~~strikethrough~~` syntax. Select a word and execute the 
-    command or hover over already strong text to remove.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {split_delimiter} (`boolean?`, default `false`)
-		split format delimiter string in half
-
-formatting.inline_code_toggle({opts})			*mdnotes.formatting.inline_code_toggle()*
-
-    Toggle Markdown `inline code` (``) syntax. Select a word and execute the command
-    or hover over already strong text to remove.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {split_delimiter} (`boolean?`, default `false`)
-		split format delimiter string in half
-
-formatting.autolink_toggle({opts})			*mdnotes.formatting.autolink_toggle()*
-
-    Toggle Markdown `<autolink>` (<>) syntax. Select a word and execute the command
-    or hover over already strong text to remove.
-
-    Parameters: ~
-    • {opts}  (`table?`) Optional parameters:
-              • {location} (`MdnInLineLocation?`)
-		inline text location
-              • {split_delimiter} (`boolean?`, default `false`)
-		split format delimiter string in half
-
-formatting.parse_list_item({line})			*mdnotes.formatting.parse_list_item()*
-
-    Get a consistent table containing all data on a list item.
-
-    Behaves as a wrapper for the `parse_list_item_re()` and `parse_list_item_ts()` functions which
-    get called depending on the |mdnotes-parser|.
-
-    Parameters: ~
-    • {line}  (`string?`) Line text
-
-    Return: ~
-    • (`MdnListItemData?`)
-
 footnote.buf_footnotes			 		*mdnotes.footnote.buf_footnotes*
 
     Table of type |mdnotes.MdnBufFootnotes|. Accessed using
@@ -1745,6 +1626,99 @@ footnote.picker({on_end}, {buf}) 			*mdnotes.footnote.picker()*
     • {on_end}  (`fun(sel_obj): any`) Callback function for when the coroutine finishes
     • {buf}  (`integer`) Buffer number to parse elements from. Use `0` for current
     buffer.
+
+formatting.format_delimiters 				*mdnotes.formatting.format_delimiters*
+
+    Table of type |mdnotes.MdnFormatDelimiters|. 
+
+formatting.insert_format({imetype}, {opts})		*mdnotes.formatting.insert_format()*
+
+    Used internally for all formatting using format delimiters. 
+
+    Parameters: ~
+    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
+    • {opts}  (`MdnFormattingOpts?`)
+
+formatting.delete_format({pattern}, {opts})		*mdnotes.formatting.delete_format()*
+
+    Used internall for removing format delimiters from text.
+
+    Behaves as a wrapper for the `delete_format_re()` and `delete_format_ts()` functions which
+    get called depending on the |mdnotes-parser|.
+
+    Parameters: ~
+    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
+    • {opts}  (`MdnFormattingOpts?`)
+
+formatting.toggle({imetype}, {delimiter}, {opts})	*mdnotes.formatting.toggle()*
+
+    Parameters: ~
+    • {imetype}  (`MdnSupportedInlineMEType`) Markdown element type
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {move_cursor} (`boolean?`, default `true`)
+		move the cursor to the position of the deleted text
+
+formatting.emphasis_toggle({opts})			*mdnotes.formatting.emphasis_toggle()*
+
+    Toggle Markdown `*emphasis*` syntax. Select a word and execute the command
+    or hover over already strong text to remove.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {split_delimiter} (`boolean?`, default `false`)
+		split format delimiter string in half
+
+formatting.strong_toggle({opts})			*mdnotes.formatting.strong_toggle()*
+
+    Toggle Markdown `**strong**` syntax. Select a word and execute the command
+    or hover over already strong text to remove.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {split_delimiter} (`boolean?`, default `false`)
+		split format delimiter string in half
+
+formatting.strikethrough_toggle({opts})			*mdnotes.formatting.strikethrough_toggle()*
+
+    Toggle Markdown `~~strikethrough~~` syntax. Select a word and execute the 
+    command or hover over already strong text to remove.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {split_delimiter} (`boolean?`, default `false`)
+		split format delimiter string in half
+
+formatting.inline_code_toggle({opts})			*mdnotes.formatting.inline_code_toggle()*
+
+    Toggle Markdown `inline code` (``) syntax. Select a word and execute the command
+    or hover over already strong text to remove.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {split_delimiter} (`boolean?`, default `false`)
+		split format delimiter string in half
+
+formatting.autolink_toggle({opts})			*mdnotes.formatting.autolink_toggle()*
+
+    Toggle Markdown `<autolink>` (<>) syntax. Select a word and execute the command
+    or hover over already strong text to remove.
+
+    Parameters: ~
+    • {opts}  (`table?`) Optional parameters:
+              • {location} (`MdnInLineLocation?`)
+		inline text location
+              • {split_delimiter} (`boolean?`, default `false`)
+		split format delimiter string in half
 
 formatting.insert_fence({fence}, {opts}) 		*mdnotes.formatting.insert_fence()*
 
@@ -2104,6 +2078,40 @@ journal.insert_entry({opts})				*mdnotes.journal_insert_entry()*
               • {check_file} (`boolean?,` default `false`)
 		check if currently in journal file
 
+list.new_line_remap({key}, {inc_val}) 			*mdnotes.list.new_line_remap()*
+
+    Used in the remaps for |mdnotes-auto_list_continuation|.
+
+    Parameters: ~
+    • {key}  (`string`) Only accepts `o`, `O`, and `<CR>` as inputs. Always
+    treats `<CR>` as an expression.
+    • {inc_val}  (`integer`) Value to increment/decrement by.
+
+    Return: ~
+    • (`string?`)
+
+list.parse_list_item({opts}) 				*mdnotes.list.parse_list_item()*
+
+    Get a consistent table containing all data on a list item.
+
+    Behaves as a wrapper for the `parse_list_item_re()` and
+    `parse_list_item_ts()` functions which get called depending on
+    the |mdnotes-parser|.
+
+    Parameters: ~
+    • {line}  (`string`) Line containing list item
+	
+    Return: ~
+    • (`MdnListItemData?`)
+
+list.get_list_item_string({ldata}) 			*mdnotes.list.get_list_item_string()*
+
+    Parameters: ~
+    • {ldata}  (`MdnListItemData?`)
+	
+    Return: ~
+    • (`string?`)
+
 list.task_list_toggle({opts})				*mdnotes.list.task_list_toggle()*
 
     Toggle through checked, unchecked, and no checkbox in a list item. Also works
@@ -2462,6 +2470,7 @@ table.create({rows}, {cols}, {opts})			*mdnotes.table.create()*
     |    |    |    |
     |    |    |    |
 <
+
     Parameters: ~
     • {rows} (`integer|string`)
     • {columns} (`integer|string`)

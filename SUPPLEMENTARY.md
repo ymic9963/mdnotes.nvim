@@ -28,6 +28,8 @@ The main reason I started this project was dissatisfaction with Markdown LSPs at
  
  **Note:** Not all of the features of `mdnotes` are listed in this table, just the ones that are relevant to this section. Some LSPs provide more than just LSP features and their documentation should also be referenced along with this table.
 
+ Currently the only reason I personally have Markdown LSPs installed is for autocompletion of Markdown files and their fragments/sections. If a solution for this is implemented in `mdnotes` then I would not have a need for LSPs.
+
 ### Editing Tables
 `mdnotes` tries to complement Neovim functionality to make editing tables as easy as possible. See the table below for what functions Neovim does and what functions are done by `mdnotes`.
 
