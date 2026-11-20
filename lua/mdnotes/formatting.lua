@@ -56,17 +56,17 @@ end
 ---@param opts MdnFormattingOpts?
 function M.delete_format(imetype, opts)
     if mdn.config.parser == "patterns" then
-        return M.delete_format_re(imetype, opts)
+        return M.delete_format_re(patterns[imetype], opts)
     elseif mdn.config.parser == "treesitter" then
         return M.delete_format_ts(imetype, opts)
     end
 end
 
 ---Delete the format indicators around a Markdown element using Lua patterns
----@param imetype MdnSupportedInlineMEType Inline Markdown element type
+---@param pattern MdnPattern Pattern that returns the start and end columns, as well as the text
 ---@param opts MdnFormattingOpts?
-function M.delete_format_re(imetype, opts)
-    vim.validate("imetype", imetype, "string")
+function M.delete_format_re(pattern, opts)
+    vim.validate("pattern", pattern, "string")
     vim.validate("opts", opts, "table", true)
 
     opts = opts or {}
@@ -74,9 +74,8 @@ function M.delete_format_re(imetype, opts)
     local move_cursor = opts.move_cursor ~= false
     vim.validate("move_cursor", move_cursor, "boolean")
 
-    local pattern = patterns[imetype]
     local txtdata = mdn.get_text_in_pattern(pattern, {location = opts.location})
-    local delimiter = M.format_delimiters[imetype]
+    local delimiter = M.format_delimiters[pattern]
 
     local new_text = txtdata.raw:sub(#delimiter.ldel + 1, #txtdata.raw - #delimiter.rdel)
 
