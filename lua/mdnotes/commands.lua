@@ -3,10 +3,10 @@
 local commands = nil
 local get_commands = function() return {
     index = {
-        require("mdnotes").go_to_index_file,
+        go_to = require("mdnotes").go_to_index_file,
     },
     journal = {
-        require("mdnotes.journal").go_to,
+        go_to = require("mdnotes.journal").go_to,
         insert_entry = require("mdnotes.journal").insert_entry,
     },
     formatting = {
